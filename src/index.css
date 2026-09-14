@@ -1,0 +1,73 @@
+@import './styles/fonts.css';
+@import './styles/tailwind.css';
+@import './styles/theme.css';
+@import './styles/arktos.css';
+
+/* ── Accessibility Mode ────────────────────────────────────────────
+   Applied by toggling class="a11y-mode" on <html>.
+   All overrides use !important to defeat inline styles.
+─────────────────────────────────────────────────────────────────── */
+html.a11y-mode,
+html.a11y-mode body {
+  background: #fff !important;
+  color: #000 !important;
+}
+
+html.a11y-mode * {
+  color: #000 !important;
+  -webkit-text-fill-color: #000 !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+  border-color: #999 !important;
+  animation: none !important;
+}
+
+/* White page background */
+html.a11y-mode section,
+html.a11y-mode main,
+html.a11y-mode header,
+html.a11y-mode footer,
+html.a11y-mode nav {
+  background: #fff !important;
+}
+
+/* Hide all photos / background imagery */
+html.a11y-mode img {
+  display: none !important;
+}
+
+/* Buttons: black border, white fill, black text */
+html.a11y-mode button {
+  background: #fff !important;
+  border: 1.5px solid #000 !important;
+  color: #000 !important;
+}
+
+/* Keep SVG icons readable */
+html.a11y-mode svg {
+  color: #000 !important;
+  stroke: #000 !important;
+}
+
+/* The a11y toggle button itself keeps its look */
+html.a11y-mode button[aria-label="Toggle accessibility mode"] {
+  background: #f0f0f0 !important;
+  border: 1.5px solid #000 !important;
+  color: #000 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

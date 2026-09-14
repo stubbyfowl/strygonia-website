@@ -1,0 +1,164 @@
+/* ── Strygonia brand tokens ───────────────────────────────────────────
+   Warm sand + charcoal text + vivid blue. Dark sections invert via .ark-dark.
+   Instrument Serif for display, Source Sans 3 for body.
+─────────────────────────────────────────────────────────────────────── */
+:root {
+  --ark-bg: #e8dcc8;
+  --ark-bg-2: #dfd1bb;
+  --ark-panel: rgba(232, 220, 200, 0.82);
+  --ark-panel-2: rgba(223, 209, 187, 0.85);
+  --ark-line: rgba(28, 25, 23, 0.10);
+  --ark-line-soft: rgba(28, 25, 23, 0.05);
+  --ark-ink: #1c1917;
+  --ark-ink-dim: #44403c;
+  --ark-muted: #78716c;
+  --ark-faint: #a8a29e;
+
+  --ark-signal: #2563eb;
+  --ark-signal-2: #1d4ed8;
+  --ark-signal-deep: #1e40af;
+
+  --ark-btn: #2563eb;
+  --ark-btn-hover: #3b82f6;
+  --ark-btn-ink: #ffffff;
+
+  --ark-fault: #dc2626;
+  --ark-fault-2: #b91c1c;
+  --ark-amber: #e4dacb;
+
+  --ark-display: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --ark-wordmark: "Instrument Serif", Georgia, serif;
+  --ark-body: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+  --ark-mono: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+  --ark-nordic: "Instrument Serif", Georgia, serif;
+}
+
+.ark-dark {
+  --ark-bg: #0c0c0c;
+  --ark-bg-2: #161616;
+  --ark-panel: rgba(255, 255, 255, 0.05);
+  --ark-panel-2: rgba(255, 255, 255, 0.07);
+  --ark-line: rgba(255, 255, 255, 0.10);
+  --ark-line-soft: rgba(255, 255, 255, 0.06);
+  --ark-ink: #f5f5f4;
+  --ark-ink-dim: rgba(255, 255, 255, 0.6);
+  --ark-muted: rgba(255, 255, 255, 0.4);
+  --ark-faint: rgba(255, 255, 255, 0.22);
+  --ark-amber: #1a1a1a;
+}
+
+::selection {
+  background: rgba(37, 99, 235, 0.22);
+  color: #1c1917;
+}
+
+.ark-on-photo {
+  text-shadow: 0 1px 24px rgba(0, 0, 0, 0.45), 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes ark-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.ark-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: ark-marquee 34s linear infinite;
+}
+.ark-marquee:hover .ark-marquee-track { animation-play-state: paused; }
+
+@keyframes ark-trace-draw {
+  from { stroke-dashoffset: var(--trace-len, 2000); }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes ark-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.35; transform: scale(0.82); }
+}
+
+@keyframes ark-sweep {
+  0%   { transform: translateX(-8%); opacity: 0; }
+  12%  { opacity: 0.9; }
+  88%  { opacity: 0.9; }
+  100% { transform: translateX(108%); opacity: 0; }
+}
+
+@keyframes ark-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ark-drift {
+  0%   { transform: translateY(0) translateX(0); opacity: 0; }
+  10%  { opacity: var(--mote-opacity, 0.4); }
+  90%  { opacity: var(--mote-opacity, 0.4); }
+  100% { transform: translateY(-120px) translateX(var(--mote-drift, 12px)); opacity: 0; }
+}
+
+@keyframes ark-mesh {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(2%, -1.5%, 0) scale(1.06); }
+}
+
+.ark-led { animation: ark-pulse 1.9s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.ark-led-ring { animation: ark-ring 1.9s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes ark-ring {
+  0%   { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+.ark-fan { animation: ark-spin 1.3s linear infinite; transform-box: view-box; transform-origin: 370px 144px; }
+.ark-smoke-1, .ark-smoke-2 {
+  stroke-dasharray: 60;
+  animation: ark-smoke-flow 2.4s ease-in-out infinite;
+}
+.ark-smoke-2 { animation-delay: 0.9s; }
+@keyframes ark-smoke-flow {
+  0%   { stroke-dashoffset: 60; opacity: 0; }
+  35%  { opacity: 0.55; }
+  100% { stroke-dashoffset: -30; opacity: 0; }
+}
+
+.ark-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.18);
+  outline: none;
+  cursor: pointer;
+}
+.ark-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--ark-signal-2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15), 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+.ark-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--ark-signal-2);
+}
+.ark-range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.28);
+}
+
+.ark-focus:focus-visible {
+  outline: 2px solid var(--ark-signal);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.ark-btn-primary:hover {
+  background: var(--ark-btn-hover) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ark-marquee-track,
+  [class*="ark-"] { animation: none !important; }
+}
