@@ -12,6 +12,8 @@ import {
   Lock,
   CreditCard,
 } from "lucide-react";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { CookieBanner } from "@/components/CookieBanner";
 import { CircuitBackdrop } from "@/components/CircuitBackdrop";
 import { DeviceMockup } from "@/components/DeviceMockup";
@@ -46,6 +48,10 @@ const {
   careersBackground,
   productSpecBackground,
 } = images;
+
+const stripePromise = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
+  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
+  : null;
 
 /* ── Shared type tokens ───────────────────────────────────────────── */
 const DISPLAY = "var(--ark-display)";
@@ -430,27 +436,64 @@ function BackBar({ onHome, label = "Back to Strygonia" }: { onHome: () => void; 
   );
 }
 
-function StripeCheckout() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+function CheckoutForm() {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [status, setStatus] = useState<"idle" | "processing" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleCheckout = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch("/api/create-checkout-session", { method: "POST" });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        setError(data.error || "Something went wrong.");
-        setLoading(false);
-      }
-    } catch {
-      setError("Could not connect to checkout. Try again.");
-      setLoading(false);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+    setStatus("processing");
+    setErrorMsg("");
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: { return_url: `${window.location.origin}/?checkout=success` },
+    });
+
+    if (error) {
+      setErrorMsg(error.message || "Payment failed.");
+      setStatus("error");
+    } else {
+      setStatus("success");
     }
   };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <PaymentElement options={{ layout: "tabs" }} />
+      <Button
+        type="submit"
+        className="w-full mt-6"
+        size="lg"
+        disabled={!stripe || status === "processing"}
+      >
+        {status === "processing" ? "Processing..." : <><Lock size={14} /> Pay $198.99</>}
+      </Button>
+      {status === "error" && (
+        <div className="mt-4 rounded-lg px-4 py-3 border" style={{ background: "rgba(28,25,23,0.06)", borderColor: "rgba(28,25,23,0.14)", color: "var(--ark-fault-2)", fontFamily: BODY, fontSize: "0.85rem" }}>
+          {errorMsg}
+        </div>
+      )}
+    </form>
+  );
+}
+
+function StripeCheckout() {
+  const [clientSecret, setClientSecret] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetch("/api/create-payment-intent", { method: "POST" })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.clientSecret) setClientSecret(data.clientSecret);
+        else setError(data.error || "Could not initialize checkout.");
+      })
+      .catch(() => setError("Could not connect to payment server."));
+  }, []);
 
   return (
     <Panel className="p-7">
@@ -461,30 +504,22 @@ function StripeCheckout() {
         </span>
       </div>
 
-      <div className="mb-6 rounded-lg px-4 py-3 flex items-start gap-3" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.14)" }}>
-        <Lock size={15} style={{ color: "var(--ark-muted)", marginTop: "2px", flexShrink: 0 }} />
-        <p style={{ fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-ink-dim)", lineHeight: 1.6 }}>
-          <strong style={{ color: "var(--ark-ink)", fontWeight: 600 }}>Secure checkout.</strong> You'll be redirected to Stripe's hosted payment page. No card info touches our servers.
-        </p>
-      </div>
-
-      <Button
-        className="w-full mt-2"
-        size="lg"
-        onClick={handleCheckout}
-        disabled={loading}
-      >
-        {loading ? "Redirecting to Stripe..." : <><CreditCard size={16} /> Proceed to checkout</>}
-      </Button>
-
-      {error && (
-        <div className="mt-4 rounded-lg px-4 py-3 border" style={{ background: "rgba(28,25,23,0.06)", borderColor: "rgba(28,25,23,0.14)", color: "var(--ark-fault-2)", fontFamily: BODY, fontSize: "0.85rem" }}>
+      {error ? (
+        <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(28,25,23,0.06)", borderColor: "rgba(28,25,23,0.14)", color: "var(--ark-fault-2)", fontFamily: BODY, fontSize: "0.85rem" }}>
           {error}
+        </div>
+      ) : clientSecret && stripePromise ? (
+        <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: "stripe", variables: { colorPrimary: "#2563eb", borderRadius: "8px" } } }}>
+          <CheckoutForm />
+        </Elements>
+      ) : (
+        <div className="flex items-center justify-center py-10" style={{ color: "var(--ark-muted)", fontFamily: BODY, fontSize: "0.9rem" }}>
+          Loading payment form...
         </div>
       )}
 
-      <p className="mt-4 text-center" style={{ fontFamily: MONO, fontSize: "0.64rem", letterSpacing: "0.1em", color: "var(--ark-faint)" }}>
-        Secured by Stripe
+      <p className="mt-5 text-center" style={{ fontFamily: MONO, fontSize: "0.64rem", letterSpacing: "0.1em", color: "var(--ark-faint)" }}>
+        Secured by Stripe · $198.99 USD
       </p>
     </Panel>
   );
