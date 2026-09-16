@@ -1,22 +1,24 @@
 /* ── Strygonia brand tokens ───────────────────────────────────────────
    Warm sand + charcoal text + vivid blue. Dark sections invert via .ark-dark.
-   Instrument Serif for display, Source Sans 3 for body.
+   Instrument Serif for display, Source Sans 3 for body, Space Mono for mono.
 ─────────────────────────────────────────────────────────────────────── */
 :root {
-  --ark-bg: #e8dcc8;
-  --ark-bg-2: #dfd1bb;
-  --ark-panel: rgba(232, 220, 200, 0.82);
-  --ark-panel-2: rgba(223, 209, 187, 0.85);
-  --ark-line: rgba(28, 25, 23, 0.10);
-  --ark-line-soft: rgba(28, 25, 23, 0.05);
+  --ark-bg: #f0ebe4;
+  --ark-bg-2: #e6e0d8;
+  --ark-panel: rgba(255, 255, 255, 0.85);
+  --ark-panel-2: rgba(255, 255, 255, 0.72);
+  --ark-line: rgba(28, 25, 23, 0.14);
+  --ark-line-soft: rgba(28, 25, 23, 0.07);
   --ark-ink: #1c1917;
-  --ark-ink-dim: #44403c;
-  --ark-muted: #78716c;
-  --ark-faint: #a8a29e;
+  --ark-ink-dim: #57524b;
+  --ark-muted: #8a857e;
+  --ark-faint: #b5b0aa;
 
   --ark-signal: #2563eb;
   --ark-signal-2: #1d4ed8;
   --ark-signal-deep: #1e40af;
+  --ark-signal-soft: rgba(37, 99, 235, 0.10);
+  --ark-signal-glow: rgba(37, 99, 235, 0.25);
 
   --ark-btn: #2563eb;
   --ark-btn-hover: #3b82f6;
@@ -29,21 +31,21 @@
   --ark-display: "Instrument Serif", Georgia, "Times New Roman", serif;
   --ark-wordmark: "Instrument Serif", Georgia, serif;
   --ark-body: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
-  --ark-mono: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+  --ark-mono: "Space Mono", "Courier New", monospace;
   --ark-nordic: "Instrument Serif", Georgia, serif;
 }
 
 .ark-dark {
   --ark-bg: #0c0c0c;
   --ark-bg-2: #161616;
-  --ark-panel: rgba(255, 255, 255, 0.05);
-  --ark-panel-2: rgba(255, 255, 255, 0.07);
-  --ark-line: rgba(255, 255, 255, 0.10);
-  --ark-line-soft: rgba(255, 255, 255, 0.06);
+  --ark-panel: rgba(255, 255, 255, 0.08);
+  --ark-panel-2: rgba(255, 255, 255, 0.10);
+  --ark-line: rgba(255, 255, 255, 0.12);
+  --ark-line-soft: rgba(255, 255, 255, 0.07);
   --ark-ink: #f5f5f4;
-  --ark-ink-dim: rgba(255, 255, 255, 0.6);
-  --ark-muted: rgba(255, 255, 255, 0.4);
-  --ark-faint: rgba(255, 255, 255, 0.22);
+  --ark-ink-dim: rgba(255, 255, 255, 0.72);
+  --ark-muted: rgba(255, 255, 255, 0.48);
+  --ark-faint: rgba(255, 255, 255, 0.28);
   --ark-amber: #1a1a1a;
 }
 
@@ -156,6 +158,8 @@
 
 .ark-btn-primary:hover {
   background: var(--ark-btn-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
 }
 
 @media (prefers-reduced-motion: reduce) {

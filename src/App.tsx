@@ -150,7 +150,7 @@ function Navbar({
       <div
         className="w-full flex items-center justify-between px-6 lg:px-10 py-3 transition-all duration-300"
         style={{
-          background: scrolled ? "rgba(232,220,200,0.92)" : "transparent",
+          background: scrolled ? "rgba(240,235,228,0.92)" : "transparent",
           backdropFilter: scrolled ? "blur(14px)" : "none",
           WebkitBackdropFilter: scrolled ? "blur(14px)" : "none",
           borderBottom: scrolled ? "1px solid var(--ark-line)" : "1px solid transparent",
@@ -198,7 +198,7 @@ function Navbar({
       </div>
 
       {open && (
-        <div className="md:hidden p-6 border-b" style={{ background: "rgba(232,220,200,0.98)", borderColor: "var(--ark-line)" }}>
+        <div className="md:hidden p-6 border-b" style={{ background: "rgba(240,235,228,0.98)", borderColor: "var(--ark-line)" }}>
           <ul className="flex flex-col gap-4">
             {NAV_LINKS.map((link) => (
               <li key={link.label}>
@@ -222,7 +222,8 @@ function Navbar({
 function Hero({ onBlackBox }: { onBlackBox: () => void }) {
   return (
     <section id="home" className="ark-dark relative w-full overflow-hidden" style={{ background: "var(--ark-bg)" }}>
-      <div className="min-h-[90vh] flex flex-col items-center justify-center px-6 pt-28 pb-16">
+      <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 60% 50% at 50% 40%, rgba(37,99,235,0.08) 0%, transparent 70%)" }} />
+      <div className="min-h-[90vh] flex flex-col items-center justify-center px-6 pt-28 pb-16 relative z-10">
         <div className="max-w-4xl text-center">
           <img
             src="/strygonia-logo-dark.png"
@@ -235,7 +236,7 @@ function Hero({ onBlackBox }: { onBlackBox: () => void }) {
             <br />
             your board died.
           </h1>
-          <p style={{ fontFamily: BODY, fontSize: "clamp(1rem, 1.6vw, 1.2rem)", color: "rgba(255,255,255,0.45)", lineHeight: 1.7, maxWidth: "34rem", margin: "2rem auto 0" }}>
+          <p style={{ fontFamily: BODY, fontSize: "clamp(1rem, 1.6vw, 1.2rem)", color: "rgba(255,255,255,0.55)", lineHeight: 1.7, maxWidth: "34rem", margin: "2rem auto 0" }}>
             BlackBox quietly records the signals your board checks first, so when it dies you play the failure back instead of hunting for it.
           </p>
           <div className="flex justify-center gap-4 mt-10">
@@ -256,7 +257,7 @@ function Hero({ onBlackBox }: { onBlackBox: () => void }) {
 function ToolMarquee() {
   const tools = ["Breadboards", "Raspberry Pi", "STM32", "ESP32", "Arduino", "Custom PCBs", "KiCad", "Saleae", "JLCPCB", "Pinecil", "Rigol scopes"];
   return (
-    <section className="relative py-16 px-6 border-y" style={{ background: "var(--ark-bg-2)", borderColor: "var(--ark-line-soft)" }}>
+    <section className="ark-dark relative py-16 px-6 border-y" style={{ background: "var(--ark-bg-2)", borderColor: "var(--ark-line-soft)" }}>
       <div className="max-w-6xl mx-auto grid lg:grid-cols-[0.42fr_1.58fr] gap-8 lg:gap-14 items-baseline">
         <p style={{ fontFamily: MONO, fontSize: "0.68rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--ark-muted)", lineHeight: 1.7 }}>
           Works next to what's already on your bench
@@ -322,7 +323,8 @@ function ProductRow({
 function Products({ onProduct, onReserve }: { onProduct: (id: ProductId) => void; onReserve: () => void }) {
   return (
     <section id="products" className="ark-dark relative py-40 px-6 overflow-hidden" style={{ background: "var(--ark-bg)" }}>
-      <div className="max-w-6xl mx-auto">
+      <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 80% 60% at 30% 20%, rgba(37,99,235,0.05) 0%, transparent 60%)" }} />
+      <div className="max-w-6xl mx-auto relative z-10">
         <Reveal className="max-w-2xl mb-24">
           <h2 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(2.2rem, 4vw, 3.6rem)", lineHeight: 0.95, color: "var(--ark-ink)", marginBottom: "1.2rem" }}>
             For the worst part of building hardware.
@@ -389,11 +391,12 @@ function Team() {
 function CTA({ onReserve, onContact }: { onReserve: () => void; onContact: () => void }) {
   return (
     <section className="ark-dark relative py-48 px-6 overflow-hidden" style={{ background: "var(--ark-bg)" }}>
+      <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(37,99,235,0.06) 0%, transparent 65%)" }} />
       <img
         src="/strygonia-pcb.png"
         alt=""
         aria-hidden
-        className="absolute right-0 top-1/2 -translate-y-1/2 opacity-[0.08] pointer-events-none select-none"
+        className="absolute right-0 top-1/2 -translate-y-1/2 opacity-[0.15] pointer-events-none select-none"
         style={{ width: "clamp(300px, 45vw, 600px)", height: "auto" }}
       />
       <div className="max-w-3xl mx-auto text-center relative z-10">
@@ -1039,21 +1042,17 @@ export default function App() {
           <Hero onBlackBox={() => goProduct("blackbox")} />
           <ToolMarquee />
           <Products onProduct={goProduct} onReserve={() => goReserve()} />
-          <div className="ark-dark" style={{ background: "#0c0c0c" }}>
-            <img
-              src="/strygonia-banner-dark.png"
-              alt="Strygonia — Debug, Test, Probe, Diagnose"
-              className="w-full"
-              style={{ maxHeight: 220, objectFit: "cover", opacity: 0.9 }}
-            />
-          </div>
           <div className="ark-dark">
             <BlackBoxExploded
               title="Every layer, accounted for."
               subtitle="The V1 comes apart the way it goes together: printed shell, radio module, carrier PCB, bottom plate."
             />
           </div>
+          {/* gradient bridge: dark → sand */}
+          <div aria-hidden style={{ height: 120, background: "linear-gradient(180deg, #0c0c0c 0%, #f0ebe4 100%)" }} />
           <Team />
+          {/* gradient bridge: sand → dark */}
+          <div aria-hidden style={{ height: 120, background: "linear-gradient(180deg, #f0ebe4 0%, #0c0c0c 100%)" }} />
           <CTA onReserve={() => goReserve()} onContact={goContact} />
         </>
       ) : page === "reserve" ? (

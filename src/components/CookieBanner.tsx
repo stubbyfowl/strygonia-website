@@ -83,7 +83,7 @@ export function CookieBanner({ onPrivacy }: { onPrivacy: () => void }) {
                     fontFamily: "var(--ark-body)",
                     fontWeight: 400,
                     fontSize: "0.875rem",
-                    color: "var(--ark-ink-dim)",
+                    color: "#c8ccd2",
                     lineHeight: 1.6,
                   }}
                 >
@@ -111,7 +111,7 @@ export function CookieBanner({ onPrivacy }: { onPrivacy: () => void }) {
               <div className="flex items-center gap-2.5 flex-shrink-0">
                 <button
                   onClick={() => dismiss("declined")}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md text-sm transition-all duration-200 hover:bg-white/[0.06] border"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm transition-all duration-200 hover:bg-white/[0.06] border"
                   style={{
                     fontFamily: "var(--ark-body)",
                     fontWeight: 400,
@@ -124,7 +124,7 @@ export function CookieBanner({ onPrivacy }: { onPrivacy: () => void }) {
                 </button>
                 <button
                   onClick={() => dismiss("accepted")}
-                  className="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-sm text-sm transition-colors duration-150 hover:bg-white"
+                  className="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm transition-colors duration-150 hover:bg-white"
                   style={{
                     fontFamily: "var(--ark-body)",
                     fontWeight: 600,
