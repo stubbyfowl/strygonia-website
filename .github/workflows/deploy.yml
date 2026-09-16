@@ -37,7 +37,7 @@ jobs:
         env:
           VITE_DISCORD_INVITE_URL: ${{ secrets.VITE_DISCORD_INVITE_URL }}
           VITE_FORMSPREE_ENDPOINT: ${{ secrets.VITE_FORMSPREE_ENDPOINT }}
-          VITE_ARKTOS_EMAIL: ${{ secrets.VITE_ARKTOS_EMAIL }}
+          VITE_STRYGONIA_EMAIL: ${{ secrets.VITE_STRYGONIA_EMAIL }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
