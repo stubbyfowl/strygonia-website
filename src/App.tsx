@@ -430,10 +430,28 @@ function BackBar({ onHome, label = "Back to Strygonia" }: { onHome: () => void; 
   );
 }
 
-/* Stripe checkout — visual placeholder until Stripe is configured. Replace the
-   body of this component with the real Stripe Embedded Checkout / Payment
-   Element once keys and a backend session are wired up. */
-function StripeCheckoutPlaceholder() {
+function StripeCheckout() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleCheckout = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/api/create-checkout-session", { method: "POST" });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        setError(data.error || "Something went wrong.");
+        setLoading(false);
+      }
+    } catch {
+      setError("Could not connect to checkout. Try again.");
+      setLoading(false);
+    }
+  };
+
   return (
     <Panel className="p-7">
       <div className="flex items-center justify-between mb-5">
@@ -446,45 +464,27 @@ function StripeCheckoutPlaceholder() {
       <div className="mb-6 rounded-lg px-4 py-3 flex items-start gap-3" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.14)" }}>
         <Lock size={15} style={{ color: "var(--ark-muted)", marginTop: "2px", flexShrink: 0 }} />
         <p style={{ fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-ink-dim)", lineHeight: 1.6 }}>
-          <strong style={{ color: "var(--ark-ink)", fontWeight: 600 }}>Checkout isn't live yet.</strong> The Stripe payment form will load here once configured — this is a placeholder and no card is charged.
+          <strong style={{ color: "var(--ark-ink)", fontWeight: 600 }}>Secure checkout.</strong> You'll be redirected to Stripe's hosted payment page. No card info touches our servers.
         </p>
       </div>
 
-      <div className="grid gap-4 select-none" aria-hidden="true">
-        <label className="grid gap-2">
-          <span style={FORM_LABEL_STYLE}>Email</span>
-          <div className={FORM_FIELD_CLASS} style={{ ...FORM_FIELD_STYLE, color: "var(--ark-faint)" }}>you@example.com</div>
-        </label>
-        <label className="grid gap-2">
-          <span style={FORM_LABEL_STYLE}>Card information</span>
-          <div className="rounded-lg overflow-hidden border" style={{ borderColor: "var(--ark-line)" }}>
-            <div className="px-4 py-3 flex items-center justify-between" style={{ background: "rgba(28,25,23,0.04)" }}>
-              <span style={{ fontFamily: MONO, fontSize: "0.85rem", color: "var(--ark-faint)" }}>1234 1234 1234 1234</span>
-              <CreditCard size={16} style={{ color: "var(--ark-faint)" }} />
-            </div>
-            <div className="grid grid-cols-2 border-t" style={{ borderColor: "var(--ark-line)" }}>
-              <span className="px-4 py-3 border-r" style={{ borderColor: "var(--ark-line)", fontFamily: MONO, fontSize: "0.85rem", color: "var(--ark-faint)", background: "rgba(28,25,23,0.04)" }}>MM / YY</span>
-              <span className="px-4 py-3" style={{ fontFamily: MONO, fontSize: "0.85rem", color: "var(--ark-faint)", background: "rgba(28,25,23,0.04)" }}>CVC</span>
-            </div>
-          </div>
-        </label>
-        <label className="grid gap-2">
-          <span style={FORM_LABEL_STYLE}>Name on card</span>
-          <div className={FORM_FIELD_CLASS} style={{ ...FORM_FIELD_STYLE, color: "var(--ark-faint)" }}>Full name</div>
-        </label>
-      </div>
-
-      <button
-        type="button"
-        disabled
-        className="inline-flex w-full items-center justify-center gap-2 px-7 py-3.5 rounded-full text-sm mt-6 cursor-not-allowed"
-        style={{ background: "var(--ark-btn)", color: "var(--ark-btn-ink)", fontFamily: BODY, fontWeight: 600, opacity: 0.55 }}
+      <Button
+        className="w-full mt-2"
+        size="lg"
+        onClick={handleCheckout}
+        disabled={loading}
       >
-        <Lock size={14} /> Pay — awaiting Stripe setup
-      </button>
+        {loading ? "Redirecting to Stripe..." : <><CreditCard size={16} /> Proceed to checkout</>}
+      </Button>
+
+      {error && (
+        <div className="mt-4 rounded-lg px-4 py-3 border" style={{ background: "rgba(28,25,23,0.06)", borderColor: "rgba(28,25,23,0.14)", color: "var(--ark-fault-2)", fontFamily: BODY, fontSize: "0.85rem" }}>
+          {error}
+        </div>
+      )}
 
       <p className="mt-4 text-center" style={{ fontFamily: MONO, fontSize: "0.64rem", letterSpacing: "0.1em", color: "var(--ark-faint)" }}>
-        Secured by Stripe · placeholder
+        Secured by Stripe
       </p>
     </Panel>
   );
@@ -545,7 +545,7 @@ function ReservePage({ onHome }: { onHome: () => void; initialProduct?: ProductI
           </Reveal>
 
           <Reveal delay={0.1}>
-            <StripeCheckoutPlaceholder />
+            <StripeCheckout />
           </Reveal>
         </div>
       </div>
