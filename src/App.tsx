@@ -163,12 +163,13 @@ function Navbar({
         }}
       >
         <button className="ark-focus flex items-center gap-2.5" onClick={onHome} aria-label="Strygonia home">
-          <img
-            src={scrolled ? "/strygonia-icon-cream.png" : "/strygonia-icon-blue.png"}
-            alt=""
-            className="rounded-lg"
-            style={{ width: 28, height: 28 }}
-          />
+          <div className="rounded-lg overflow-hidden" style={{ width: 28, height: 28 }}>
+            <img
+              src={scrolled ? "/strygonia-icon-cream.png" : "/strygonia-icon-blue.png"}
+              alt=""
+              style={{ width: "115%", height: "115%", objectFit: "cover", marginTop: "-2px", marginLeft: "-2px" }}
+            />
+          </div>
           <span style={{ fontFamily: WORDMARK, fontSize: "1rem", fontWeight: 600, letterSpacing: "0.02em", color: scrolled ? "var(--ark-ink)" : "#fff" }}>
             Strygonia
           </span>
@@ -231,12 +232,6 @@ function Hero({ onBlackBox }: { onBlackBox: () => void }) {
       <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 60% 50% at 50% 40%, rgba(37,99,235,0.08) 0%, transparent 70%)" }} />
       <div className="min-h-[90vh] flex flex-col items-center justify-center px-6 pt-28 pb-16 relative z-10">
         <div className="max-w-4xl text-center">
-          <img
-            src="/strygonia-logo-dark.png"
-            alt="Strygonia"
-            className="mx-auto mb-10 rounded-2xl"
-            style={{ width: "clamp(100px, 16vw, 160px)", height: "auto" }}
-          />
           <h1 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(3rem, 7vw, 5.8rem)", lineHeight: 0.92, letterSpacing: "-0.02em", color: "#fff" }}>
             Rewind the moment
             <br />
