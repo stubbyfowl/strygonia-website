@@ -33,9 +33,9 @@ export const PRODUCTS: Record<ProductId, ProductSpec> = {
     division: "instruments",
     name: "BlackBox",
     kind: "Hardware flight recorder",
-    tagline: "Rewind the moment your board died.",
+    tagline: "A hardware flight recorder for your bench.",
     shortSummary:
-      "A small module you clip onto almost any embedded system and leave running. When the board dies, you scrub back through the recording and watch it happen instead of trying to make it happen again.",
+      "Clip it onto a breadboard, Pi, or PCB and leave it running. It records voltage, current, and serial in a rolling window. When the board faults, scrub back and see what happened.",
     summary:
       "BlackBox is a small module you clip onto almost any embedded system — a breadboard, a Raspberry Pi, a custom PCB — and leave running. It keeps a rolling record of the signals you check first when something goes wrong. So instead of trying to make a crash happen again, you just scrub back through the timeline and watch it play out.",
     features: [
@@ -78,7 +78,7 @@ export const PRODUCTS: Record<ProductId, ProductSpec> = {
     ],
     status: "V1 prototype",
     mockup: "blackbox",
-    reserveLabel: "Reserve a BlackBox",
+    reserveLabel: "Buy — $198.99",
   },
 };
 

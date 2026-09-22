@@ -90,17 +90,6 @@
   to { transform: rotate(360deg); }
 }
 
-@keyframes ark-drift {
-  0%   { transform: translateY(0) translateX(0); opacity: 0; }
-  10%  { opacity: var(--mote-opacity, 0.4); }
-  90%  { opacity: var(--mote-opacity, 0.4); }
-  100% { transform: translateY(-120px) translateX(var(--mote-drift, 12px)); opacity: 0; }
-}
-
-@keyframes ark-mesh {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  50%      { transform: translate3d(2%, -1.5%, 0) scale(1.06); }
-}
 
 .ark-led { animation: ark-pulse 1.9s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 .ark-led-ring { animation: ark-ring 1.9s ease-out infinite; transform-box: fill-box; transform-origin: center; }
@@ -158,8 +147,6 @@
 
 .ark-btn-primary:hover {
   background: var(--ark-btn-hover) !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
 }
 
 @media (prefers-reduced-motion: reduce) {

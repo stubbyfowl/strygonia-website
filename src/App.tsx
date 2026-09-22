@@ -229,7 +229,6 @@ function Navbar({
 function Hero({ onBlackBox }: { onBlackBox: () => void }) {
   return (
     <section id="home" className="ark-dark relative w-full overflow-hidden" style={{ background: "var(--ark-bg)" }}>
-      <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 60% 50% at 50% 40%, rgba(37,99,235,0.08) 0%, transparent 70%)" }} />
       <div className="min-h-[90vh] flex flex-col items-center justify-center px-6 pt-28 pb-16 relative z-10">
         <div className="max-w-4xl text-center">
           <h1 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(3rem, 7vw, 5.8rem)", lineHeight: 0.92, letterSpacing: "-0.02em", color: "#fff" }}>
@@ -237,8 +236,8 @@ function Hero({ onBlackBox }: { onBlackBox: () => void }) {
             <br />
             your board died.
           </h1>
-          <p style={{ fontFamily: BODY, fontSize: "clamp(1rem, 1.6vw, 1.2rem)", color: "rgba(255,255,255,0.55)", lineHeight: 1.7, maxWidth: "34rem", margin: "2rem auto 0" }}>
-            BlackBox quietly records the signals your board checks first, so when it dies you play the failure back instead of hunting for it.
+          <p style={{ fontFamily: BODY, fontSize: "clamp(1rem, 1.6vw, 1.15rem)", color: "rgba(255,255,255,0.50)", lineHeight: 1.7, maxWidth: "34rem", margin: "2rem auto 0" }}>
+            BlackBox records voltage, current, and serial output in a rolling window. When your board faults, you scrub back through the last few seconds instead of guessing.
           </p>
           <div className="flex justify-center gap-4 mt-10">
             <Button size="lg" onClick={onBlackBox}>
@@ -256,20 +255,18 @@ function Hero({ onBlackBox }: { onBlackBox: () => void }) {
 
 /* ── "Works next to" strip — static, no scroll animation ──────────── */
 function ToolMarquee() {
-  const tools = ["Breadboards", "Raspberry Pi", "STM32", "ESP32", "Arduino", "Custom PCBs", "KiCad", "Saleae", "JLCPCB", "Pinecil", "Rigol scopes"];
+  const tools = ["STM32", "ESP32", "Raspberry Pi", "Arduino", "KiCad", "Custom PCBs", "Breadboards", "Rigol scopes", "Saleae"];
   return (
-    <section className="ark-dark relative py-16 px-6 border-y" style={{ background: "var(--ark-bg-2)", borderColor: "var(--ark-line-soft)" }}>
-      <div className="max-w-6xl mx-auto grid lg:grid-cols-[0.42fr_1.58fr] gap-8 lg:gap-14 items-baseline">
-        <p style={{ fontFamily: MONO, fontSize: "0.68rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--ark-muted)", lineHeight: 1.7 }}>
-          Works next to what's already on your bench
-        </p>
-        <div className="flex flex-wrap items-baseline gap-x-8 gap-y-3">
-          {tools.map((t) => (
-            <span key={t} style={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: "1.06rem", color: "var(--ark-ink-dim)" }}>
-              {t}
-            </span>
-          ))}
-        </div>
+    <section className="ark-dark relative py-10 px-6 border-y" style={{ background: "var(--ark-bg-2)", borderColor: "var(--ark-line-soft)" }}>
+      <div className="max-w-6xl mx-auto flex flex-wrap items-baseline gap-x-6 gap-y-2 justify-center">
+        <span style={{ fontFamily: MONO, fontSize: "0.62rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--ark-faint)" }}>
+          Compatible with
+        </span>
+        {tools.map((t) => (
+          <span key={t} style={{ fontFamily: BODY, fontWeight: 400, fontSize: "0.9rem", color: "var(--ark-muted)" }}>
+            {t}
+          </span>
+        ))}
       </div>
     </section>
   );
@@ -323,15 +320,14 @@ function ProductRow({
 
 function Products({ onProduct, onReserve }: { onProduct: (id: ProductId) => void; onReserve: () => void }) {
   return (
-    <section id="products" className="ark-dark relative py-40 px-6 overflow-hidden" style={{ background: "var(--ark-bg)" }}>
-      <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 80% 60% at 30% 20%, rgba(37,99,235,0.05) 0%, transparent 60%)" }} />
+    <section id="products" className="ark-dark relative py-28 px-6 overflow-hidden" style={{ background: "var(--ark-bg)" }}>
       <div className="max-w-6xl mx-auto relative z-10">
-        <Reveal className="max-w-2xl mb-24">
+        <Reveal className="max-w-2xl mb-20">
           <h2 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(2.2rem, 4vw, 3.6rem)", lineHeight: 0.95, color: "var(--ark-ink)", marginBottom: "1.2rem" }}>
-            For the worst part of building hardware.
+            What we make
           </h2>
-          <p style={{ fontFamily: BODY, fontSize: "1.1rem", color: "var(--ark-ink-dim)", lineHeight: 1.8 }}>
-            A board that dies and won't tell you why. We built one instrument to fix exactly that.
+          <p style={{ fontFamily: BODY, fontSize: "1.05rem", color: "var(--ark-ink-dim)", lineHeight: 1.8 }}>
+            One instrument so far. It watches your board's power rail, serial output, and GPIO lines continuously, keeping a rolling record so you can see exactly what happened when something goes wrong.
           </p>
         </Reveal>
 
@@ -350,7 +346,7 @@ const TEAM = [
   {
     name: "Sidak Mann",
     title: "Co-founder · Firmware & software",
-    bio: "Sidak writes the STM32 firmware that does the real-time recording and the desktop app you rewind in. He came from distributed systems and real-time work, and cares most about catching a fault in microseconds and making the replay readable.",
+    bio: "Writes the STM32 firmware and the desktop replay app. Background in distributed systems and real-time programming. Currently focused on getting the V1 current-sense accuracy tight enough to ship.",
     accent: "var(--ark-signal)",
     photo: sidakProfile,
     photoPosition: "center 32%",
@@ -359,12 +355,11 @@ const TEAM = [
 
 function Team() {
   return (
-    <section id="team" className="relative py-40 px-6 overflow-hidden" style={{ background: "var(--ark-bg)" }}>
+    <section id="team" className="relative py-28 px-6 overflow-hidden" style={{ background: "var(--ark-bg)" }}>
       <div className="max-w-6xl mx-auto">
-        <div className="mb-16 max-w-2xl">
-          <Eyebrow variant="secondary">Meet the team</Eyebrow>
+        <div className="mb-14 max-w-2xl">
           <h2 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(2rem, 3.5vw, 3rem)", lineHeight: 0.98, letterSpacing: "0", color: "var(--ark-ink)" }}>
-            Built by engineers, for engineers.
+            Team
           </h2>
         </div>
         <div className="max-w-lg">
@@ -391,27 +386,19 @@ function Team() {
 /* ── CTA ──────────────────────────────────────────────────────────── */
 function CTA({ onReserve, onContact }: { onReserve: () => void; onContact: () => void }) {
   return (
-    <section className="ark-dark relative py-48 px-6 overflow-hidden" style={{ background: "var(--ark-bg)" }}>
-      <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(37,99,235,0.06) 0%, transparent 65%)" }} />
-      <img
-        src="/strygonia-pcb.png"
-        alt=""
-        aria-hidden
-        className="absolute right-0 top-1/2 -translate-y-1/2 opacity-[0.15] pointer-events-none select-none"
-        style={{ width: "clamp(300px, 45vw, 600px)", height: "auto" }}
-      />
-      <div className="max-w-3xl mx-auto text-center relative z-10">
-        <h2 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(2.4rem, 5vw, 4rem)", lineHeight: 0.92, letterSpacing: "-0.01em", color: "var(--ark-ink)" }}>
-          Reserve a prototype unit.
+    <section className="relative py-28 px-6 overflow-hidden border-t" style={{ background: "var(--ark-bg)", borderColor: "var(--ark-line-soft)" }}>
+      <div className="max-w-2xl mx-auto">
+        <h2 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 0.95, letterSpacing: "-0.01em", color: "var(--ark-ink)" }}>
+          Get a Founder's Edition
         </h2>
-        <p style={{ fontFamily: BODY, fontSize: "1.1rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, maxWidth: "32rem", margin: "1.5rem auto 0" }}>
-          We're building the first BlackBox units with a small group of embedded engineers. Join the reserve list — no payment involved.
+        <p style={{ fontFamily: BODY, fontSize: "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, margin: "1rem 0 0" }}>
+          $198.99 for the first production run. Includes the unit, harness, and all firmware updates.
         </p>
-        <div className="flex justify-center flex-wrap gap-4 mt-10">
+        <div className="flex flex-wrap gap-4 mt-8">
           <Button size="lg" onClick={onReserve}>
-            Reserve a unit <ArrowRight size={17} />
+            Buy now <ArrowRight size={17} />
           </Button>
-          <Button variant="light" size="lg" onClick={onContact}>Talk to us</Button>
+          <Button variant="outline" size="lg" onClick={onContact}>Questions?</Button>
         </div>
       </div>
     </section>
@@ -548,12 +535,11 @@ function ReservePage({ onHome }: { onHome: () => void; initialProduct?: ProductI
         <BackBar onHome={onHome} />
         <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-10 items-start">
           <Reveal>
-            <Eyebrow>Checkout</Eyebrow>
             <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.2rem, 4.3vw, 3.6rem)", lineHeight: 0.98, letterSpacing: "0", color: "var(--ark-ink)", marginBottom: "1.3rem" }}>
               {editionName}
             </h1>
             <p style={{ fontFamily: BODY, fontSize: "1.05rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, maxWidth: "36rem" }}>
-              The first production run of BlackBox, reserved for early supporters. Founders get prototype access, build updates, and founders pricing.
+              First production run. Includes the unit, USB-C cable, wiring harness, and access to firmware and desktop app updates as we ship them.
             </p>
 
             <Panel className="mt-8 p-6 max-w-lg">
@@ -620,12 +606,12 @@ function ContactPage({ onHome }: { onHome: () => void }) {
         <BackBar onHome={onHome} />
         <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-10 items-start">
           <Reveal>
-            <Eyebrow>Contact Strygonia</Eyebrow>
+            <Eyebrow>Contact</Eyebrow>
             <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.2rem, 4.3vw, 3.6rem)", lineHeight: 0.98, letterSpacing: "0", color: "var(--ark-ink)" }}>
-              Let's talk about<br />what you're building.
+              Get in touch
             </h1>
             <p style={{ fontFamily: BODY, fontSize: "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, maxWidth: "34rem", marginTop: "1.4rem" }}>
-              Want a prototype on your bench, have a bug you think BlackBox should catch, or just want to talk hardware? Send a note and we'll get back to you.
+              Questions about BlackBox, partnership inquiries, or anything else — send us a message and we'll reply within a day.
             </p>
             <Panel className="mt-8 p-6 max-w-md">
               <p style={{ ...FORM_LABEL_STYLE, marginBottom: "0.6rem" }}>Direct email</p>
@@ -708,12 +694,12 @@ function CareersPage({ onHome }: { onHome: () => void }) {
         <BackBar onHome={onHome} />
         <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-10 items-start">
           <Reveal>
-            <Eyebrow>Careers at Strygonia</Eyebrow>
+            <Eyebrow>Careers</Eyebrow>
             <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.2rem, 4.3vw, 3.6rem)", lineHeight: 0.98, letterSpacing: "0", color: "var(--ark-ink)" }}>
-              Build the instruments<br />other builders trust.
+              Work with us
             </h1>
             <p style={{ fontFamily: BODY, fontSize: "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, maxWidth: "34rem", marginTop: "1.4rem" }}>
-              Strygonia is a small team building bench instruments for hardware engineers. Send a short application and tell us what you'd want to build with us.
+              We're a small team in the early stages. If you're good at any of the things listed below and want to work on bench instruments, reach out.
             </p>
             <Panel className="mt-8 p-6 max-w-md">
               <span style={{ ...FORM_LABEL_STYLE, display: "block", marginBottom: "0.75rem" }}>Open focus areas</span>
@@ -798,10 +784,10 @@ function SpecsPage({ onHome, onReserve }: { onHome: () => void; onReserve: () =>
         <Reveal className="max-w-3xl mb-12">
           <Eyebrow>BlackBox · SG-BB1 · V1 prototype</Eyebrow>
           <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.2rem, 4.3vw, 3.6rem)", lineHeight: 0.98, letterSpacing: "0", color: "var(--ark-ink)", marginBottom: "1.2rem" }}>
-            The build sheet.
+            Specifications
           </h1>
           <p style={{ fontFamily: BODY, fontSize: "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.8 }}>
-            A look at what goes into the V1 BlackBox prototype — the materials, the connections, and where it's headed. Everything here reflects our current direction and keeps changing as we validate it.
+            What's in the V1 prototype and where it's headed. Specs are subject to change as we validate the hardware.
           </p>
         </Reveal>
 
@@ -991,7 +977,7 @@ function Footer({
         </div>
         <div className="pt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3" style={{ borderTop: "1px solid var(--ark-line-soft)" }}>
           <p style={{ fontFamily: BODY, fontSize: "0.72rem", color: "var(--ark-faint)" }}>© 2026 Strygonia, Inc.</p>
-          <p style={{ fontFamily: BODY, fontSize: "0.68rem", color: "var(--ark-faint)", letterSpacing: "0.04em" }}>Debug · Test · Probe · Diagnose</p>
+          <p style={{ fontFamily: BODY, fontSize: "0.68rem", color: "var(--ark-faint)", letterSpacing: "0.04em" }}>Bench instruments for embedded engineers</p>
         </div>
       </div>
     </footer>
@@ -1074,15 +1060,11 @@ export default function App() {
           <Products onProduct={goProduct} onReserve={() => goReserve()} />
           <div className="ark-dark">
             <BlackBoxExploded
-              title="Every layer, accounted for."
-              subtitle="The V1 comes apart the way it goes together: printed shell, radio module, carrier PCB, bottom plate."
+              title="Inside the V1"
+              subtitle="Printed shell, carrier PCB, radio module, bottom plate. Everything comes apart for inspection and repair."
             />
           </div>
-          {/* gradient bridge: dark → sand */}
-          <div aria-hidden style={{ height: 120, background: "linear-gradient(180deg, #0c0c0c 0%, #f0ebe4 100%)" }} />
           <Team />
-          {/* gradient bridge: sand → dark */}
-          <div aria-hidden style={{ height: 120, background: "linear-gradient(180deg, #f0ebe4 0%, #0c0c0c 100%)" }} />
           <CTA onReserve={() => goReserve()} onContact={goContact} />
         </>
       ) : page === "reserve" ? (

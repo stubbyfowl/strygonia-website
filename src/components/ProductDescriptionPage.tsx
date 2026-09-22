@@ -112,8 +112,8 @@ function SignalChain({ product }: { product: ProductSpec }) {
       <div className="max-w-6xl mx-auto">
         <SectionHead
           kicker="How it works"
-          title="Always recording. You just rewind."
-          blurb="BlackBox doesn't wait for you to press capture. It runs the whole time your board runs, keeping the most recent window of every channel — so the failure is already recorded by the time you notice it."
+          title="How it works"
+          blurb="BlackBox runs continuously while your board runs, keeping a rolling window of every channel. The failure is already recorded by the time you notice it."
         />
         <ol className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-10">
           {product.chain.map((c, i) => (
@@ -139,8 +139,8 @@ function Signals({ product }: { product: ProductSpec }) {
       <div className="relative z-10 max-w-6xl mx-auto">
         <SectionHead
           kicker="V1 signal set"
-          title="The signals engineers check first."
-          blurb="Six channels, one harness, every sample stamped against the same clock — so a voltage dip, a current spike, and the serial line that printed right before them all land on the same timeline."
+          title="V1 channels"
+          blurb="Six inputs on one harness. Every sample shares the same clock, so a voltage dip, current spike, and the serial print that preceded them line up on one timeline."
         />
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-12">
           {product.signals.map((s, i) => (
@@ -166,7 +166,7 @@ function BuildSheet({ product }: { product: ProductSpec }) {
   return (
     <section className="relative py-28 px-6" style={{ background: "var(--ark-bg-2)" }}>
       <div className="max-w-6xl mx-auto">
-        <SectionHead kicker="The hardware" title="Built to be opened." />
+        <SectionHead kicker="The hardware" title="Specifications" />
         <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-6">
           <Panel className="p-8">
             <h3 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.3rem", color: "var(--ark-ink)", marginBottom: "1.4rem" }}>Specifications</h3>
@@ -228,7 +228,7 @@ function BlackBoxGallery() {
   return (
     <section className="relative py-28 px-6" style={{ background: "var(--ark-bg)" }}>
       <div className="max-w-6xl mx-auto">
-        <SectionHead kicker="Renders" title="From every angle." />
+        <SectionHead kicker="Renders" title="Product renders" />
 
         <div className="grid gap-6 md:grid-cols-2">
           {GALLERY_SHOTS.map((shot, i) => (
@@ -258,10 +258,10 @@ function ProductCTA({ product, onReserve, onContact }: { product: ProductSpec; o
     <section className="relative py-28 px-6" style={{ background: "var(--ark-bg-2)", borderTop: "1px solid var(--ark-line-soft)" }}>
       <div className="max-w-6xl mx-auto">
         <h2 className="ark-on-photo" style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(1.8rem, 3.2vw, 2.6rem)", lineHeight: 1, color: "var(--ark-ink)", maxWidth: "24rem" }}>
-          Put one on your bench.
+          Get a {product.name}
         </h2>
         <p className="mt-5" style={{ fontFamily: BODY, fontSize: "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, maxWidth: "34rem" }}>
-          {product.name} is a {product.status.toLowerCase()}. Joining the reserve list just tells us you're interested — there's no payment involved.
+          {product.name} is currently a {product.status.toLowerCase()}. $198.99 for the Founder's Edition — includes the unit, harness, and ongoing firmware updates.
         </p>
         <div className="flex flex-wrap gap-4 mt-9">
           {onReserve && <PrimaryBtn onClick={onReserve}>{product.reserveLabel} <ArrowRight size={17} /></PrimaryBtn>}
