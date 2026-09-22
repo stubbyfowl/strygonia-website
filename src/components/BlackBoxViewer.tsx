@@ -9,7 +9,7 @@ import {
 } from "@/lib/blackboxModels";
 import { images } from "@/assets/images";
 
-const MONO = "var(--ark-mono)";
+const BODY = "var(--ark-body)";
 
 /* Interactive 360° viewer for the full BlackBox assembly. Auto-rotates until
    the user grabs it; zoom stays off so the page keeps the scroll wheel. */
@@ -127,7 +127,7 @@ export function BlackBoxViewer({ className = "" }: { className?: string }) {
 
       {status === "loading" && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <span style={{ fontFamily: MONO, fontSize: "0.66rem", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--ark-muted)" }}>
+          <span style={{ fontFamily: BODY, fontSize: "0.82rem", fontWeight: 500, color: "var(--ark-muted)" }}>
             Loading model…
           </span>
         </div>
@@ -141,10 +141,9 @@ export function BlackBoxViewer({ className = "" }: { className?: string }) {
         <span
           className="absolute bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-3 py-1.5 pointer-events-none transition-opacity duration-500"
           style={{
-            fontFamily: MONO,
-            fontSize: "0.6rem",
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
+            fontFamily: BODY,
+            fontSize: "0.75rem",
+            fontWeight: 500,
             color: "var(--ark-ink-dim)",
             border: "1px solid var(--ark-line)",
             background: "rgba(6,8,12,0.55)",

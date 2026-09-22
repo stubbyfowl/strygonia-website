@@ -56,7 +56,6 @@ const stripePromise = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
 /* ── Shared type tokens ───────────────────────────────────────────── */
 const DISPLAY = "var(--ark-display)";
 const BODY = "var(--ark-body)";
-const MONO = "var(--ark-mono)";
 const NORDIC = "var(--ark-nordic)";
 const WORDMARK = "var(--ark-wordmark)";
 
@@ -79,7 +78,7 @@ function Panel({
 
 function Eyebrow({ children, variant = "outline" }: { children: React.ReactNode; variant?: "default" | "secondary" | "outline"; color?: string }) {
   return (
-    <Badge variant={variant} className="mb-4 text-[0.68rem] tracking-[0.18em] uppercase font-normal" style={{ fontFamily: NORDIC }}>
+    <Badge variant={variant} className="mb-4 text-[0.78rem] tracking-[0.06em] uppercase font-semibold" style={{ fontFamily: BODY }}>
       {children}
     </Badge>
   );
@@ -259,7 +258,7 @@ function ToolMarquee() {
   return (
     <section className="ark-dark relative py-10 px-6 border-y" style={{ background: "var(--ark-bg-2)", borderColor: "var(--ark-line-soft)" }}>
       <div className="max-w-6xl mx-auto flex flex-wrap items-baseline gap-x-6 gap-y-2 justify-center">
-        <span style={{ fontFamily: MONO, fontSize: "0.62rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--ark-faint)" }}>
+        <span style={{ fontFamily: BODY, fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ark-faint)" }}>
           Compatible with
         </span>
         {tools.map((t) => (
@@ -406,7 +405,7 @@ function CTA({ onReserve, onContact }: { onReserve: () => void; onContact: () =>
 }
 
 /* ── Reserve page ─────────────────────────────────────────────────── */
-const FORM_LABEL_STYLE: React.CSSProperties = { fontFamily: MONO, fontSize: "0.66rem", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ark-muted)" };
+const FORM_LABEL_STYLE: React.CSSProperties = { fontFamily: BODY, fontSize: "0.78rem", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ark-muted)" };
 const FORM_FIELD_CLASS = "ark-focus w-full rounded-lg px-4 py-3 outline-none border";
 const FORM_FIELD_STYLE: React.CSSProperties = { background: "rgba(28,25,23,0.04)", borderColor: "var(--ark-line)", color: "var(--ark-ink)", fontFamily: BODY };
 
@@ -481,7 +480,7 @@ function StripeCheckout() {
     <Panel className="p-7">
       <div className="flex items-center justify-between mb-5">
         <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.25rem", color: "var(--ark-ink)" }}>Payment</span>
-        <span className="inline-flex items-center gap-1.5" style={{ fontFamily: MONO, fontSize: "0.62rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ark-muted)" }}>
+        <span className="inline-flex items-center gap-1.5" style={{ fontFamily: BODY, fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--ark-muted)" }}>
           <Lock size={12} /> Stripe
         </span>
       </div>
@@ -500,7 +499,7 @@ function StripeCheckout() {
         </div>
       )}
 
-      <p className="mt-5 text-center" style={{ fontFamily: MONO, fontSize: "0.64rem", letterSpacing: "0.1em", color: "var(--ark-faint)" }}>
+      <p className="mt-5 text-center" style={{ fontFamily: BODY, fontSize: "0.78rem", color: "var(--ark-faint)" }}>
         Secured by Stripe · $198.99 USD
       </p>
     </Panel>
@@ -549,13 +548,13 @@ function ReservePage({ onHome }: { onHome: () => void; initialProduct?: ProductI
                 </div>
                 <div className="min-w-0">
                   <div style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.05rem", color: "var(--ark-ink)" }}>{editionName}</div>
-                  <div style={{ fontFamily: MONO, fontSize: "0.62rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ark-muted)", marginTop: "3px" }}>{product.code} · {product.status}</div>
+                  <div style={{ fontFamily: BODY, fontSize: "0.78rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--ark-muted)", marginTop: "3px" }}>{product.code} · {product.status}</div>
                   <div style={{ fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-ink-dim)", lineHeight: 1.55, marginTop: "0.6rem" }}>{product.tagline}</div>
                 </div>
               </div>
               <div className="mt-5 pt-4 flex items-baseline justify-between" style={{ borderTop: "1px solid var(--ark-line-soft)" }}>
                 <span style={{ fontFamily: BODY, fontSize: "0.9rem", color: "var(--ark-muted)" }}>Founders pricing</span>
-                <span style={{ fontFamily: MONO, fontSize: "0.85rem", color: "var(--ark-ink-dim)" }}>Set at launch</span>
+                <span style={{ fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-ink-dim)" }}>Set at launch</span>
               </div>
             </Panel>
           </Reveal>
@@ -798,7 +797,7 @@ function SpecsPage({ onHome, onReserve }: { onHome: () => void; onReserve: () =>
               <div className="grid gap-0 divide-y" style={{ borderColor: "var(--ark-line-soft)" }}>
                 {materials.map(([label, desc]) => (
                   <div key={label} className="grid sm:grid-cols-[0.7fr_1.3fr] gap-2 sm:gap-4 py-3.5 first:pt-0 items-baseline" style={{ borderColor: "var(--ark-line-soft)" }}>
-                    <span style={{ fontFamily: MONO, fontSize: "0.66rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ark-signal)" }}>{label}</span>
+                    <span style={{ fontFamily: BODY, fontSize: "0.8rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--ark-signal)" }}>{label}</span>
                     <span style={{ fontFamily: BODY, fontSize: "0.9rem", color: "var(--ark-ink-dim)", lineHeight: 1.6 }}>{desc}</span>
                   </div>
                 ))}
@@ -813,8 +812,8 @@ function SpecsPage({ onHome, onReserve }: { onHome: () => void; onReserve: () =>
                 <div className="grid gap-0 divide-y" style={{ borderColor: "var(--ark-line-soft)" }}>
                   {targets.map(([conn, note]) => (
                     <div key={conn} className="flex justify-between gap-3 py-2.5 first:pt-0" style={{ borderColor: "var(--ark-line-soft)" }}>
-                      <span style={{ fontFamily: MONO, fontSize: "0.82rem", color: "var(--ark-ink-dim)" }}>{conn}</span>
-                      <span style={{ fontFamily: MONO, fontSize: "0.7rem", color: "var(--ark-faint)" }}>{note}</span>
+                      <span style={{ fontFamily: BODY, fontSize: "0.88rem", color: "var(--ark-ink-dim)" }}>{conn}</span>
+                      <span style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-faint)" }}>{note}</span>
                     </div>
                   ))}
                 </div>
@@ -826,8 +825,8 @@ function SpecsPage({ onHome, onReserve }: { onHome: () => void; onReserve: () =>
                 <div className="flex flex-wrap gap-2">
                   {stack.map(([k, v]) => (
                     <span key={k} className="inline-flex items-baseline gap-2 px-3 py-1.5 rounded-md" style={{ border: "1px solid var(--ark-line-soft)", background: "var(--ark-bg-2)" }}>
-                      <span style={{ fontFamily: MONO, fontSize: "0.62rem", letterSpacing: "0.1em", color: "var(--ark-faint)" }}>{k}</span>
-                      <span style={{ fontFamily: MONO, fontSize: "0.78rem", color: "var(--ark-ink)" }}>{v}</span>
+                      <span style={{ fontFamily: BODY, fontSize: "0.75rem", fontWeight: 600, color: "var(--ark-faint)" }}>{k}</span>
+                      <span style={{ fontFamily: BODY, fontSize: "0.88rem", color: "var(--ark-ink)" }}>{v}</span>
                     </span>
                   ))}
                 </div>
@@ -842,7 +841,7 @@ function SpecsPage({ onHome, onReserve }: { onHome: () => void; onReserve: () =>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {roadmap.map((r) => (
                 <div key={r.phase} className="p-5 rounded-lg" style={{ background: "var(--ark-bg-2)", border: "1px solid var(--ark-line-soft)" }}>
-                  <div style={{ fontFamily: MONO, fontSize: "0.72rem", letterSpacing: "0.1em", color: "var(--ark-signal)", marginBottom: "0.6rem" }}>{r.phase}</div>
+                  <div style={{ fontFamily: BODY, fontSize: "0.82rem", fontWeight: 600, letterSpacing: "0.04em", color: "var(--ark-signal)", marginBottom: "0.6rem" }}>{r.phase}</div>
                   <p style={{ fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-ink-dim)", lineHeight: 1.7 }}>{r.detail}</p>
                 </div>
               ))}
@@ -894,7 +893,7 @@ function LegalPage({ type, onHome, a11y, onToggleA11y }: { type: "privacy" | "te
                 <h2 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.2rem", color: "var(--ark-ink)", marginBottom: "0.35rem" }}>Accessibility mode</h2>
                 <p style={{ fontFamily: BODY, fontSize: "0.92rem", color: "var(--ark-ink-dim)", lineHeight: 1.65 }}>Turn on high-contrast reading mode across the site.</p>
               </div>
-              <button onClick={onToggleA11y} className="ark-focus inline-flex items-center gap-2 px-5 py-2.5 rounded-lg transition-all" style={{ fontFamily: MONO, fontSize: "0.72rem", letterSpacing: "0.1em", textTransform: "uppercase", background: a11y ? "#fff" : "rgba(28,25,23,0.05)", border: a11y ? "1px solid #000" : "1px solid var(--ark-line)", color: a11y ? "#000" : "var(--ark-ink)" }} aria-pressed={a11y} aria-label="Toggle accessibility mode">
+              <button onClick={onToggleA11y} className="ark-focus inline-flex items-center gap-2 px-5 py-2.5 rounded-lg transition-all" style={{ fontFamily: BODY, fontSize: "0.82rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", background: a11y ? "#fff" : "rgba(28,25,23,0.05)", border: a11y ? "1px solid #000" : "1px solid var(--ark-line)", color: a11y ? "#000" : "var(--ark-ink)" }} aria-pressed={a11y} aria-label="Toggle accessibility mode">
                 {a11y ? <EyeOff size={14} /> : <Eye size={14} />}
                 {a11y ? "Exit accessibility mode" : "Enable accessibility mode"}
               </button>
@@ -965,7 +964,7 @@ function Footer({
           <div className="flex flex-wrap gap-x-10 gap-y-6">
             {columns.map((col) => (
               <div key={col.title} className="flex flex-col gap-2.5">
-                <span style={{ fontFamily: MONO, fontSize: "0.62rem", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ark-faint)" }}>{col.title}</span>
+                <span style={{ fontFamily: BODY, fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ark-faint)" }}>{col.title}</span>
                 {col.links.map((link) => (
                   <button key={link.label} type="button" onClick={link.action} className="ark-focus transition-colors duration-200 text-left" style={{ fontFamily: BODY, fontSize: "0.84rem", color: "var(--ark-muted)", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
                     {link.label}
@@ -976,8 +975,8 @@ function Footer({
           </div>
         </div>
         <div className="pt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3" style={{ borderTop: "1px solid var(--ark-line-soft)" }}>
-          <p style={{ fontFamily: BODY, fontSize: "0.72rem", color: "var(--ark-faint)" }}>© 2026 Strygonia, Inc.</p>
-          <p style={{ fontFamily: BODY, fontSize: "0.68rem", color: "var(--ark-faint)", letterSpacing: "0.04em" }}>Bench instruments for embedded engineers</p>
+          <p style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-faint)" }}>© 2026 Strygonia, Inc.</p>
+          <p style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-faint)" }}>Bench instruments for embedded engineers</p>
         </div>
       </div>
     </footer>

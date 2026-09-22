@@ -13,7 +13,6 @@ import { images } from "@/assets/images";
 
 const DISPLAY = "var(--ark-display)";
 const BODY = "var(--ark-body)";
-const MONO = "var(--ark-mono)";
 const NORDIC = "var(--ark-nordic)";
 
 /* Each part separates over its own slice of the scroll ("window"), top first,
@@ -233,7 +232,7 @@ export function BlackBoxExploded({
 
           {status === "loading" && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <span style={{ fontFamily: MONO, fontSize: "0.66rem", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--ark-muted)" }}>
+              <span style={{ fontFamily: BODY, fontSize: "0.82rem", fontWeight: 500, color: "var(--ark-muted)" }}>
                 Loading assembly…
               </span>
             </div>

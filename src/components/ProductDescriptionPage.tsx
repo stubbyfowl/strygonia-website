@@ -12,7 +12,6 @@ const { glacierField, alpineBackground, glacierCave, blackbox1, blackbox2, black
 
 const DISPLAY = "var(--ark-display)";
 const BODY = "var(--ark-body)";
-const MONO = "var(--ark-mono)";
 
 const SIGNAL_ICONS: Record<SignalIcon, React.ReactNode> = {
   gauge: <Gauge size={20} />,
@@ -69,7 +68,7 @@ function GhostBtn({ children, onClick }: { children: React.ReactNode; onClick?: 
 function SectionHead({ kicker, title, blurb }: { kicker: string; title: string; blurb?: string }) {
   return (
     <div className="max-w-2xl mb-14">
-      <span style={{ fontFamily: MONO, fontSize: "0.66rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--ark-signal)", display: "block", marginBottom: "1rem" }}>
+      <span style={{ fontFamily: BODY, fontSize: "0.82rem", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ark-signal)", display: "block", marginBottom: "1rem" }}>
         {kicker}
       </span>
       <h2 className="ark-on-photo" style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(1.9rem, 3.4vw, 2.8rem)", lineHeight: 0.98, color: "var(--ark-ink)" }}>
@@ -90,7 +89,7 @@ function AtAGlance({ product }: { product: ProductSpec }) {
   return (
     <section className="relative py-20 px-6 border-y" style={{ background: "var(--ark-bg-2)", borderColor: "var(--ark-line-soft)" }}>
       <div className="max-w-6xl mx-auto grid lg:grid-cols-[0.36fr_1.64fr] gap-8 lg:gap-16">
-        <h2 style={{ fontFamily: MONO, fontSize: "0.68rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--ark-muted)", lineHeight: 1.7 }}>
+        <h2 style={{ fontFamily: BODY, fontSize: "0.85rem", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ark-muted)", lineHeight: 1.7 }}>
           At a glance
         </h2>
         <ul className="grid sm:grid-cols-2 gap-x-10 gap-y-5">
@@ -118,9 +117,6 @@ function SignalChain({ product }: { product: ProductSpec }) {
         <ol className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-10">
           {product.chain.map((c, i) => (
             <li key={c.step} className="pt-5 border-t" style={{ borderColor: "var(--ark-line)" }}>
-              <span style={{ fontFamily: MONO, fontSize: "0.62rem", letterSpacing: "0.14em", color: "var(--ark-signal)", display: "block", marginBottom: "0.7rem" }}>
-                {String(i + 1).padStart(2, "0")}
-              </span>
               <h3 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.2rem", color: "var(--ark-ink)", marginBottom: "0.5rem" }}>{c.step}</h3>
               <p style={{ fontFamily: BODY, fontSize: "0.93rem", color: "var(--ark-ink-dim)", lineHeight: 1.7 }}>{c.detail}</p>
             </li>
@@ -147,9 +143,6 @@ function Signals({ product }: { product: ProductSpec }) {
             <div key={s.title} className="ark-on-photo">
               <div className="flex items-center gap-3 pb-4 mb-4 border-b" style={{ borderColor: "var(--ark-line)" }}>
                 <span style={{ color: "var(--ark-signal)" }}>{SIGNAL_ICONS[s.icon]}</span>
-                <span style={{ fontFamily: MONO, fontSize: "0.6rem", letterSpacing: "0.16em", color: "var(--ark-muted)" }}>
-                  {String(i + 1).padStart(2, "0")}
-                </span>
               </div>
               <h3 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.25rem", color: "var(--ark-ink)", marginBottom: "0.55rem" }}>{s.title}</h3>
               <p style={{ fontFamily: BODY, fontSize: "0.93rem", color: "var(--ark-ink-dim)", lineHeight: 1.75 }}>{s.body}</p>
@@ -173,7 +166,7 @@ function BuildSheet({ product }: { product: ProductSpec }) {
             <dl className="grid gap-0 divide-y" style={{ borderColor: "var(--ark-line-soft)" }}>
               {product.specs.map((spec) => (
                 <div key={spec.label} className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 py-4 first:pt-0 last:pb-0" style={{ borderColor: "var(--ark-line-soft)" }}>
-                  <dt style={{ fontFamily: MONO, fontSize: "0.68rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ark-muted)" }}>{spec.label}</dt>
+                  <dt style={{ fontFamily: BODY, fontSize: "0.82rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--ark-muted)" }}>{spec.label}</dt>
                   <dd style={{ fontFamily: BODY, fontSize: "0.98rem", color: "var(--ark-ink)" }}>{spec.value}</dd>
                 </div>
               ))}
@@ -236,11 +229,8 @@ function BlackBoxGallery() {
               <div className="rounded-lg overflow-hidden" style={{ border: "1px solid var(--ark-line)" }}>
                 <img src={shot.src} alt={shot.alt} loading="lazy" className="block w-full h-auto" />
               </div>
-              <figcaption className="mt-3 flex items-baseline gap-3">
-                <span style={{ fontFamily: MONO, fontSize: "0.6rem", letterSpacing: "0.14em", color: "var(--ark-faint)" }}>
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span style={{ fontFamily: MONO, fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ark-muted)" }}>
+              <figcaption className="mt-3">
+                <span style={{ fontFamily: BODY, fontSize: "0.82rem", fontWeight: 500, color: "var(--ark-muted)" }}>
                   {shot.caption}
                 </span>
               </figcaption>
@@ -343,8 +333,8 @@ export function ProductDescriptionPage({
               <Panel className="p-6">
                 {isBlackbox ? <BlackBoxViewer /> : <DeviceMockup kind={product.mockup} className="w-full h-auto" />}
                 <div className="mt-4 flex items-center justify-between">
-                  <span style={{ fontFamily: MONO, fontSize: "0.66rem", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ark-muted)" }}>{product.code}</span>
-                  <span style={{ fontFamily: MONO, fontSize: "0.66rem", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ark-signal)" }}>{product.status}</span>
+                  <span style={{ fontFamily: BODY, fontSize: "0.8rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--ark-muted)" }}>{product.code}</span>
+                  <span style={{ fontFamily: BODY, fontSize: "0.8rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--ark-signal)" }}>{product.status}</span>
                 </div>
               </Panel>
             </Reveal>

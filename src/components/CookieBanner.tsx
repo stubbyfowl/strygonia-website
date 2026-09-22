@@ -68,9 +68,10 @@ export function CookieBanner({ onPrivacy }: { onPrivacy: () => void }) {
               <div className="flex-1 min-w-0">
                 <p
                   style={{
-                    fontFamily: "var(--ark-mono)",
-                    fontSize: "0.64rem",
-                    letterSpacing: "0.18em",
+                    fontFamily: "var(--ark-body)",
+                    fontSize: "0.78rem",
+                    fontWeight: 600,
+                    letterSpacing: "0.06em",
                     textTransform: "uppercase",
                     color: "#cfd3da",
                     marginBottom: "4px",
