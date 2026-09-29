@@ -462,20 +462,55 @@ function CheckoutForm() {
   );
 }
 
+const FIELD_ERROR_STYLE: React.CSSProperties = { fontFamily: BODY, fontSize: "0.78rem", color: "var(--ark-fault)", marginTop: "4px" };
+
+function validate(form: { name: string; line1: string; city: string; state: string; postal_code: string; country: string }) {
+  const e: Record<string, string> = {};
+  const name = form.name.trim();
+  if (!name || name.split(/\s+/).length < 2) e.name = "Enter your first and last name.";
+  const line1 = form.line1.trim();
+  if (!line1 || line1.length < 5 || !/\d/.test(line1)) e.line1 = "Enter a street address (e.g. 123 Main St).";
+  const city = form.city.trim();
+  if (!city || city.length < 2 || /^\d+$/.test(city)) e.city = "Enter a valid city name.";
+  const state = form.state.trim();
+  if (!state || state.length < 2) e.state = "Enter a state or province (e.g. CA).";
+  const zip = form.postal_code.trim();
+  if (!zip || !/^[A-Za-z0-9\s-]{3,10}$/.test(zip)) e.postal_code = "Enter a valid postal code.";
+  const country = form.country.trim();
+  if (!country || country.length < 2) e.country = "Enter a country code (e.g. US).";
+  return e;
+}
+
 function ShippingForm({ onComplete }: { onComplete: (data: { name: string; line1: string; line2: string; city: string; state: string; postal_code: string; country: string }) => void }) {
   const [form, setForm] = useState({ name: "", line1: "", line2: "", city: "", state: "", postal_code: "", country: "US" });
-  const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) => setForm((f) => ({ ...f, [k]: e.target.value }));
-  const ready = form.name && form.line1 && form.city && form.state && form.postal_code;
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState(false);
+  const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const next = { ...form, [k]: e.target.value };
+    setForm(next);
+    if (touched) setErrors(validate(next));
+  };
+
+  const handleSubmit = () => {
+    const e = validate(form);
+    setErrors(e);
+    setTouched(true);
+    if (Object.keys(e).length === 0) onComplete(form);
+  };
+
+  const fieldStyle = (k: string) => errors[k] ? { ...FORM_FIELD_STYLE, borderColor: "var(--ark-fault)" } : FORM_FIELD_STYLE;
 
   return (
     <div className="flex flex-col gap-4">
       <div>
         <label style={FORM_LABEL_STYLE}>Full name</label>
-        <input className={FORM_FIELD_CLASS} style={FORM_FIELD_STYLE} placeholder="Your name" value={form.name} onChange={set("name")} required />
+        <input className={FORM_FIELD_CLASS} style={fieldStyle("name")} placeholder="First and last name" value={form.name} onChange={set("name")} />
+        {errors.name && <p style={FIELD_ERROR_STYLE}>{errors.name}</p>}
       </div>
       <div>
         <label style={FORM_LABEL_STYLE}>Address line 1</label>
-        <input className={FORM_FIELD_CLASS} style={FORM_FIELD_STYLE} placeholder="Street address" value={form.line1} onChange={set("line1")} required />
+        <input className={FORM_FIELD_CLASS} style={fieldStyle("line1")} placeholder="123 Main St" value={form.line1} onChange={set("line1")} />
+        {errors.line1 && <p style={FIELD_ERROR_STYLE}>{errors.line1}</p>}
       </div>
       <div>
         <label style={FORM_LABEL_STYLE}>Address line 2</label>
@@ -484,24 +519,28 @@ function ShippingForm({ onComplete }: { onComplete: (data: { name: string; line1
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label style={FORM_LABEL_STYLE}>City</label>
-          <input className={FORM_FIELD_CLASS} style={FORM_FIELD_STYLE} placeholder="City" value={form.city} onChange={set("city")} required />
+          <input className={FORM_FIELD_CLASS} style={fieldStyle("city")} placeholder="City" value={form.city} onChange={set("city")} />
+          {errors.city && <p style={FIELD_ERROR_STYLE}>{errors.city}</p>}
         </div>
         <div>
           <label style={FORM_LABEL_STYLE}>State / Province</label>
-          <input className={FORM_FIELD_CLASS} style={FORM_FIELD_STYLE} placeholder="State" value={form.state} onChange={set("state")} required />
+          <input className={FORM_FIELD_CLASS} style={fieldStyle("state")} placeholder="CA" value={form.state} onChange={set("state")} />
+          {errors.state && <p style={FIELD_ERROR_STYLE}>{errors.state}</p>}
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label style={FORM_LABEL_STYLE}>ZIP / Postal code</label>
-          <input className={FORM_FIELD_CLASS} style={FORM_FIELD_STYLE} placeholder="ZIP code" value={form.postal_code} onChange={set("postal_code")} required />
+          <input className={FORM_FIELD_CLASS} style={fieldStyle("postal_code")} placeholder="90210" value={form.postal_code} onChange={set("postal_code")} />
+          {errors.postal_code && <p style={FIELD_ERROR_STYLE}>{errors.postal_code}</p>}
         </div>
         <div>
           <label style={FORM_LABEL_STYLE}>Country</label>
-          <input className={FORM_FIELD_CLASS} style={FORM_FIELD_STYLE} placeholder="US" value={form.country} onChange={set("country")} />
+          <input className={FORM_FIELD_CLASS} style={fieldStyle("country")} placeholder="US" value={form.country} onChange={set("country")} />
+          {errors.country && <p style={FIELD_ERROR_STYLE}>{errors.country}</p>}
         </div>
       </div>
-      <Button className="w-full mt-2" size="lg" disabled={!ready} onClick={() => onComplete(form)}>
+      <Button className="w-full mt-2" size="lg" onClick={handleSubmit}>
         Continue to payment <ArrowRight size={14} />
       </Button>
     </div>
