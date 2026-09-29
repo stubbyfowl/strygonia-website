@@ -1,5 +1,4 @@
 import { Activity, ArrowLeft, ArrowRight, CircuitBoard, Gauge, Radio, Terminal, Zap } from "lucide-react";
-import { CircuitBackdrop } from "@/components/CircuitBackdrop";
 import { DeviceMockup } from "@/components/DeviceMockup";
 import { BlackBoxViewer } from "@/components/BlackBoxViewer";
 import { BlackBoxExploded } from "@/components/BlackBoxExploded";
@@ -8,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import type { ProductSpec, SignalIcon } from "@/constants/products";
 import { images } from "@/assets/images";
 
-const { glacierField, alpineBackground, blackbox1, blackbox2, blackbox3 } = images;
+const { blackbox1, blackbox2, blackbox3 } = images;
 
 const DISPLAY = "var(--ark-display)";
 const BODY = "var(--ark-body)";
@@ -71,11 +70,11 @@ function SectionHead({ kicker, title, blurb }: { kicker: string; title: string; 
       <span style={{ fontFamily: BODY, fontSize: "0.82rem", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ark-signal)", display: "block", marginBottom: "1rem" }}>
         {kicker}
       </span>
-      <h2 className="ark-on-photo" style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(1.9rem, 3.4vw, 2.8rem)", lineHeight: 0.98, color: "var(--ark-ink)" }}>
+      <h2 className="" style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(1.9rem, 3.4vw, 2.8rem)", lineHeight: 0.98, color: "var(--ark-ink)" }}>
         {title}
       </h2>
       {blurb && (
-        <p className="ark-on-photo mt-5" style={{ fontFamily: BODY, fontSize: "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.8 }}>
+        <p className=" mt-5" style={{ fontFamily: BODY, fontSize: "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.8 }}>
           {blurb}
         </p>
       )}
@@ -240,7 +239,7 @@ function ProductCTA({ product, onReserve, onContact }: { product: ProductSpec; o
   return (
     <section className="relative py-28 px-6" style={{ background: "var(--ark-bg-2)", borderTop: "1px solid var(--ark-line-soft)" }}>
       <div className="max-w-6xl mx-auto">
-        <h2 className="ark-on-photo" style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(1.8rem, 3.2vw, 2.6rem)", lineHeight: 1, color: "var(--ark-ink)", maxWidth: "24rem" }}>
+        <h2 className="" style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(1.8rem, 3.2vw, 2.6rem)", lineHeight: 1, color: "var(--ark-ink)", maxWidth: "24rem" }}>
           Get a {product.name}
         </h2>
         <p className="mt-5" style={{ fontFamily: BODY, fontSize: "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, maxWidth: "34rem" }}>
@@ -275,15 +274,10 @@ export function ProductDescriptionPage({
     <>
       {/* ── Hero: what it is, and the unit itself. Nothing else. ─────── */}
       <main
-        className="relative overflow-hidden px-6 pt-32 pb-24"
+        className="relative px-6 pt-32 pb-24"
         style={{ background: "var(--ark-bg)" }}
       >
-        <CircuitBackdrop
-          tint={isBlackbox ? "signal" : "deep"}
-          image={isBlackbox ? glacierField : alpineBackground}
-        />
-
-        <div className="relative z-20 max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="mb-10 flex flex-wrap items-center gap-6">
             <button onClick={onHome} className="ark-focus inline-flex items-center gap-2 text-sm" style={{ fontFamily: BODY, color: "var(--ark-ink-dim)" }}>
               <ArrowLeft size={14} /> Home
@@ -296,7 +290,7 @@ export function ProductDescriptionPage({
           <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-10 items-center">
             <Reveal>
               <h1
-                className="ark-on-photo"
+                className=""
                 style={{
                   fontFamily: DISPLAY,
                   fontWeight: 600,
@@ -309,10 +303,10 @@ export function ProductDescriptionPage({
               >
                 {product.name}
               </h1>
-              <p className="ark-on-photo" style={{ fontFamily: BODY, fontSize: "1.3rem", color: "var(--ark-signal)", lineHeight: 1.35, marginBottom: "1.5rem" }}>
+              <p className="" style={{ fontFamily: BODY, fontSize: "1.3rem", color: "var(--ark-signal)", lineHeight: 1.35, marginBottom: "1.5rem" }}>
                 {product.tagline}
               </p>
-              <p className="ark-on-photo" style={{ fontFamily: BODY, fontSize: "1.05rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, maxWidth: "36rem", marginBottom: "2.2rem" }}>
+              <p className="" style={{ fontFamily: BODY, fontSize: "1.05rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, maxWidth: "36rem", marginBottom: "2.2rem" }}>
                 {product.summary}
               </p>
 

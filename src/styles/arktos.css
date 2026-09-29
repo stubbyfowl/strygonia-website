@@ -1,6 +1,6 @@
 /* ── Strygonia brand tokens ───────────────────────────────────────────
    Warm sand + charcoal text + vivid blue. Dark sections invert via .ark-dark.
-   Instrument Serif for display, Source Sans 3 for body, Space Mono for mono.
+   Instrument Serif for display, Source Sans 3 for body, system monospace stack.
 ─────────────────────────────────────────────────────────────────────── */
 :root {
   --ark-bg: #f0ebe4;
@@ -31,7 +31,7 @@
   --ark-display: "Instrument Serif", Georgia, "Times New Roman", serif;
   --ark-wordmark: "Instrument Serif", Georgia, serif;
   --ark-body: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
-  --ark-mono: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+  --ark-mono: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
   --ark-nordic: "Instrument Serif", Georgia, serif;
 }
 

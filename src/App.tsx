@@ -15,7 +15,6 @@ import {
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { CookieBanner } from "@/components/CookieBanner";
-import { CircuitBackdrop } from "@/components/CircuitBackdrop";
 import { DeviceMockup } from "@/components/DeviceMockup";
 import { BlackBoxExploded } from "@/components/BlackBoxExploded";
 import { RewindTimeline } from "@/components/RewindTimeline";
@@ -41,13 +40,7 @@ import { STRYGONIA_EMAIL } from "@/config/env";
 import { submitToFormspree } from "@/lib/formspree";
 import { useSmoothScroll, scrollToTop, scrollToId } from "@/lib/useSmoothScroll";
 
-const {
-  sidakProfile,
-  glacierCave,
-  arcticIce,
-  careersBackground,
-  productSpecBackground,
-} = images;
+const { sidakProfile } = images;
 
 const stripePromise = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
   ? loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
@@ -608,26 +601,8 @@ function ReservePage({ onHome }: { onHome: () => void; initialProduct?: ProductI
   const editionName = "BlackBox: Founder's Edition";
 
   return (
-    <main className="relative min-h-screen overflow-hidden px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
-      <CircuitBackdrop tint="signal" image={glacierCave} />
-      {/* Gray theme layer — a soft gray wash plus a fine gray dot grid that
-          fades down the page, tying the checkout to the gray button palette. */}
-      <div aria-hidden className="absolute inset-0 z-10 pointer-events-none">
-        <div
-          className="absolute inset-0"
-          style={{ background: "linear-gradient(180deg, rgba(72,77,86,0.42) 0%, rgba(72,77,86,0.16) 30%, rgba(72,77,86,0.04) 55%, transparent 72%)" }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: "radial-gradient(circle at 1px 1px, rgba(180,188,200,0.16) 1px, transparent 0)",
-            backgroundSize: "24px 24px",
-            maskImage: "linear-gradient(180deg, #000 0%, rgba(0,0,0,0.35) 46%, transparent 82%)",
-            WebkitMaskImage: "linear-gradient(180deg, #000 0%, rgba(0,0,0,0.35) 46%, transparent 82%)",
-          }}
-        />
-      </div>
-      <div className="relative z-20 max-w-6xl mx-auto">
+    <main className="relative min-h-screen px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
+      <div className="max-w-6xl mx-auto">
         <BackBar onHome={onHome} />
         <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-10 items-start">
           <Reveal>
@@ -696,9 +671,8 @@ function ContactPage({ onHome }: { onHome: () => void }) {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
-      <CircuitBackdrop tint="deep" image={arcticIce} />
-      <div className="relative z-20 max-w-6xl mx-auto">
+    <main className="relative min-h-screen px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
+      <div className="max-w-6xl mx-auto">
         <BackBar onHome={onHome} />
         <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-10 items-start">
           <Reveal>
@@ -784,9 +758,8 @@ function CareersPage({ onHome }: { onHome: () => void }) {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
-      <CircuitBackdrop tint="neutral" image={careersBackground} />
-      <div className="relative z-20 max-w-6xl mx-auto">
+    <main className="relative min-h-screen px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
+      <div className="max-w-6xl mx-auto">
         <BackBar onHome={onHome} />
         <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-10 items-start">
           <Reveal>
@@ -873,9 +846,8 @@ function SpecsPage({ onHome, onReserve }: { onHome: () => void; onReserve: () =>
   const stack = [["PCB design", "KiCad"], ["Firmware", "Embedded C toolchain"], ["Desktop app", "Qt · C++"], ["Prototyping", "Python"], ["Version control", "GitHub"]];
 
   return (
-    <main className="relative min-h-screen overflow-hidden px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
-      <CircuitBackdrop tint="signal" image={productSpecBackground} />
-      <div className="relative z-20 max-w-6xl mx-auto">
+    <main className="relative min-h-screen px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
+      <div className="max-w-6xl mx-auto">
         <BackBar onHome={onHome} />
         <Reveal className="max-w-3xl mb-12">
           <Eyebrow>BlackBox · SG-BB1 · V1 prototype</Eyebrow>
@@ -970,9 +942,8 @@ function LegalPage({ type, onHome, a11y, onToggleA11y }: { type: "privacy" | "te
       ];
 
   return (
-    <main className="relative min-h-screen overflow-hidden px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
-      <CircuitBackdrop tint="neutral" image={arcticIce} />
-      <div className="relative z-20 max-w-4xl mx-auto">
+    <main className="relative min-h-screen px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
+      <div className="max-w-4xl mx-auto">
         <BackBar onHome={onHome} />
         <Panel className="p-8 md:p-12">
           <Eyebrow>Strygonia</Eyebrow>
