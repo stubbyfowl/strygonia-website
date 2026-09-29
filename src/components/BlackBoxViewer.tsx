@@ -134,7 +134,7 @@ export function BlackBoxViewer({ className = "" }: { className?: string }) {
       )}
 
       {status === "error" && (
-        <img src={images.blackbox1} alt="BlackBox recorder module on a workbench" className="absolute inset-0 w-full h-full object-cover" />
+        <img src={images.blackbox1} alt="BlackBox Rev A PCB top view" className="absolute inset-0 w-full h-full object-cover" />
       )}
 
       {status === "ready" && (

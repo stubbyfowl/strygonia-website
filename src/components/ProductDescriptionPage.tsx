@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import type { ProductSpec, SignalIcon } from "@/constants/products";
 import { images } from "@/assets/images";
 
-const { glacierField, alpineBackground, glacierCave, blackbox1, blackbox2, blackbox3, blackbox4 } = images;
+const { glacierField, alpineBackground, blackbox1, blackbox2, blackbox3 } = images;
 
 const DISPLAY = "var(--ark-display)";
 const BODY = "var(--ark-body)";
@@ -130,17 +130,16 @@ function SignalChain({ product }: { product: ProductSpec }) {
 /* ── What it records: the V1 channel set ──────────────────────────── */
 function Signals({ product }: { product: ProductSpec }) {
   return (
-    <section className="relative py-28 px-6 overflow-hidden" style={{ background: "var(--ark-bg)" }}>
-      <CircuitBackdrop grid={false} image={glacierCave} position="center 45%" />
-      <div className="relative z-10 max-w-6xl mx-auto">
+    <section className="relative py-28 px-6" style={{ background: "var(--ark-bg-2)" }}>
+      <div className="max-w-6xl mx-auto">
         <SectionHead
           kicker="V1 signal set"
           title="V1 channels"
           blurb="Six inputs on one harness. Every sample shares the same clock, so a voltage dip, current spike, and the serial print that preceded them line up on one timeline."
         />
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-12">
-          {product.signals.map((s, i) => (
-            <div key={s.title} className="ark-on-photo">
+          {product.signals.map((s) => (
+            <div key={s.title}>
               <div className="flex items-center gap-3 pb-4 mb-4 border-b" style={{ borderColor: "var(--ark-line)" }}>
                 <span style={{ color: "var(--ark-signal)" }}>{SIGNAL_ICONS[s.icon]}</span>
               </div>
@@ -189,31 +188,25 @@ function BuildSheet({ product }: { product: ProductSpec }) {
   );
 }
 
-/* BlackBox render gallery — the four V1 product shots, full-bleed rows. */
+/* BlackBox render gallery — the three Rev A PCB renders. */
 const GALLERY_SHOTS = [
   {
     src: blackbox1,
-    alt: "BlackBox V1 on a workbench, USB-C and universal interface header visible",
-    caption: "V1 enclosure · on the bench",
+    alt: "BlackBox Rev A PCB top view — components, ICs, and signal routing visible",
+    caption: "Rev A · top side",
     full: true,
-  },
-  {
-    src: blackbox3,
-    alt: "Exploded render — top enclosure, carrier PCB, and bottom plate separated with fasteners",
-    caption: "Assembly · four fasteners, no glue",
-    full: false,
-  },
-  {
-    src: blackbox4,
-    alt: "BlackBox with wiring harness, probe tips, and labelled internals",
-    caption: "Harness · probes · internals",
-    full: false,
   },
   {
     src: blackbox2,
-    alt: "Six orthographic views of the BlackBox V1 — faces, ports, and interface header",
-    caption: "Every face · ports and header",
-    full: true,
+    alt: "BlackBox Rev A PCB bottom view — ground plane and bottom-side passives",
+    caption: "Rev A · bottom side",
+    full: false,
+  },
+  {
+    src: blackbox3,
+    alt: "BlackBox Rev A PCB profile view — board thickness, connector heights, and component clearances",
+    caption: "Rev A · profile",
+    full: false,
   },
 ];
 

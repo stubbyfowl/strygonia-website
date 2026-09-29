@@ -223,7 +223,7 @@ export function BlackBoxExploded({
             <div className="absolute inset-0 flex items-center justify-center px-6">
               <img
                 src={images.blackbox3}
-                alt="Exploded render of the BlackBox V1 — top enclosure, carrier PCB, and bottom plate separated"
+                alt="BlackBox Rev A PCB profile view"
                 className="max-h-[70vh] w-auto max-w-full rounded-lg"
                 style={{ border: "1px solid var(--ark-line)" }}
               />

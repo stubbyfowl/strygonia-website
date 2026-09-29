@@ -462,37 +462,109 @@ function CheckoutForm() {
   );
 }
 
+function ShippingForm({ onComplete }: { onComplete: (data: { name: string; line1: string; line2: string; city: string; state: string; postal_code: string; country: string }) => void }) {
+  const [form, setForm] = useState({ name: "", line1: "", line2: "", city: "", state: "", postal_code: "", country: "US" });
+  const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) => setForm((f) => ({ ...f, [k]: e.target.value }));
+  const ready = form.name && form.line1 && form.city && form.state && form.postal_code;
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div>
+        <label style={FORM_LABEL_STYLE}>Full name</label>
+        <input className={FORM_FIELD_CLASS} style={FORM_FIELD_STYLE} placeholder="Your name" value={form.name} onChange={set("name")} required />
+      </div>
+      <div>
+        <label style={FORM_LABEL_STYLE}>Address line 1</label>
+        <input className={FORM_FIELD_CLASS} style={FORM_FIELD_STYLE} placeholder="Street address" value={form.line1} onChange={set("line1")} required />
+      </div>
+      <div>
+        <label style={FORM_LABEL_STYLE}>Address line 2</label>
+        <input className={FORM_FIELD_CLASS} style={FORM_FIELD_STYLE} placeholder="Apt, suite, etc. (optional)" value={form.line2} onChange={set("line2")} />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label style={FORM_LABEL_STYLE}>City</label>
+          <input className={FORM_FIELD_CLASS} style={FORM_FIELD_STYLE} placeholder="City" value={form.city} onChange={set("city")} required />
+        </div>
+        <div>
+          <label style={FORM_LABEL_STYLE}>State / Province</label>
+          <input className={FORM_FIELD_CLASS} style={FORM_FIELD_STYLE} placeholder="State" value={form.state} onChange={set("state")} required />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label style={FORM_LABEL_STYLE}>ZIP / Postal code</label>
+          <input className={FORM_FIELD_CLASS} style={FORM_FIELD_STYLE} placeholder="ZIP code" value={form.postal_code} onChange={set("postal_code")} required />
+        </div>
+        <div>
+          <label style={FORM_LABEL_STYLE}>Country</label>
+          <input className={FORM_FIELD_CLASS} style={FORM_FIELD_STYLE} placeholder="US" value={form.country} onChange={set("country")} />
+        </div>
+      </div>
+      <Button className="w-full mt-2" size="lg" disabled={!ready} onClick={() => onComplete(form)}>
+        Continue to payment <ArrowRight size={14} />
+      </Button>
+    </div>
+  );
+}
+
 function StripeCheckout() {
+  const [step, setStep] = useState<"shipping" | "payment">("shipping");
+  const [shipping, setShipping] = useState<{ name: string; line1: string; line2: string; city: string; state: string; postal_code: string; country: string } | null>(null);
   const [clientSecret, setClientSecret] = useState("");
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    fetch("/api/create-payment-intent", { method: "POST" })
+  const handleShippingComplete = (data: typeof shipping & {}) => {
+    setShipping(data);
+    setStep("payment");
+    fetch("/api/create-payment-intent", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ shipping: { name: data.name, address: { line1: data.line1, line2: data.line2, city: data.city, state: data.state, postal_code: data.postal_code, country: data.country || "US" } } }),
+    })
       .then((r) => r.json())
-      .then((data) => {
-        if (data.clientSecret) setClientSecret(data.clientSecret);
-        else setError(data.error || "Could not initialize checkout.");
+      .then((d) => {
+        if (d.clientSecret) setClientSecret(d.clientSecret);
+        else setError(d.error || "Could not initialize checkout.");
       })
       .catch(() => setError("Could not connect to payment server."));
-  }, []);
+  };
 
   return (
     <Panel className="p-7">
       <div className="flex items-center justify-between mb-5">
-        <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.25rem", color: "var(--ark-ink)" }}>Payment</span>
+        <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.25rem", color: "var(--ark-ink)" }}>
+          {step === "shipping" ? "Shipping" : "Payment"}
+        </span>
         <span className="inline-flex items-center gap-1.5" style={{ fontFamily: BODY, fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--ark-muted)" }}>
-          <Lock size={12} /> Stripe
+          <Lock size={12} /> {step === "shipping" ? "Step 1 of 2" : "Step 2 of 2"}
         </span>
       </div>
 
-      {error ? (
+      {step === "shipping" ? (
+        <ShippingForm onComplete={handleShippingComplete} />
+      ) : error ? (
         <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(28,25,23,0.06)", borderColor: "rgba(28,25,23,0.14)", color: "var(--ark-fault-2)", fontFamily: BODY, fontSize: "0.85rem" }}>
           {error}
         </div>
       ) : clientSecret && stripePromise ? (
-        <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: "stripe", variables: { colorPrimary: "#2563eb", borderRadius: "8px" } } }}>
-          <CheckoutForm />
-        </Elements>
+        <>
+          {shipping && (
+            <div className="mb-5 rounded-lg px-4 py-3" style={{ background: "rgba(28,25,23,0.04)", fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-ink-dim)" }}>
+              <span style={{ fontWeight: 600, color: "var(--ark-ink)" }}>{shipping.name}</span>
+              <br />{shipping.line1}{shipping.line2 ? `, ${shipping.line2}` : ""}
+              <br />{shipping.city}, {shipping.state} {shipping.postal_code}
+              <div className="mt-2">
+                <button onClick={() => { setStep("shipping"); setClientSecret(""); }} style={{ fontFamily: BODY, fontSize: "0.78rem", color: "var(--ark-signal)", background: "none", border: "none", padding: 0, cursor: "pointer", textDecoration: "underline", textUnderlineOffset: "2px" }}>
+                  Edit address
+                </button>
+              </div>
+            </div>
+          )}
+          <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: "stripe", variables: { colorPrimary: "#2563eb", borderRadius: "8px" } } }}>
+            <CheckoutForm />
+          </Elements>
+        </>
       ) : (
         <div className="flex items-center justify-center py-10" style={{ color: "var(--ark-muted)", fontFamily: BODY, fontSize: "0.9rem" }}>
           Loading payment form...
