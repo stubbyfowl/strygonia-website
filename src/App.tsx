@@ -341,41 +341,27 @@ function Products({ onProduct, onReserve }: { onProduct: (id: ProductId) => void
 }
 
 /* ── Team ─────────────────────────────────────────────────────────── */
-const TEAM = [
-  {
-    name: "Sidak Mann",
-    title: "Co-founder · Firmware & software",
-    bio: "Writes the STM32 firmware and the desktop replay app. Background in distributed systems and real-time programming. Currently focused on getting the V1 current-sense accuracy tight enough to ship.",
-    accent: "var(--ark-signal)",
-    photo: sidakProfile,
-    photoPosition: "center 32%",
-  },
-];
-
 function Team() {
   return (
     <section id="team" className="relative py-28 px-6 overflow-hidden" style={{ background: "var(--ark-bg)" }}>
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-14 max-w-2xl">
-          <h2 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(2rem, 3.5vw, 3rem)", lineHeight: 0.98, letterSpacing: "0", color: "var(--ark-ink)" }}>
-            Team
-          </h2>
-        </div>
-        <div className="max-w-lg">
-          {TEAM.map((m) => (
-            <div key={m.name} className="flex flex-col gap-6">
-              <div className="flex items-center gap-5">
-                <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0" style={{ border: "1px solid var(--ark-line)" }}>
-                  <img src={m.photo} alt={`${m.name}`} className="w-full h-full object-cover" style={{ objectPosition: m.photoPosition }} />
-                </div>
-                <div>
-                  <h3 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.3rem", color: "var(--ark-ink)" }}>{m.name}</h3>
-                  <span style={{ fontFamily: BODY, fontSize: "0.78rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ark-signal)" }}>{m.title}</span>
-                </div>
-              </div>
-              <p style={{ fontFamily: BODY, fontSize: "0.95rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, maxWidth: "28rem" }}>{m.bio}</p>
-            </div>
-          ))}
+      <div className="max-w-3xl mx-auto text-center">
+        <h2 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(2rem, 3.5vw, 3rem)", lineHeight: 0.98, color: "var(--ark-ink)", marginBottom: "3.5rem" }}>
+          Leadership
+        </h2>
+        <div className="flex flex-col items-center gap-6">
+          <div className="w-28 h-28 rounded-2xl overflow-hidden" style={{ border: "1px solid var(--ark-line)" }}>
+            <img src={sidakProfile} alt="Sidak Mann" className="w-full h-full object-cover" style={{ objectPosition: "center 32%" }} />
+          </div>
+          <div>
+            <h3 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.5rem", color: "var(--ark-ink)" }}>Sidak Mann</h3>
+            <span style={{ fontFamily: BODY, fontSize: "0.82rem", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ark-signal)" }}>Founder & CEO</span>
+          </div>
+          <p style={{ fontFamily: BODY, fontSize: "1rem", color: "var(--ark-ink-dim)", lineHeight: 1.85, maxWidth: "34rem" }}>
+            Sidak founded Strygonia to solve a problem he kept hitting firsthand: embedded failures that vanish the moment you try to reproduce them. He architected the BlackBox from board-level hardware design through firmware to the desktop replay application — owning the full stack from schematic capture to shipped product.
+          </p>
+          <p style={{ fontFamily: BODY, fontSize: "1rem", color: "var(--ark-ink-dim)", lineHeight: 1.85, maxWidth: "34rem" }}>
+            Before Strygonia, Sidak built and led engineering teams across firmware, systems software, and product development. He brings deep technical fluency in real-time embedded systems, analog signal acquisition, and cross-platform tooling — combined with the product instinct to know what engineers actually need on their bench and the operational discipline to ship it.
+          </p>
         </div>
       </div>
     </section>
