@@ -192,19 +192,19 @@ function BuildSheet({ product }: { product: ProductSpec }) {
 const GALLERY_SHOTS = [
   {
     src: blackbox1,
-    alt: "BlackBox Rev A PCB top view — components, ICs, and signal routing visible",
+    alt: "BlackBox Rev A PCB top view, components, ICs, and signal routing visible",
     caption: "Rev A · top side",
     full: true,
   },
   {
     src: blackbox2,
-    alt: "BlackBox Rev A PCB bottom view — ground plane and bottom-side passives",
+    alt: "BlackBox Rev A PCB bottom view, ground plane and bottom-side passives",
     caption: "Rev A · bottom side",
     full: false,
   },
   {
     src: blackbox3,
-    alt: "BlackBox Rev A PCB profile view — board thickness, connector heights, and component clearances",
+    alt: "BlackBox Rev A PCB profile view, board thickness, connector heights, and component clearances",
     caption: "Rev A · profile",
     full: false,
   },
@@ -244,7 +244,7 @@ function ProductCTA({ product, onReserve, onContact }: { product: ProductSpec; o
           Get a {product.name}
         </h2>
         <p className="mt-5" style={{ fontFamily: BODY, fontSize: "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, maxWidth: "34rem" }}>
-          {product.name} is currently a {product.status.toLowerCase()}. $198.99 for the Founder's Edition — includes the unit, harness, and ongoing firmware updates.
+          {product.name} is currently a {product.status.toLowerCase()}. $198.99 for the Founder's Edition. Includes the unit, harness, and ongoing firmware updates.
         </p>
         <div className="flex flex-wrap gap-4 mt-9">
           {onReserve && <PrimaryBtn onClick={onReserve}>{product.reserveLabel} <ArrowRight size={17} /></PrimaryBtn>}

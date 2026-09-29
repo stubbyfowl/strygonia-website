@@ -357,10 +357,10 @@ function Team() {
             <span style={{ fontFamily: BODY, fontSize: "0.82rem", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ark-signal)" }}>Founder & CEO</span>
           </div>
           <p style={{ fontFamily: BODY, fontSize: "1rem", color: "var(--ark-ink-dim)", lineHeight: 1.85, maxWidth: "34rem" }}>
-            Sidak founded Strygonia to solve a problem he kept hitting firsthand: embedded failures that vanish the moment you try to reproduce them. He architected the BlackBox from board-level hardware design through firmware to the desktop replay application — owning the full stack from schematic capture to shipped product.
+            Sidak founded Strygonia to solve a problem he kept hitting firsthand: embedded failures that vanish the moment you try to reproduce them. He architected the BlackBox from board-level hardware design through firmware to the desktop replay application, owning the full stack from schematic capture to shipped product.
           </p>
           <p style={{ fontFamily: BODY, fontSize: "1rem", color: "var(--ark-ink-dim)", lineHeight: 1.85, maxWidth: "34rem" }}>
-            Before Strygonia, Sidak built and led engineering teams across firmware, systems software, and product development. He brings deep technical fluency in real-time embedded systems, analog signal acquisition, and cross-platform tooling — combined with the product instinct to know what engineers actually need on their bench and the operational discipline to ship it.
+            Before Strygonia, Sidak built and led engineering teams across firmware, systems software, and product development. He brings deep technical fluency in real-time embedded systems, analog signal acquisition, and cross-platform tooling, combined with the product instinct to know what engineers actually need on their bench and the operational discipline to ship it.
           </p>
         </div>
       </div>
@@ -707,7 +707,7 @@ function ContactPage({ onHome }: { onHome: () => void }) {
               Get in touch
             </h1>
             <p style={{ fontFamily: BODY, fontSize: "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, maxWidth: "34rem", marginTop: "1.4rem" }}>
-              Questions about BlackBox, partnership inquiries, or anything else — send us a message and we'll reply within a day.
+              Questions about BlackBox, partnership inquiries, or anything else. Send us a message and we'll reply within a day.
             </p>
             <Panel className="mt-8 p-6 max-w-md">
               <p style={{ ...FORM_LABEL_STYLE, marginBottom: "0.6rem" }}>Direct email</p>
@@ -866,7 +866,7 @@ function SpecsPage({ onHome, onReserve }: { onHome: () => void; onReserve: () =>
   ];
   const roadmap = [
     { phase: "Phase 1", detail: "Custom PCB with universal pin header. Voltage, current, and UART recording to SD card." },
-    { phase: "Phase 2", detail: "Desktop viewer over USB-C — timeline, graphs, event markers, zoom, search." },
+    { phase: "Phase 2", detail: "Desktop viewer over USB-C: timeline, graphs, event markers, zoom, search." },
     { phase: "Phase 3", detail: "GPIO recording, reset detection, trigger events, refined harness." },
     { phase: "Phase 4", detail: "Improved enclosure, expanded harness kit, field testing across breadboard, Pi, and PCB." },
   ];
