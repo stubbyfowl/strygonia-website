@@ -599,6 +599,18 @@ function StripeCheckout() {
 function ReservePage({ onHome }: { onHome: () => void; initialProduct?: ProductId }) {
   const product = PRODUCTS.blackbox;
   const editionName = "BlackBox: Founder's Edition";
+  const [nuke, setNuke] = useState(false);
+
+  useEffect(() => {
+    const code = "lazyjones";
+    let buf = "";
+    const onKey = (e: KeyboardEvent) => {
+      buf = (buf + e.key.toLowerCase()).slice(-code.length);
+      if (buf === code) setNuke(true);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   return (
     <main className="relative min-h-screen px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
@@ -636,6 +648,13 @@ function ReservePage({ onHome }: { onHome: () => void; initialProduct?: ProductI
           </Reveal>
         </div>
       </div>
+      {nuke && (
+        <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 9999, animation: "ark-pulse 1.9s ease-in-out infinite" }}>
+          <a href="https://destroy.spritefusion.com/?from=badge" target="_blank" rel="noopener noreferrer">
+            <img src="https://destroy.spritefusion.com/badge.svg" alt="Destroy this website" width={180} height={40} />
+          </a>
+        </div>
+      )}
     </main>
   );
 }
@@ -1072,6 +1091,7 @@ export default function App() {
   useEffect(() => {
     document.documentElement.classList.toggle("a11y-mode", a11y);
   }, [a11y]);
+
 
   const go = (next: Page) => {
     setPage(next);
