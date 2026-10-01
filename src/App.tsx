@@ -602,11 +602,11 @@ function ReservePage({ onHome }: { onHome: () => void; initialProduct?: ProductI
   const [nuke, setNuke] = useState(false);
 
   useEffect(() => {
-    const code = "lazyjones";
     let buf = "";
     const onKey = (e: KeyboardEvent) => {
-      buf = (buf + e.key.toLowerCase()).slice(-code.length);
-      if (buf === code) setNuke(true);
+      buf = (buf + e.key.toLowerCase()).slice(-9);
+      if (buf.endsWith("destroy1")) setNuke(true);
+      if (buf.endsWith("lazyjones")) window.open("https://c64online.com/c64-games/lazy-jones/", "_blank");
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
