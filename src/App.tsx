@@ -606,7 +606,7 @@ function ReservePage({ onHome }: { onHome: () => void; initialProduct?: ProductI
     const onKey = (e: KeyboardEvent) => {
       buf = (buf + e.key.toLowerCase()).slice(-9);
       if (buf.endsWith("destroy1")) setNuke(true);
-      if (buf.endsWith("lazyjones")) window.open("https://c64online.com/c64-games/lazy-jones/", "_blank");
+      if (buf.endsWith("lazyjones")) window.open("https://c64.krissz.hu/lazy-jones/play-online/", "_blank");
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
