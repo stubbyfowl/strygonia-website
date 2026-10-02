@@ -219,7 +219,7 @@ function BlackBoxGallery() {
           {GALLERY_SHOTS.map((shot, i) => (
             <figure key={shot.caption} className={shot.full ? "md:col-span-2" : ""}>
               <div className="rounded-lg overflow-hidden" style={{ border: "1px solid var(--ark-line)" }}>
-                <img src={shot.src} alt={shot.alt} loading="lazy" className="block w-full h-auto" />
+                <img src={shot.src} alt={shot.alt} width={3168} height={2384} loading="lazy" className="block w-full h-auto" />
               </div>
               <figcaption className="mt-3">
                 <span style={{ fontFamily: BODY, fontSize: "0.82rem", fontWeight: 500, color: "var(--ark-muted)" }}>
@@ -271,9 +271,10 @@ export function ProductDescriptionPage({
 }) {
   const isBlackbox = product.id === "blackbox";
   return (
-    <>
+    <main>
+    <article>
       {/* ── Hero: what it is, and the unit itself. Nothing else. ─────── */}
-      <main
+      <section
         className="relative px-6 pt-32 pb-24"
         style={{ background: "var(--ark-bg)" }}
       >
@@ -327,10 +328,8 @@ export function ProductDescriptionPage({
             </Reveal>
           </div>
         </div>
-      </main>
+      </section>
 
-      {/* Sticky-scroll sections live outside <main> — its overflow-hidden
-          (needed for the backdrop) would break position: sticky. */}
       <AtAGlance product={product} />
       <SignalChain product={product} />
       <Signals product={product} />
@@ -345,6 +344,7 @@ export function ProductDescriptionPage({
       <BuildSheet product={product} />
       {isBlackbox && <BlackBoxGallery />}
       <ProductCTA product={product} onReserve={onReserve} onContact={onContact} />
-    </>
+    </article>
+    </main>
   );
 }

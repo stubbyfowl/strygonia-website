@@ -118,6 +118,29 @@ const NAV_LINKS: NavItem[] = [
   { label: "Specs", kind: "page", page: "specs" },
 ];
 
+const navHref = (link: NavItem) =>
+  link.kind === "section" ? `/#${link.section}` : link.kind === "product" ? PATHS[link.id] : PATHS[link.page];
+
+/* Real <a href> so crawlers can follow it. Plain left-clicks switch pages in place;
+   modified clicks (new tab/window) fall through to the browser. */
+function PageLink({
+  href,
+  onNavigate,
+  ...rest
+}: Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "onClick"> & { href: string; onNavigate: () => void }) {
+  return (
+    <a
+      href={href}
+      {...rest}
+      onClick={(e) => {
+        if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        e.preventDefault();
+        onNavigate();
+      }}
+    />
+  );
+}
+
 function Navbar({
   scrolled,
   onHome,
@@ -154,7 +177,7 @@ function Navbar({
           borderBottom: scrolled ? "1px solid var(--ark-line)" : "1px solid transparent",
         }}
       >
-        <button className="ark-focus flex items-center gap-2.5" onClick={onHome} aria-label="Strygonia home">
+        <PageLink href="/" onNavigate={onHome} className="ark-focus flex items-center gap-2.5" aria-label="Strygonia home">
           <div className="rounded-lg overflow-hidden" style={{ width: 28, height: 28 }}>
             <img
               src={scrolled ? "/strygonia-icon-cream.png" : "/strygonia-icon-blue.png"}
@@ -165,27 +188,29 @@ function Navbar({
           <span style={{ fontFamily: WORDMARK, fontSize: "1rem", fontWeight: 600, letterSpacing: "0.02em", color: scrolled ? "var(--ark-ink)" : "#fff" }}>
             Strygonia
           </span>
-        </button>
+        </PageLink>
 
-        <ul className="hidden md:flex items-center gap-7">
-          {NAV_LINKS.map((link) => (
-            <li key={link.label}>
-              <button
-                type="button"
-                onClick={() => handleNav(link)}
-                className="ark-focus transition-colors"
-                style={{ fontFamily: BODY, fontWeight: 400, fontSize: "0.85rem", color: scrolled ? "var(--ark-ink-dim)" : "rgba(255,255,255,0.7)", background: "none", border: "none", cursor: "pointer" }}
-              >
-                {link.label}
-              </button>
-            </li>
-          ))}
-        </ul>
+        <nav aria-label="Main navigation" className="hidden md:block">
+          <ul className="flex items-center gap-7">
+            {NAV_LINKS.map((link) => (
+              <li key={link.label}>
+                <PageLink
+                  href={navHref(link)}
+                  onNavigate={() => handleNav(link)}
+                  className="ark-focus transition-colors inline-block"
+                  style={{ fontFamily: BODY, fontWeight: 400, fontSize: "0.85rem", color: scrolled ? "var(--ark-ink-dim)" : "rgba(255,255,255,0.7)" }}
+                >
+                  {link.label}
+                </PageLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
         <div className="hidden md:flex items-center gap-6 lg:gap-7">
-          <button onClick={onContact} className="ark-focus text-sm transition-colors px-1" style={{ fontFamily: BODY, color: scrolled ? "var(--ark-ink-dim)" : "rgba(255,255,255,0.7)", background: "none", border: "none", cursor: "pointer" }}>
+          <PageLink href={PATHS.contact} onNavigate={onContact} className="ark-focus text-sm transition-colors px-1 inline-block" style={{ fontFamily: BODY, color: scrolled ? "var(--ark-ink-dim)" : "rgba(255,255,255,0.7)" }}>
             Contact
-          </button>
+          </PageLink>
           <Button size="sm" onClick={onReserve}>
             Reserve
           </Button>
@@ -197,13 +222,13 @@ function Navbar({
       </div>
 
       {open && (
-        <div className="md:hidden p-6 border-b" style={{ background: "rgba(240,235,228,0.98)", borderColor: "var(--ark-line)" }}>
+        <nav aria-label="Mobile navigation" className="md:hidden p-6 border-b" style={{ background: "rgba(240,235,228,0.98)", borderColor: "var(--ark-line)" }}>
           <ul className="flex flex-col gap-4">
             {NAV_LINKS.map((link) => (
               <li key={link.label}>
-                <button type="button" onClick={() => { setOpen(false); handleNav(link); }} style={{ fontFamily: BODY, color: "var(--ark-ink-dim)", fontSize: "0.95rem", background: "none", border: "none" }}>
+                <PageLink href={navHref(link)} onNavigate={() => { setOpen(false); handleNav(link); }} className="inline-block" style={{ fontFamily: BODY, color: "var(--ark-ink-dim)", fontSize: "0.95rem" }}>
                   {link.label}
-                </button>
+                </PageLink>
               </li>
             ))}
           </ul>
@@ -211,7 +236,7 @@ function Navbar({
             <Button variant="outline" className="w-full" onClick={() => { setOpen(false); onContact(); }}>Contact</Button>
             <Button className="w-full" onClick={() => { setOpen(false); onReserve(); }}>Reserve</Button>
           </div>
-        </div>
+        </nav>
       )}
     </header>
   );
@@ -343,7 +368,7 @@ function Team() {
         </h2>
         <div className="flex flex-col items-center gap-6">
           <div className="w-28 h-28 rounded-2xl overflow-hidden" style={{ border: "1px solid var(--ark-line)" }}>
-            <img src={sidakProfile} alt="Sidak Mann" className="w-full h-full object-cover" style={{ objectPosition: "center 32%" }} />
+            <img src={sidakProfile} alt="Sidak Mann, Founder and CEO of Strygonia" loading="lazy" className="w-full h-full object-cover" style={{ objectPosition: "center 32%" }} />
           </div>
           <div>
             <h3 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.5rem", color: "var(--ark-ink)" }}>Sidak Mann</h3>
@@ -1011,7 +1036,7 @@ function LegalPage({ type, onHome, a11y, onToggleA11y }: { type: "privacy" | "te
 }
 
 /* ── Footer ───────────────────────────────────────────────────────── */
-type FooterLinkItem = { label: string; action: () => void };
+type FooterLinkItem = { label: string; href: string; action: () => void };
 type FooterColumn = { title: string; links: FooterLinkItem[] };
 
 function Footer({
@@ -1032,10 +1057,10 @@ function Footer({
   onSection: (section: string) => void;
 }) {
   const columns: FooterColumn[] = [
-    { title: "Products", links: [{ label: "BlackBox", action: () => onProduct("blackbox") }, { label: "Reserve", action: onReserve }] },
-    { title: "Explore", links: [{ label: "Specs", action: onSpecs }, { label: "Team", action: () => onSection("team") }] },
-    { title: "Company", links: [{ label: "Contact", action: onContact }, { label: "Careers", action: onCareers }] },
-    { title: "Legal", links: [{ label: "Privacy", action: () => onLegalPage("privacy") }, { label: "Terms", action: () => onLegalPage("terms") }, { label: "Accessibility", action: () => onLegalPage("accessibility") }] },
+    { title: "Products", links: [{ label: "BlackBox", href: PATHS.blackbox, action: () => onProduct("blackbox") }, { label: "Reserve", href: PATHS.reserve, action: onReserve }] },
+    { title: "Explore", links: [{ label: "Specs", href: PATHS.specs, action: onSpecs }, { label: "Team", href: "/#team", action: () => onSection("team") }] },
+    { title: "Company", links: [{ label: "Contact", href: PATHS.contact, action: onContact }, { label: "Careers", href: PATHS.careers, action: onCareers }] },
+    { title: "Legal", links: [{ label: "Privacy", href: PATHS.privacy, action: () => onLegalPage("privacy") }, { label: "Terms", href: PATHS.terms, action: () => onLegalPage("terms") }, { label: "Accessibility", href: PATHS.accessibility, action: () => onLegalPage("accessibility") }] },
   ];
 
   return (
@@ -1045,6 +1070,9 @@ function Footer({
           <img
             src="/strygonia-lockup-dark.png"
             alt="Strygonia"
+            width={758}
+            height={278}
+            loading="lazy"
             className="rounded-lg flex-shrink-0"
             style={{ width: 180, height: "auto" }}
           />
@@ -1053,9 +1081,9 @@ function Footer({
               <div key={col.title} className="flex flex-col gap-2.5">
                 <span style={{ fontFamily: BODY, fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ark-faint)" }}>{col.title}</span>
                 {col.links.map((link) => (
-                  <button key={link.label} type="button" onClick={link.action} className="ark-focus transition-colors duration-200 text-left" style={{ fontFamily: BODY, fontSize: "0.84rem", color: "var(--ark-muted)", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                  <PageLink key={link.label} href={link.href} onNavigate={link.action} className="ark-focus transition-colors duration-200 text-left" style={{ fontFamily: BODY, fontSize: "0.84rem", color: "var(--ark-muted)" }}>
                     {link.label}
-                  </button>
+                  </PageLink>
                 ))}
               </div>
             ))}
@@ -1073,11 +1101,44 @@ function Footer({
 /* ── Root ─────────────────────────────────────────────────────────── */
 type Page = "home" | "reserve" | "contact" | "specs" | "careers" | "privacy" | "terms" | "accessibility" | ProductId;
 
+const SITE = "https://strygonia.com";
+
+const PATHS: Record<Page, string> = {
+  home: "/",
+  blackbox: "/products/blackbox",
+  specs: "/specs",
+  contact: "/contact",
+  reserve: "/reserve",
+  careers: "/careers",
+  privacy: "/privacy",
+  terms: "/terms",
+  accessibility: "/accessibility",
+};
+
+const META: Record<Page, [title: string, description: string]> = {
+  home: ["Strygonia | Bench Instruments for Embedded Engineers", "Strygonia builds precision bench instruments for hardware engineers. BlackBox is a hardware flight recorder that captures voltage, current, and serial data so you can rewind to the moment your board failed."],
+  blackbox: ["BlackBox | Hardware Flight Recorder | Strygonia", "BlackBox clips onto your breadboard, Raspberry Pi, or PCB and continuously records voltage, current, UART, resets, and GPIO. When your board faults, scrub back through the timeline. $198.99."],
+  specs: ["BlackBox Specifications | Strygonia", "Full technical specifications for BlackBox SG-BB1: ARM processor, high-side current sensing, rolling buffer storage, USB-C, and 6 input channels."],
+  contact: ["Contact Strygonia", "Questions about BlackBox, partnership inquiries, or anything else. Email contact@strygonia.com or find us on YouTube, Instagram, and Discord."],
+  reserve: ["Buy BlackBox: Founder's Edition | Strygonia", "Reserve a BlackBox Founder's Edition. $198.99 for the first production run. Includes the unit, wiring harness, USB-C cable, and all firmware updates."],
+  careers: ["Careers | Strygonia", "Join Strygonia. We're building the next generation of bench instruments for embedded engineers."],
+  privacy: ["Privacy Policy | Strygonia", "How Strygonia collects, uses, and protects your personal information."],
+  terms: ["Terms of Service | Strygonia", "The terms that govern use of the Strygonia website and purchases of Strygonia products."],
+  accessibility: ["Accessibility | Strygonia", "Strygonia's commitment to an accessible website, and how to reach us if something doesn't work for you."],
+};
+
+const pageFromPath = (path: string): Page => {
+  const clean = path.replace(/\/+$/, "") || "/";
+  return (Object.keys(PATHS) as Page[]).find((p) => PATHS[p] === clean) ?? "home";
+};
+
 export default function App() {
   const [scrolled, setScrolled] = useState(false);
-  const [page, setPage] = useState<Page>("home");
+  const [page, setPage] = useState<Page>(() => pageFromPath(window.location.pathname));
   const [reserveProduct, setReserveProduct] = useState<ProductId>("blackbox");
-  const [pendingSection, setPendingSection] = useState<string | null>(null);
+  const [pendingSection, setPendingSection] = useState<string | null>(
+    () => (pageFromPath(window.location.pathname) === "home" && window.location.hash.slice(1)) || null,
+  );
   const [a11y, setA11y] = useState(false);
 
   useSmoothScroll();
@@ -1092,6 +1153,27 @@ export default function App() {
     document.documentElement.classList.toggle("a11y-mode", a11y);
   }, [a11y]);
 
+  useEffect(() => {
+    const path = PATHS[page];
+    if (window.location.pathname !== path) {
+      // Same page under a different spelling (trailing slash, unknown path) is a fix-up, not a navigation.
+      const fixUp = pageFromPath(window.location.pathname) === page;
+      window.history[fixUp ? "replaceState" : "pushState"](null, "", path);
+    }
+    const [title, description] = META[page];
+    document.title = title;
+    document.querySelector('meta[name="description"]')?.setAttribute("content", description);
+    document.querySelector('link[rel="canonical"]')?.setAttribute("href", SITE + path);
+  }, [page]);
+
+  useEffect(() => {
+    const onPop = () => {
+      setPage(pageFromPath(window.location.pathname));
+      requestAnimationFrame(() => scrollToTop());
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
 
   const go = (next: Page) => {
     setPage(next);
@@ -1141,7 +1223,7 @@ export default function App() {
       />
 
       {page === "home" ? (
-        <>
+        <main>
           <Hero onBlackBox={() => goProduct("blackbox")} />
           <ToolMarquee />
           <Products onProduct={goProduct} onReserve={() => goReserve()} />
@@ -1153,7 +1235,7 @@ export default function App() {
           </div>
           <Team />
           <CTA onReserve={() => goReserve()} onContact={goContact} />
-        </>
+        </main>
       ) : page === "reserve" ? (
         <ReservePage onHome={goHome} initialProduct={reserveProduct} />
       ) : page === "contact" ? (

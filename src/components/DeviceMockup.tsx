@@ -18,6 +18,8 @@ export function DeviceMockup({
     <img
       src={render.src}
       alt={render.alt}
+      width={3168}
+      height={2384}
       loading="lazy"
       className={`block rounded-md ${className}`}
       style={{ objectFit: "contain" }}

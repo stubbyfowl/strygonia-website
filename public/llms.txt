@@ -1,0 +1,35 @@
+# Strygonia
+
+> Strygonia builds precision bench instruments for embedded engineers.
+
+## About
+
+Strygonia is a hardware company that designs tools for engineers who work with embedded systems, PCBs, and microcontrollers. Founded by Sidak Mann.
+
+Website: https://strygonia.com
+Contact: contact@strygonia.com
+
+## Products
+
+### BlackBox (SG-BB1)
+- Type: Hardware flight recorder
+- Price: $198.99 (Founder's Edition)
+- Status: V1 Prototype
+
+BlackBox is a small module you clip onto a breadboard, Raspberry Pi, or custom PCB. It continuously records voltage (2 rails), current (high-side sensor), UART serial output, reset events, 4 GPIO inputs, and 1 analog channel, all timestamped against a shared clock in a rolling buffer. When your board faults, you connect via USB-C and scrub back through a desktop timeline app to see exactly what happened. No need to reproduce the failure.
+
+Includes: BlackBox V1 recorder, color-coded wiring harness, USB-C cable, desktop timeline app (macOS, Windows, Linux).
+
+Compatible with: STM32, ESP32, Raspberry Pi, Arduino, KiCad projects, custom PCBs, breadboards.
+
+## Links
+
+- Homepage: https://strygonia.com/
+- BlackBox product page: https://strygonia.com/products/blackbox
+- Specifications: https://strygonia.com/specs
+- Buy / Reserve: https://strygonia.com/reserve
+- Contact: https://strygonia.com/contact
+- YouTube: https://www.youtube.com/@Strygonia
+- Instagram: https://www.instagram.com/Strygonia/
+- Discord: Strygonia community server
+- Full detail for LLMs: https://strygonia.com/llms-full.txt
