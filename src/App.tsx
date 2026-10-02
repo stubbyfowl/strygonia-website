@@ -761,7 +761,7 @@ function ContactPage({ onHome }: { onHome: () => void }) {
                 {status === "error" && (
                   <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(28,25,23,0.06)", borderColor: "rgba(28,25,23,0.14)", color: "var(--ark-fault-2)", fontFamily: BODY }}>{errorMessage}</div>
                 )}
-                <p style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-faint)", lineHeight: 1.6 }}>You can email us at strygonia.com</p>
+                <p style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-faint)", lineHeight: 1.6 }}>You can email us at {STRYGONIA_EMAIL}</p>
               </form>
             </Panel>
           </Reveal>
@@ -852,7 +852,7 @@ function CareersPage({ onHome }: { onHome: () => void }) {
                 {status === "error" && (
                   <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(28,25,23,0.06)", borderColor: "rgba(28,25,23,0.14)", color: "var(--ark-fault-2)", fontFamily: BODY }}>{errorMessage}</div>
                 )}
-                <p style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-faint)", lineHeight: 1.6 }}>You can email us at strygonia.com</p>
+                <p style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-faint)", lineHeight: 1.6 }}>You can email us at {STRYGONIA_EMAIL}</p>
               </form>
             </Panel>
           </Reveal>
@@ -1101,7 +1101,7 @@ function Footer({
 /* ── Root ─────────────────────────────────────────────────────────── */
 type Page = "home" | "reserve" | "contact" | "specs" | "careers" | "privacy" | "terms" | "accessibility" | ProductId;
 
-const SITE = "https://strygonia.com";
+const SITE = "https://www.strygonia.com";
 
 const PATHS: Record<Page, string> = {
   home: "/",

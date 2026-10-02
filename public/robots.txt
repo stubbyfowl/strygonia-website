@@ -23,4 +23,4 @@ Allow: /
 User-agent: Bytespider
 Disallow: /
 
-Sitemap: https://strygonia.com/sitemap.xml
+Sitemap: https://www.strygonia.com/sitemap.xml

@@ -6,7 +6,7 @@
 
 Strygonia is a hardware company that designs tools for engineers who work with embedded systems, PCBs, and microcontrollers. Founded by Sidak Mann.
 
-Website: https://strygonia.com
+Website: https://www.strygonia.com
 Contact: contact@strygonia.com
 
 ## Products
@@ -24,12 +24,12 @@ Compatible with: STM32, ESP32, Raspberry Pi, Arduino, KiCad projects, custom PCB
 
 ## Links
 
-- Homepage: https://strygonia.com/
-- BlackBox product page: https://strygonia.com/products/blackbox
-- Specifications: https://strygonia.com/specs
-- Buy / Reserve: https://strygonia.com/reserve
-- Contact: https://strygonia.com/contact
+- Homepage: https://www.strygonia.com/
+- BlackBox product page: https://www.strygonia.com/products/blackbox
+- Specifications: https://www.strygonia.com/specs
+- Buy / Reserve: https://www.strygonia.com/reserve
+- Contact: https://www.strygonia.com/contact
 - YouTube: https://www.youtube.com/@Strygonia
 - Instagram: https://www.instagram.com/Strygonia/
 - Discord: Strygonia community server
-- Full detail for LLMs: https://strygonia.com/llms-full.txt
+- Full detail for LLMs: https://www.strygonia.com/llms-full.txt
