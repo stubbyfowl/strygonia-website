@@ -76,8 +76,10 @@ export function BlackBoxExploded({
   const barScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
   /* The intro copy hands the frame to the model once the teardown starts —
      on narrow screens the lifted shell would otherwise sit behind the text. */
-  const introOpacity = useTransform(scrollYProgress, [0.05, 0.3], [1, 0]);
-  const introY = useTransform(scrollYProgress, [0.05, 0.3], [0, -24]);
+  // Full 0..1 range on purpose: motion hands opacity to a native ViewTimeline, and a
+  // partial range leaves no keyframe at 1, so the browser fades the copy back in.
+  const introOpacity = useTransform(scrollYProgress, [0, 0.05, 0.3, 1], [1, 1, 0, 0]);
+  const introY = useTransform(scrollYProgress, [0, 0.05, 0.3, 1], [0, 0, -24, -24]);
 
   useMotionValueEvent(scrollYProgress, "change", (v) => {
     progressRef.current = v;
@@ -203,6 +205,7 @@ export function BlackBoxExploded({
       io.disconnect();
       materials.forEach((m) => m.dispose());
       renderer.dispose();
+      renderer.forceContextLoss();
       host.removeChild(renderer.domElement);
     };
   }, [reducedMotion]);

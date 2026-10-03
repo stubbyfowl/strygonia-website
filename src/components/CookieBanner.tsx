@@ -9,14 +9,17 @@ export function CookieBanner({ onPrivacy }: { onPrivacy: () => void }) {
   const [decided, setDecided] = useState(false);
 
   useEffect(() => {
-    if (!localStorage.getItem(CONSENT_KEY)) {
+    // localStorage throws when the browser blocks site data; an uncaught throw here would blank the whole site.
+    let stored: string | null = null;
+    try { stored = localStorage.getItem(CONSENT_KEY); } catch {}
+    if (!stored) {
       const t = setTimeout(() => setVisible(true), 1200);
       return () => clearTimeout(t);
     }
   }, []);
 
   const dismiss = (choice: "accepted" | "declined") => {
-    localStorage.setItem(CONSENT_KEY, choice);
+    try { localStorage.setItem(CONSENT_KEY, choice); } catch {}
     setDecided(true);
     setTimeout(() => setVisible(false), 400);
   };

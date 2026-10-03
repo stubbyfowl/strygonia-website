@@ -8,7 +8,6 @@ Strygonia is a hardware company that designs tools for engineers who work with e
 
 Website: https://www.strygonia.com
 Contact: contact@strygonia.com
-YouTube: https://www.youtube.com/@Strygonia
 Instagram: https://www.instagram.com/Strygonia/
 
 ## BlackBox (SG-BB1)

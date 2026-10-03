@@ -24,8 +24,8 @@ export default async function handler(req, res) {
           line1: shipping.address.line1,
           line2: shipping.address.line2 || undefined,
           city: shipping.address.city,
-          state: shipping.address.state,
-          postal_code: shipping.address.postal_code,
+          state: shipping.address.state || undefined,
+          postal_code: shipping.address.postal_code || undefined,
           country: shipping.address.country || "US",
         },
       };

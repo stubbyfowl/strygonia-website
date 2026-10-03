@@ -2,20 +2,12 @@ import { DISCORD_INVITE_URL } from "@/config/env";
 
 export { DISCORD_INVITE_URL };
 
+// YouTube (@Strygonia 404s) and Discord (invite pointed at someone else's server)
+// are off until real links exist. Re-add { id: "youtube" | "discord", label, href } here.
 export const SOCIAL_LINKS = [
-  {
-    id: "youtube",
-    label: "YouTube @Strygonia",
-    href: "https://www.youtube.com/@Strygonia",
-  },
   {
     id: "instagram",
     label: "Instagram @Strygonia",
     href: "https://www.instagram.com/Strygonia/",
-  },
-  {
-    id: "discord",
-    label: "Join Strygonia Discord",
-    href: DISCORD_INVITE_URL,
   },
 ] as const;

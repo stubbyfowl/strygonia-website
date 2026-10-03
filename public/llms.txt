@@ -29,7 +29,5 @@ Compatible with: STM32, ESP32, Raspberry Pi, Arduino, KiCad projects, custom PCB
 - Specifications: https://www.strygonia.com/specs
 - Buy / Reserve: https://www.strygonia.com/reserve
 - Contact: https://www.strygonia.com/contact
-- YouTube: https://www.youtube.com/@Strygonia
 - Instagram: https://www.instagram.com/Strygonia/
-- Discord: Strygonia community server
 - Full detail for LLMs: https://www.strygonia.com/llms-full.txt

@@ -38,12 +38,12 @@ export function useSmoothScroll() {
   }, []);
 }
 
-/** Smoothly scroll to top (works with or without Lenis). */
-export function scrollToTop() {
+/** Scroll to top (works with or without Lenis). `instant` for page switches, so the new page doesn't animate up from wherever the old one was. */
+export function scrollToTop(instant = false) {
   if (window.__lenis) {
-    window.__lenis.scrollTo(0, { immediate: false });
+    window.__lenis.scrollTo(0, { immediate: instant });
   } else {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: instant ? "auto" : "smooth" });
   }
 }
 

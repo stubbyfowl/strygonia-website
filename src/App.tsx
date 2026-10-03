@@ -476,17 +476,21 @@ function validate(form: { name: string; line1: string; city: string; state: stri
   if (!line1 || line1.length < 5 || !/\d/.test(line1)) e.line1 = "Enter a street address (e.g. 123 Main St).";
   const city = form.city.trim();
   if (!city || city.length < 2 || /^\d+$/.test(city)) e.city = "Enter a valid city name.";
+  // State and ZIP are required for US addresses only; plenty of countries have neither.
+  const country = form.country.trim().toUpperCase();
+  const isUS = country === "US";
   const state = form.state.trim();
-  if (!state || state.length < 2) e.state = "Enter a state or province (e.g. CA).";
+  if (isUS && state.length < 2) e.state = "Enter a state (e.g. CA).";
   const zip = form.postal_code.trim();
-  if (!zip || !/^[A-Za-z0-9\s-]{3,10}$/.test(zip)) e.postal_code = "Enter a valid postal code.";
-  const country = form.country.trim();
-  if (!country || country.length < 2) e.country = "Enter a country code (e.g. US).";
+  if (isUS ? !/^\d{5}(-\d{4})?$/.test(zip) : zip !== "" && !/^[A-Za-z0-9\s-]{3,10}$/.test(zip)) e.postal_code = "Enter a valid postal code.";
+  if (!/^[A-Z]{2}$/.test(country)) e.country = "Enter a 2-letter country code (e.g. US).";
   return e;
 }
 
-function ShippingForm({ onComplete }: { onComplete: (data: { name: string; line1: string; line2: string; city: string; state: string; postal_code: string; country: string }) => void }) {
-  const [form, setForm] = useState({ name: "", line1: "", line2: "", city: "", state: "", postal_code: "", country: "US" });
+type ShippingAddress = { name: string; line1: string; line2: string; city: string; state: string; postal_code: string; country: string };
+
+function ShippingForm({ onComplete, initial }: { onComplete: (data: ShippingAddress) => void; initial: ShippingAddress | null }) {
+  const [form, setForm] = useState(initial ?? { name: "", line1: "", line2: "", city: "", state: "", postal_code: "", country: "US" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState(false);
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -499,7 +503,7 @@ function ShippingForm({ onComplete }: { onComplete: (data: { name: string; line1
     const e = validate(form);
     setErrors(e);
     setTouched(true);
-    if (Object.keys(e).length === 0) onComplete(form);
+    if (Object.keys(e).length === 0) onComplete({ ...form, country: form.country.trim().toUpperCase() });
   };
 
   const fieldStyle = (k: string) => errors[k] ? { ...FORM_FIELD_STYLE, borderColor: "var(--ark-fault)" } : FORM_FIELD_STYLE;
@@ -507,40 +511,40 @@ function ShippingForm({ onComplete }: { onComplete: (data: { name: string; line1
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <label style={FORM_LABEL_STYLE}>Full name</label>
-        <input className={FORM_FIELD_CLASS} style={fieldStyle("name")} placeholder="First and last name" value={form.name} onChange={set("name")} />
+        <label htmlFor="ship-name" style={FORM_LABEL_STYLE}>Full name</label>
+        <input id="ship-name" autoComplete="name" className={FORM_FIELD_CLASS} style={fieldStyle("name")} placeholder="First and last name" value={form.name} onChange={set("name")} />
         {errors.name && <p style={FIELD_ERROR_STYLE}>{errors.name}</p>}
       </div>
       <div>
-        <label style={FORM_LABEL_STYLE}>Address line 1</label>
-        <input className={FORM_FIELD_CLASS} style={fieldStyle("line1")} placeholder="123 Main St" value={form.line1} onChange={set("line1")} />
+        <label htmlFor="ship-line1" style={FORM_LABEL_STYLE}>Address line 1</label>
+        <input id="ship-line1" autoComplete="address-line1" className={FORM_FIELD_CLASS} style={fieldStyle("line1")} placeholder="123 Main St" value={form.line1} onChange={set("line1")} />
         {errors.line1 && <p style={FIELD_ERROR_STYLE}>{errors.line1}</p>}
       </div>
       <div>
-        <label style={FORM_LABEL_STYLE}>Address line 2</label>
-        <input className={FORM_FIELD_CLASS} style={FORM_FIELD_STYLE} placeholder="Apt, suite, etc. (optional)" value={form.line2} onChange={set("line2")} />
+        <label htmlFor="ship-line2" style={FORM_LABEL_STYLE}>Address line 2</label>
+        <input id="ship-line2" autoComplete="address-line2" className={FORM_FIELD_CLASS} style={FORM_FIELD_STYLE} placeholder="Apt, suite, etc. (optional)" value={form.line2} onChange={set("line2")} />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label style={FORM_LABEL_STYLE}>City</label>
-          <input className={FORM_FIELD_CLASS} style={fieldStyle("city")} placeholder="City" value={form.city} onChange={set("city")} />
+          <label htmlFor="ship-city" style={FORM_LABEL_STYLE}>City</label>
+          <input id="ship-city" autoComplete="address-level2" className={FORM_FIELD_CLASS} style={fieldStyle("city")} placeholder="City" value={form.city} onChange={set("city")} />
           {errors.city && <p style={FIELD_ERROR_STYLE}>{errors.city}</p>}
         </div>
         <div>
-          <label style={FORM_LABEL_STYLE}>State / Province</label>
-          <input className={FORM_FIELD_CLASS} style={fieldStyle("state")} placeholder="CA" value={form.state} onChange={set("state")} />
+          <label htmlFor="ship-state" style={FORM_LABEL_STYLE}>State / Province</label>
+          <input id="ship-state" autoComplete="address-level1" className={FORM_FIELD_CLASS} style={fieldStyle("state")} placeholder="CA" value={form.state} onChange={set("state")} />
           {errors.state && <p style={FIELD_ERROR_STYLE}>{errors.state}</p>}
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label style={FORM_LABEL_STYLE}>ZIP / Postal code</label>
-          <input className={FORM_FIELD_CLASS} style={fieldStyle("postal_code")} placeholder="90210" value={form.postal_code} onChange={set("postal_code")} />
+          <label htmlFor="ship-postal_code" style={FORM_LABEL_STYLE}>ZIP / Postal code</label>
+          <input id="ship-postal_code" autoComplete="postal-code" className={FORM_FIELD_CLASS} style={fieldStyle("postal_code")} placeholder="90210" value={form.postal_code} onChange={set("postal_code")} />
           {errors.postal_code && <p style={FIELD_ERROR_STYLE}>{errors.postal_code}</p>}
         </div>
         <div>
-          <label style={FORM_LABEL_STYLE}>Country</label>
-          <input className={FORM_FIELD_CLASS} style={fieldStyle("country")} placeholder="US" value={form.country} onChange={set("country")} />
+          <label htmlFor="ship-country" style={FORM_LABEL_STYLE}>Country</label>
+          <input id="ship-country" autoComplete="country" className={FORM_FIELD_CLASS} style={fieldStyle("country")} placeholder="US" value={form.country} onChange={set("country")} />
           {errors.country && <p style={FIELD_ERROR_STYLE}>{errors.country}</p>}
         </div>
       </div>
@@ -585,10 +589,15 @@ function StripeCheckout() {
       </div>
 
       {step === "shipping" ? (
-        <ShippingForm onComplete={handleShippingComplete} />
+        <ShippingForm onComplete={handleShippingComplete} initial={shipping} />
       ) : error ? (
         <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(28,25,23,0.06)", borderColor: "rgba(28,25,23,0.14)", color: "var(--ark-fault-2)", fontFamily: BODY, fontSize: "0.85rem" }}>
           {error}
+          <div className="mt-2">
+            <button onClick={() => { setError(""); setStep("shipping"); }} style={{ fontFamily: BODY, fontSize: "0.78rem", color: "var(--ark-signal)", background: "none", border: "none", padding: 0, cursor: "pointer", textDecoration: "underline", textUnderlineOffset: "2px" }}>
+              Edit address and try again
+            </button>
+          </div>
         </div>
       ) : clientSecret && stripePromise ? (
         <>
@@ -629,7 +638,10 @@ function ReservePage({ onHome }: { onHome: () => void; initialProduct?: ProductI
   useEffect(() => {
     let buf = "";
     const onKey = (e: KeyboardEvent) => {
-      buf = (buf + e.key.toLowerCase()).slice(-9);
+      // Physical key, so Shift doesn't add "shift" to the buffer or turn 1 into "!".
+      const ch = e.code.startsWith("Key") ? e.code.slice(3) : e.code.startsWith("Digit") ? e.code.slice(5) : "";
+      if (!ch) return;
+      buf = (buf + ch.toLowerCase()).slice(-9);
       if (buf.endsWith("destroy1")) setNuke(true);
       if (buf.endsWith("lazyjones")) window.open("https://c64.krissz.hu/lazy-jones/play-online/", "_blank");
     };
@@ -663,7 +675,7 @@ function ReservePage({ onHome }: { onHome: () => void; initialProduct?: ProductI
               </div>
               <div className="mt-5 pt-4 flex items-baseline justify-between" style={{ borderTop: "1px solid var(--ark-line-soft)" }}>
                 <span style={{ fontFamily: BODY, fontSize: "0.9rem", color: "var(--ark-muted)" }}>Founders pricing</span>
-                <span style={{ fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-ink-dim)" }}>Set at launch</span>
+                <span style={{ fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-ink-dim)" }}>$198.99</span>
               </div>
             </Panel>
           </Reveal>
@@ -684,9 +696,22 @@ function ReservePage({ onHome }: { onHome: () => void; initialProduct?: ProductI
   );
 }
 
+/* `required` counts "   " as filled. Clear blank fields so the browser's own
+   "Please fill out this field" prompt shows instead of sending an empty message. */
+function rejectBlankRequired(form: HTMLFormElement) {
+  for (const el of form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("[required]")) {
+    if (!el.value.trim()) {
+      el.value = "";
+      el.reportValidity();
+      return true;
+    }
+  }
+  return false;
+}
+
 /* ── Contact page ─────────────────────────────────────────────────── */
 function ContactPage({ onHome }: { onHome: () => void }) {
-  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "drafted" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const fields = [
     ["name", "Full name", "Your name", "text", true],
@@ -697,6 +722,7 @@ function ContactPage({ onHome }: { onHome: () => void }) {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (rejectBlankRequired(event.currentTarget)) return;
     setStatus("submitting");
     setErrorMessage("");
     const form = event.currentTarget;
@@ -705,9 +731,9 @@ function ContactPage({ onHome }: { onHome: () => void }) {
     formData.set("form_type", "Contact");
     formData.set("_replyto", String(formData.get("email") ?? ""));
     try {
-      await submitToFormspree(formData, "contact");
-      setStatus("success");
-      form.reset();
+      const result = await submitToFormspree(formData, "contact");
+      setStatus(result === "drafted" ? "drafted" : "success");
+      if (result === "sent") form.reset();
     } catch (error) {
       setStatus("error");
       setErrorMessage(error instanceof Error ? error.message : `Something went wrong. Email ${STRYGONIA_EMAIL} directly.`);
@@ -755,6 +781,9 @@ function ContactPage({ onHome }: { onHome: () => void }) {
                 <Button type="submit" disabled={status === "submitting"} className="w-full mt-2">
                   {status === "submitting" ? "Sending..." : "Send message"} {status !== "submitting" && <ArrowRight size={14} />}
                 </Button>
+                {status === "drafted" && (
+                  <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(37,99,235,0.06)", borderColor: "rgba(37,99,235,0.18)", color: "var(--ark-signal)", fontFamily: BODY }}>Your email app should open with your message filled in. Hit send there. If nothing opened, email {STRYGONIA_EMAIL}.</div>
+                )}
                 {status === "success" && (
                   <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(37,99,235,0.06)", borderColor: "rgba(37,99,235,0.18)", color: "var(--ark-signal)", fontFamily: BODY }}>Thanks for reaching out. We'll reply to your email soon.</div>
                 )}
@@ -773,7 +802,7 @@ function ContactPage({ onHome }: { onHome: () => void }) {
 
 /* ── Careers page ─────────────────────────────────────────────────── */
 function CareersPage({ onHome }: { onHome: () => void }) {
-  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "drafted" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const fields = [
     ["name", "Full name", "Your name", "text", true],
@@ -784,6 +813,7 @@ function CareersPage({ onHome }: { onHome: () => void }) {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (rejectBlankRequired(event.currentTarget)) return;
     setStatus("submitting");
     setErrorMessage("");
     const form = event.currentTarget;
@@ -792,9 +822,9 @@ function CareersPage({ onHome }: { onHome: () => void }) {
     formData.set("form_type", "Application");
     formData.set("_replyto", String(formData.get("email") ?? ""));
     try {
-      await submitToFormspree(formData, "contact");
-      setStatus("success");
-      form.reset();
+      const result = await submitToFormspree(formData, "contact");
+      setStatus(result === "drafted" ? "drafted" : "success");
+      if (result === "sent") form.reset();
     } catch (error) {
       setStatus("error");
       setErrorMessage(error instanceof Error ? error.message : `Something went wrong. Email ${STRYGONIA_EMAIL} directly.`);
@@ -846,6 +876,9 @@ function CareersPage({ onHome }: { onHome: () => void }) {
                 <Button type="submit" disabled={status === "submitting"} className="w-full mt-2">
                   {status === "submitting" ? "Sending..." : "Send application"} {status !== "submitting" && <ArrowRight size={14} />}
                 </Button>
+                {status === "drafted" && (
+                  <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(37,99,235,0.06)", borderColor: "rgba(37,99,235,0.18)", color: "var(--ark-signal)", fontFamily: BODY }}>Your email app should open with your message filled in. Hit send there. If nothing opened, email {STRYGONIA_EMAIL}.</div>
+                )}
                 {status === "success" && (
                   <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(37,99,235,0.06)", borderColor: "rgba(37,99,235,0.18)", color: "var(--ark-signal)", fontFamily: BODY }}>Thanks for applying. We'll review and get back to you soon.</div>
                 )}
@@ -1119,7 +1152,7 @@ const META: Record<Page, [title: string, description: string]> = {
   home: ["Strygonia | Bench Instruments for Embedded Engineers", "Strygonia builds precision bench instruments for hardware engineers. BlackBox is a hardware flight recorder that captures voltage, current, and serial data so you can rewind to the moment your board failed."],
   blackbox: ["BlackBox | Hardware Flight Recorder | Strygonia", "BlackBox clips onto your breadboard, Raspberry Pi, or PCB and continuously records voltage, current, UART, resets, and GPIO. When your board faults, scrub back through the timeline. $198.99."],
   specs: ["BlackBox Specifications | Strygonia", "Full technical specifications for BlackBox SG-BB1: ARM processor, high-side current sensing, rolling buffer storage, USB-C, and 6 input channels."],
-  contact: ["Contact Strygonia", "Questions about BlackBox, partnership inquiries, or anything else. Email contact@strygonia.com or find us on YouTube, Instagram, and Discord."],
+  contact: ["Contact Strygonia", "Questions about BlackBox, partnership inquiries, or anything else. Email contact@strygonia.com or find us on Instagram."],
   reserve: ["Buy BlackBox: Founder's Edition | Strygonia", "Reserve a BlackBox Founder's Edition. $198.99 for the first production run. Includes the unit, wiring harness, USB-C cable, and all firmware updates."],
   careers: ["Careers | Strygonia", "Join Strygonia. We're building the next generation of bench instruments for embedded engineers."],
   privacy: ["Privacy Policy | Strygonia", "How Strygonia collects, uses, and protects your personal information."],
@@ -1128,7 +1161,7 @@ const META: Record<Page, [title: string, description: string]> = {
 };
 
 const pageFromPath = (path: string): Page => {
-  const clean = path.replace(/\/+$/, "") || "/";
+  const clean = path.toLowerCase().replace(/\/+$/, "") || "/";
   return (Object.keys(PATHS) as Page[]).find((p) => PATHS[p] === clean) ?? "home";
 };
 
@@ -1158,7 +1191,9 @@ export default function App() {
     if (window.location.pathname !== path) {
       // Same page under a different spelling (trailing slash, unknown path) is a fix-up, not a navigation.
       const fixUp = pageFromPath(window.location.pathname) === page;
-      window.history[fixUp ? "replaceState" : "pushState"](null, "", path);
+      // A fix-up keeps ?utm_source=… and #hash so ad attribution survives.
+      if (fixUp) window.history.replaceState(null, "", path + window.location.search + window.location.hash);
+      else window.history.pushState(null, "", path);
     }
     const [title, description] = META[page];
     document.title = title;
@@ -1169,7 +1204,7 @@ export default function App() {
   useEffect(() => {
     const onPop = () => {
       setPage(pageFromPath(window.location.pathname));
-      requestAnimationFrame(() => scrollToTop());
+      requestAnimationFrame(() => scrollToTop(true));
     };
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
@@ -1177,7 +1212,7 @@ export default function App() {
 
   const go = (next: Page) => {
     setPage(next);
-    requestAnimationFrame(() => scrollToTop());
+    requestAnimationFrame(() => scrollToTop(true));
   };
   const goHome = () => go("home");
   const goReserve = (product?: ProductId) => {
@@ -1213,7 +1248,7 @@ export default function App() {
   return (
     <div className="relative" style={{ fontFamily: BODY, background: "var(--ark-bg)", color: "var(--ark-ink)" }}>
       <Navbar
-        scrolled={scrolled}
+        scrolled={scrolled || page !== "home"}
         onHome={goHome}
         onReserve={() => goReserve()}
         onContact={goContact}

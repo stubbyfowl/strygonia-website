@@ -114,6 +114,7 @@ export function BlackBoxViewer({ className = "" }: { className?: string }) {
       controls.dispose();
       material.dispose();
       renderer.dispose();
+      renderer.forceContextLoss();
       host.removeChild(renderer.domElement);
     };
   }, []);
