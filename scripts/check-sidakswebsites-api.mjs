@@ -17,7 +17,7 @@ async function call({ method = "POST", origin = "https://sidakswebsites.com", bo
   return res;
 }
 
-const ok = { plan: "deposit", name: "Maria G", email: "maria@example.com" };
+const ok = { name: "Maria G", email: "maria@example.com" };
 
 let r = await call({ method: "OPTIONS" });
 assert.equal(r.statusCode, 204);
@@ -33,10 +33,7 @@ assert.equal(r.statusCode, 403);
 r = await call({ method: "GET" });
 assert.equal(r.statusCode, 405);
 
-r = await call({ body: { ...ok, plan: "free" } });
-assert.equal(r.statusCode, 400);
-
-r = await call({ body: { ...ok, amount: 1, plan: undefined } });
+r = await call({ body: undefined });
 assert.equal(r.statusCode, 400);
 
 r = await call({ body: { ...ok, email: "   " } });

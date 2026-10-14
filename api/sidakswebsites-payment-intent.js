@@ -3,12 +3,9 @@ import Stripe from "stripe";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // Sidak's Websites (sidakswebsites.com) is a static site with no server, so its
-// checkout borrows this endpoint and the shared Stripe account. Amounts live
-// here, not in the browser, so a buyer can't pick their own price.
-const PLANS = {
-  deposit: { amount: 40000, description: "Sidak's Websites: website build deposit" },
-  balance: { amount: 39900, description: "Sidak's Websites: website build launch balance" },
-};
+// checkout borrows this endpoint and the shared Stripe account. The price lives
+// here, not in the browser, so a buyer can't pick their own amount.
+const PRICE_CENTS = 79900;
 
 const ALLOWED_ORIGINS = new Set([
   "https://sidakswebsites.com",
@@ -35,25 +32,22 @@ export default async function handler(req, res) {
   }
   if (!allowed) return res.status(403).json({ error: "Origin not allowed" });
 
-  const { plan, name, email, business } = req.body || {};
-  const chosen = PLANS[plan];
-  if (!chosen) return res.status(400).json({ error: "Unknown payment plan." });
+  const { name, email, business } = req.body || {};
   if (!clean(name) || !clean(email)) {
     return res.status(400).json({ error: "Name and email are required." });
   }
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: chosen.amount,
+      amount: PRICE_CENTS,
       currency: "usd",
-      description: chosen.description,
+      description: "Sidak's Websites: website build",
       receipt_email: clean(email),
       // Card statements read "<account prefix>* SIDAKS WEB" instead of only Strygonia.
       statement_descriptor_suffix: "SIDAKS WEB",
       automatic_payment_methods: { enabled: true },
       metadata: {
         business: "sidakswebsites",
-        plan,
         client_name: clean(name),
         client_business: clean(business),
       },
