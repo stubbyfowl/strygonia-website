@@ -41,8 +41,9 @@ html.a11y-mode img {
   display: none !important;
 }
 
-/* Buttons: black border, white fill, black text */
-html.a11y-mode button {
+/* Buttons (and links styled as button pills): black border, white fill, black text */
+html.a11y-mode button,
+html.a11y-mode a.ark-pill {
   background: #fff !important;
   border: 1.5px solid #000 !important;
   color: #000 !important;

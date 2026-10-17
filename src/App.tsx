@@ -11,6 +11,9 @@ import {
   EyeOff,
   Lock,
   CreditCard,
+  Download,
+  Copy,
+  Check,
 } from "lucide-react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
@@ -20,7 +23,7 @@ import { BlackBoxExploded } from "@/components/BlackBoxExploded";
 import { RewindTimeline } from "@/components/RewindTimeline";
 import { Reveal } from "@/components/Reveal";
 import { ProductDescriptionPage } from "@/components/ProductDescriptionPage";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { images } from "@/assets/images";
@@ -109,13 +112,14 @@ function SocialLinkButtons({ compact = false }: { compact?: boolean }) {
 /* ── Navbar ───────────────────────────────────────────────────────── */
 type NavItem =
   | { label: string; kind: "section"; section: string }
-  | { label: string; kind: "page"; page: "specs" }
+  | { label: string; kind: "page"; page: "specs" | "downloads" }
   | { label: string; kind: "product"; id: ProductId };
 
 const NAV_LINKS: NavItem[] = [
   { label: "BlackBox", kind: "product", id: "blackbox" },
   { label: "Team", kind: "section", section: "team" },
   { label: "Specs", kind: "page", page: "specs" },
+  { label: "Downloads", kind: "page", page: "downloads" },
 ];
 
 const navHref = (link: NavItem) =>
@@ -146,7 +150,7 @@ function Navbar({
   onHome,
   onReserve,
   onContact,
-  onSpecs,
+  onPage,
   onProduct,
   onSection,
 }: {
@@ -154,7 +158,7 @@ function Navbar({
   onHome: () => void;
   onReserve: () => void;
   onContact: () => void;
-  onSpecs: () => void;
+  onPage: (page: "specs" | "downloads") => void;
   onProduct: (id: ProductId) => void;
   onSection: (section: string) => void;
 }) {
@@ -163,7 +167,7 @@ function Navbar({
   const handleNav = (link: NavItem) => {
     if (link.kind === "section") onSection(link.section);
     else if (link.kind === "product") onProduct(link.id);
-    else onSpecs();
+    else onPage(link.page);
   };
 
   return (
@@ -178,13 +182,7 @@ function Navbar({
         }}
       >
         <PageLink href="/" onNavigate={onHome} className="ark-focus flex items-center gap-2.5" aria-label="Strygonia home">
-          <div className="rounded-lg overflow-hidden" style={{ width: 28, height: 28 }}>
-            <img
-              src={scrolled ? "/strygonia-icon-cream.png" : "/strygonia-icon-blue.png"}
-              alt=""
-              style={{ width: "115%", height: "115%", objectFit: "cover", marginTop: "-2px", marginLeft: "-2px" }}
-            />
-          </div>
+          <img src="/strygonia-icon.png" alt="" width={28} height={28} className="block flex-shrink-0" style={{ width: 28, height: 28 }} />
           <span style={{ fontFamily: WORDMARK, fontSize: "1rem", fontWeight: 600, letterSpacing: "0.02em", color: scrolled ? "var(--ark-ink)" : "#fff" }}>
             Strygonia
           </span>
@@ -920,7 +918,7 @@ function SpecsPage({ onHome, onReserve }: { onHome: () => void; onReserve: () =>
     { phase: "Phase 3", detail: "GPIO recording, reset detection, trigger events, refined harness." },
     { phase: "Phase 4", detail: "Improved enclosure, expanded harness kit, field testing across breadboard, Pi, and PCB." },
   ];
-  const stack = [["PCB design", "KiCad"], ["Firmware", "Embedded C toolchain"], ["Desktop app", "Qt · C++"], ["Prototyping", "Python"], ["Version control", "GitHub"]];
+  const stack = [["PCB design", "KiCad"], ["Firmware", "C · STM32 HAL, TinyUSB, FatFs"], ["Desktop app", "Electron · React"], ["Prototyping", "Python"], ["Version control", "GitHub"]];
 
   return (
     <main className="relative min-h-screen px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
@@ -1004,6 +1002,258 @@ function SpecsPage({ onHome, onReserve }: { onHome: () => void; onReserve: () =>
 }
 
 /* ── Legal ────────────────────────────────────────────────────────── */
+/* ── Downloads ────────────────────────────────────────────────────── */
+const APP_VERSION = "1.0.0";
+const FIRMWARE_VERSION = "1.0.0";
+const FIRMWARE_BETA = true; // set to false once firmware 1.0.0 has been tested on real boards
+const APP_RELEASE_URL = "https://github.com/stubbyfowl/strygonia-website/releases/download/app-v1.0.0";
+
+type AppPlatform = "mac-arm64" | "mac-x64" | "windows" | "linux" | "linux-appimage";
+
+const APP_DOWNLOADS: { id: AppPlatform; button: string; name: string; detail: string; file: string; size: string; sha256: string }[] = [
+  { id: "mac-arm64", button: "Download for Mac (Apple silicon)", name: "Mac, Apple silicon", detail: "M1 and newer, macOS 13 or later", file: "BlackBox-mac-arm64.dmg", size: "133 MB", sha256: "269dc26f7d8028c8668d7c43f672ccaea98d3871502a19d3ea8f371aeba62aae" },
+  { id: "mac-x64", button: "Download for Mac (Intel)", name: "Mac, Intel", detail: "macOS 13 or later", file: "BlackBox-mac-x64.dmg", size: "139 MB", sha256: "a4d573c7010ccc033a16937978677b286fb15f946919ff2f4aa105672a102ebb" },
+  { id: "windows", button: "Download for Windows", name: "Windows", detail: "Windows 10 and 11, 64-bit", file: "BlackBox-windows-x64-setup.exe", size: "116 MB", sha256: "2e8186901e79dada8c47daf533a2c5f79a9dd9b32a210ea763ed6a5ce6cd1775" },
+  { id: "linux", button: "Download for Linux (.deb)", name: "Linux, .deb", detail: "Ubuntu, Debian, Mint and Pop!_OS, 64-bit", file: "BlackBox-linux-amd64.deb", size: "104 MB", sha256: "fa8663e691e366fb2dc9e62b281e95e748bf7620842508b6e1f1f4c1ce61660b" },
+  { id: "linux-appimage", button: "Download for Linux (AppImage)", name: "Other Linux", detail: "64-bit AppImage", file: "BlackBox-linux-x86_64.AppImage", size: "131 MB", sha256: "2e1efbbe3593ee4e94fa6acd186a9c058906965adc386558a8372a677f23560c" },
+];
+
+const FIRMWARE_FILE = { file: "blackbox-firmware-1.0.0.bin", size: "95 KB", sha256: "3d29e096a9304d21159e6b7b7f82565918204ebfa7ba6da16388d9886f4f69da" };
+
+/* Browsers report every Mac as "Intel", so Macs default to Apple silicon (what Apple has sold
+   since 2020); Chromium's high-entropy hints correct that for Intel Macs below. */
+function guessPlatform(): AppPlatform | null {
+  const ua = navigator.userAgent;
+  if (/Android|iPhone|iPad|iPod|CrOS/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) return null;
+  if (/Windows/.test(ua)) return "windows";
+  if (/Macintosh|Mac OS X/.test(ua)) return "mac-arm64";
+  if (/Linux|X11/.test(ua)) return "linux";
+  return null;
+}
+
+const SMALL_LABEL: React.CSSProperties = { fontFamily: BODY, fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--ark-faint)" };
+const SUBHEAD: React.CSSProperties = { fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.15rem", color: "var(--ark-ink)", marginBottom: "0.6rem" };
+const NOTE: React.CSSProperties = { fontFamily: BODY, fontSize: "0.9rem", color: "var(--ark-ink-dim)", lineHeight: 1.7 };
+const TEXT_LINK: React.CSSProperties = { fontFamily: BODY, color: "var(--ark-signal)", textDecoration: "underline", textUnderlineOffset: "2px" };
+
+function Sha256({ hash }: { hash: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard?.writeText(hash).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    }, () => {});
+  };
+  return (
+    <div className="flex items-start gap-2 mt-1.5">
+      <span style={{ ...SMALL_LABEL, fontSize: "0.68rem", paddingTop: "0.1rem", flexShrink: 0 }}>SHA-256</span>
+      <code style={{ fontFamily: "var(--ark-mono)", fontSize: "0.7rem", color: "var(--ark-muted)", wordBreak: "break-all", userSelect: "all", lineHeight: 1.5 }}>{hash}</code>
+      <button type="button" onClick={copy} aria-label="Copy SHA-256 checksum" className="ark-focus inline-flex items-center gap-1 flex-shrink-0" style={{ fontFamily: BODY, fontSize: "0.72rem", color: "var(--ark-signal)", background: "none", border: "none", padding: 0, cursor: "pointer" }}>
+        {copied ? <Check size={12} /> : <Copy size={12} />} {copied ? "Copied" : "Copy"}
+      </button>
+    </div>
+  );
+}
+
+function Cmd({ children }: { children: string }) {
+  return (
+    <code className="block rounded-md px-3 py-2 my-2 overflow-x-auto" style={{ fontFamily: "var(--ark-mono)", fontSize: "0.76rem", lineHeight: 1.6, whiteSpace: "pre", background: "var(--ark-bg-2)", border: "1px solid var(--ark-line-soft)", color: "var(--ark-ink)" }}>
+      {children}
+    </code>
+  );
+}
+
+function DownloadsPage({ onHome, onReserve }: { onHome: () => void; onReserve: () => void }) {
+  const [platform, setPlatform] = useState(guessPlatform);
+
+  useEffect(() => {
+    const uaData = (navigator as Navigator & { userAgentData?: { getHighEntropyValues(hints: string[]): Promise<{ architecture?: string }> } }).userAgentData;
+    if (platform !== "mac-arm64" || !uaData) return;
+    uaData.getHighEntropyValues(["architecture"]).then((v) => { if (v.architecture === "x86") setPlatform("mac-x64"); }, () => {});
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const primary = APP_DOWNLOADS.find((d) => d.id === platform);
+  const others = APP_DOWNLOADS.filter((d) => d !== primary);
+
+  const screenshots = [
+    ["1-welcome.png", "Welcome screen", "The welcome screen, where you connect a BlackBox or try the demo"],
+    ["2-device.png", "Live device view", "The Device view: live power rails, board current, inputs and the serial console"],
+    ["4-settings-light.png", "Settings, light mode", "Settings in light mode: names, alerts and firmware updates"],
+  ];
+
+  const appNotes = [
+    "First release, for Mac (Apple silicon and Intel), Windows, and Linux (.deb and AppImage).",
+    "Device view: live power rails, board current, the four inputs, reset and the serial console, with a plain-language \"What happened\" feed.",
+    "Rewind pulls the last 1 to 60 minutes off the SD card. Mark this moment drops a marker.",
+    "Timeline: every signal on one clock. Jump between events, zoom, scrub, and export to CSV.",
+    "Recordings: every rewind is saved automatically, and a BlackBox SD card opens straight in the app.",
+    "Settings: name your rails and inputs, choose what counts as a problem, update firmware, and pick light or dark.",
+    "Try the demo works without any hardware.",
+  ];
+  const firmwareNotes = [
+    "First release for BlackBox Rev A.",
+    "Records two power rails, AUX, board current, two serial ports (baud rate detected automatically), four GPIO and reset to the microSD card, all the time.",
+    "Flags dips and surges, overcurrent, resets, stopped heartbeats, and serial lines with words like panic, error or watchdog.",
+    "Safe to pull the card or the power while recording: at most the last half second is lost.",
+    "Press the button to drop a marker. Hold it for 5 seconds for update mode.",
+  ];
+
+  return (
+    <main className="relative min-h-screen px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
+      <div className="max-w-6xl mx-auto">
+        <BackBar onHome={onHome} />
+        <Reveal className="max-w-3xl mb-12">
+          <Eyebrow>BlackBox app {APP_VERSION} · Firmware {FIRMWARE_VERSION}</Eyebrow>
+          <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.2rem, 4.3vw, 3.6rem)", lineHeight: 0.98, letterSpacing: "0", color: "var(--ark-ink)", marginBottom: "1.2rem" }}>
+            Downloads
+          </h1>
+          <p style={{ fontFamily: BODY, fontSize: "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.8 }}>
+            The BlackBox desktop app and firmware. Both are free. No BlackBox yet? Open the app and choose Try the demo to see it work without any hardware.
+          </p>
+        </Reveal>
+
+        <Reveal>
+          <Panel className="p-7">
+            <div className="grid lg:grid-cols-[0.85fr_1.15fr] gap-8 items-start">
+              <div>
+                <h2 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.4rem", color: "var(--ark-ink)", marginBottom: "0.8rem" }}>Desktop app</h2>
+                <p style={{ ...NOTE, fontSize: "0.95rem", marginBottom: "1.5rem" }}>
+                  See what your board is doing live, then rewind to the moment it failed. Every rewind is kept as a recording you can open later, and the app reads the BlackBox SD card directly, so long stretches of history open straight from the card.
+                </p>
+
+                {primary ? (
+                  <div className="mb-7">
+                    <a href={`${APP_RELEASE_URL}/${primary.file}`} className={`${buttonVariants({ size: "lg" })} ark-pill`} style={{ fontFamily: BODY, textDecoration: "none" }}>
+                      <Download size={17} /> {primary.button}
+                    </a>
+                    <p style={{ fontFamily: BODY, fontSize: "0.82rem", color: "var(--ark-muted)", marginTop: "0.8rem" }}>
+                      Version {APP_VERSION} · {primary.size} · {primary.detail}
+                    </p>
+                    <Sha256 hash={primary.sha256} />
+                  </div>
+                ) : (
+                  <p style={{ ...NOTE, marginBottom: "1.5rem" }}>BlackBox runs on Mac, Windows and Linux. Open this page on your computer, or pick a download below.</p>
+                )}
+
+                <span style={SMALL_LABEL}>{primary ? "Other platforms" : "All platforms"}</span>
+                <div className="grid gap-0 divide-y mt-2" style={{ borderColor: "var(--ark-line-soft)" }}>
+                  {others.map((d) => (
+                    <div key={d.id} className="py-3.5" style={{ borderColor: "var(--ark-line-soft)" }}>
+                      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                        <span style={{ fontFamily: BODY, fontSize: "0.92rem", fontWeight: 600, color: "var(--ark-ink)" }}>
+                          {d.name} <span style={{ fontWeight: 400, color: "var(--ark-muted)" }}>· {d.detail}</span>
+                        </span>
+                        <a href={`${APP_RELEASE_URL}/${d.file}`} aria-label={`Download for ${d.name}, ${d.size}`} className="ark-focus inline-flex items-center gap-1.5" style={{ ...TEXT_LINK, fontSize: "0.86rem" }}>
+                          <Download size={13} /> {d.size}
+                        </a>
+                      </div>
+                      <Sha256 hash={d.sha256} />
+                    </div>
+                  ))}
+                </div>
+                <p style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-muted)", marginTop: "1rem" }}>
+                  All checksums in one file: <a href="/downloads/SHA256SUMS.txt" download className="ark-focus" style={TEXT_LINK}>SHA256SUMS.txt</a>
+                </p>
+              </div>
+
+              <figure>
+                <img src="/downloads/screenshots/3-timeline.png" width={2720} height={1760} alt="The BlackBox timeline: power rails, board current and the serial log lined up on one clock, rewound to the moment the board failed" className="block w-full h-auto rounded-lg" style={{ border: "1px solid var(--ark-line)" }} />
+                <figcaption style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-muted)", marginTop: "0.6rem" }}>The timeline: every signal on one clock, rewound to the moment the board failed.</figcaption>
+              </figure>
+            </div>
+          </Panel>
+        </Reveal>
+
+        <Reveal className="mt-6">
+          <div className="grid sm:grid-cols-3 gap-4">
+            {screenshots.map(([file, caption, alt]) => (
+              <figure key={file}>
+                <img src={`/downloads/screenshots/${file}`} width={2720} height={1760} loading="lazy" alt={alt} className="block w-full h-auto rounded-lg" style={{ border: "1px solid var(--ark-line)" }} />
+                <figcaption style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-muted)", marginTop: "0.5rem" }}>{caption}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </Reveal>
+
+        <Reveal className="mt-6">
+          <Panel className="p-7">
+            <h2 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.4rem", color: "var(--ark-ink)", marginBottom: "1.4rem" }}>Installing</h2>
+            <div className="grid lg:grid-cols-3 gap-8">
+              <div>
+                <h3 style={SUBHEAD}>Mac</h3>
+                <p style={NOTE}>Open the .dmg and drag BlackBox into Applications. The first time you open it, macOS says it "can't be opened because Apple cannot check it". Open System Settings &gt; Privacy &amp; Security and click Open Anyway. You only need to do this once.</p>
+              </div>
+              <div>
+                <h3 style={SUBHEAD}>Windows</h3>
+                <p style={NOTE}>Run the installer. Until the app is code-signed, Windows may show "Windows protected your PC". Click More info, then Run anyway.</p>
+              </div>
+              <div>
+                <h3 style={SUBHEAD}>Linux</h3>
+                <p style={NOTE}>On Ubuntu, Debian, Mint or Pop!_OS, double-click the .deb to install it. No Terminal needed: it also sets up USB access for BlackBox.</p>
+                <p style={{ ...NOTE, marginTop: "0.9rem" }}>On other Linux, use the AppImage: right-click it, open Properties, tick "Allow executing as program", then double-click it. So the app can see BlackBox without root, install the{" "}
+                  <a href="/downloads/99-blackbox.rules" download className="ark-focus" style={TEXT_LINK}>USB rule</a>, then unplug BlackBox and plug it back in:
+                </p>
+                <Cmd>{"sudo cp 99-blackbox.rules /etc/udev/rules.d/ && sudo udevadm control --reload"}</Cmd>
+                <p style={{ ...NOTE, fontSize: "0.84rem" }}>If the AppImage won't start, install FUSE 2 (usually a package called fuse2 or libfuse2).</p>
+              </div>
+            </div>
+          </Panel>
+        </Reveal>
+
+        <div className="grid lg:grid-cols-2 gap-6 mt-6">
+          <Reveal>
+            <Panel className="p-7 h-full">
+              <div className="flex items-center gap-3 mb-3">
+                <h2 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.4rem", color: "var(--ark-ink)" }}>Firmware</h2>
+                {FIRMWARE_BETA && <Badge variant="outline" className="text-[0.72rem] tracking-[0.06em] uppercase font-semibold" style={{ fontFamily: BODY }}>Beta</Badge>}
+              </div>
+              <p style={{ ...NOTE, marginBottom: "1.2rem" }}>
+                Firmware {FIRMWARE_VERSION} for BlackBox Rev A.{FIRMWARE_BETA && " It's in beta while we finish testing it on real boards."}
+              </p>
+              <a href={`/downloads/${FIRMWARE_FILE.file}`} download className={`${buttonVariants({ variant: "outline" })} ark-pill`} style={{ fontFamily: BODY, textDecoration: "none" }}>
+                <Download size={15} /> Download firmware {FIRMWARE_VERSION}
+              </a>
+              <p style={{ fontFamily: BODY, fontSize: "0.82rem", color: "var(--ark-muted)", marginTop: "0.8rem" }}>{FIRMWARE_FILE.file} · {FIRMWARE_FILE.size}</p>
+              <Sha256 hash={FIRMWARE_FILE.sha256} />
+
+              <h3 style={{ ...SUBHEAD, marginTop: "1.6rem" }}>How to update</h3>
+              <p style={NOTE}>The easiest way is in the app: Settings &gt; Firmware &gt; Update… It uses dfu-util, so install that first.</p>
+              <div className="grid sm:grid-cols-2 gap-x-4">
+                <div><span style={SMALL_LABEL}>Mac</span><Cmd>brew install dfu-util</Cmd></div>
+                <div><span style={SMALL_LABEL}>Linux</span><Cmd>sudo apt install dfu-util</Cmd></div>
+              </div>
+              <p style={NOTE}>Holding the button on BlackBox for 5 seconds also puts it into update mode.</p>
+              <p style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-muted)", lineHeight: 1.6, marginTop: "1rem" }}>
+                On Windows, firmware updates also need the STM32 DFU driver: open <a href="https://zadig.akeo.ie/" target="_blank" rel="noopener noreferrer" className="ark-focus" style={TEXT_LINK}>Zadig</a> with BlackBox in update mode and install WinUSB for it.
+              </p>
+            </Panel>
+          </Reveal>
+
+          <Reveal delay={0.06}>
+            <Panel className="p-7 h-full">
+              <h2 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.4rem", color: "var(--ark-ink)", marginBottom: "1.2rem" }}>Release notes</h2>
+              {[[`App ${APP_VERSION}`, appNotes], [`Firmware ${FIRMWARE_VERSION}${FIRMWARE_BETA ? " (beta)" : ""}`, firmwareNotes]].map(([title, notes]) => (
+                <div key={title as string} className="mb-6 last:mb-0">
+                  <h3 style={SUBHEAD}>{title}</h3>
+                  <ul className="grid gap-2.5">
+                    {(notes as string[]).map((n) => (
+                      <li key={n} className="pl-4" style={{ ...NOTE, fontSize: "0.88rem", borderLeft: "2px solid var(--ark-line)" }}>{n}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </Panel>
+          </Reveal>
+        </div>
+
+        <div className="mt-8">
+          <Button size="lg" onClick={onReserve}>Reserve a BlackBox <ArrowRight size={14} /></Button>
+        </div>
+      </div>
+    </main>
+  );
+}
+
 function LegalPage({ type, onHome, a11y, onToggleA11y }: { type: "privacy" | "terms" | "accessibility"; onHome: () => void; a11y: boolean; onToggleA11y: () => void }) {
   const isPrivacy = type === "privacy";
   const isAccessibility = type === "accessibility";
@@ -1078,6 +1328,7 @@ function Footer({
   onCareers,
   onProduct,
   onSpecs,
+  onDownloads,
   onReserve,
   onSection,
 }: {
@@ -1086,12 +1337,13 @@ function Footer({
   onCareers: () => void;
   onProduct: (id: ProductId) => void;
   onSpecs: () => void;
+  onDownloads: () => void;
   onReserve: () => void;
   onSection: (section: string) => void;
 }) {
   const columns: FooterColumn[] = [
     { title: "Products", links: [{ label: "BlackBox", href: PATHS.blackbox, action: () => onProduct("blackbox") }, { label: "Reserve", href: PATHS.reserve, action: onReserve }] },
-    { title: "Explore", links: [{ label: "Specs", href: PATHS.specs, action: onSpecs }, { label: "Team", href: "/#team", action: () => onSection("team") }] },
+    { title: "Explore", links: [{ label: "Specs", href: PATHS.specs, action: onSpecs }, { label: "Downloads", href: PATHS.downloads, action: onDownloads }, { label: "Team", href: "/#team", action: () => onSection("team") }] },
     { title: "Company", links: [{ label: "Contact", href: PATHS.contact, action: onContact }, { label: "Careers", href: PATHS.careers, action: onCareers }] },
     { title: "Legal", links: [{ label: "Privacy", href: PATHS.privacy, action: () => onLegalPage("privacy") }, { label: "Terms", href: PATHS.terms, action: () => onLegalPage("terms") }, { label: "Accessibility", href: PATHS.accessibility, action: () => onLegalPage("accessibility") }] },
   ];
@@ -1132,7 +1384,7 @@ function Footer({
 }
 
 /* ── Root ─────────────────────────────────────────────────────────── */
-type Page = "home" | "reserve" | "contact" | "specs" | "careers" | "privacy" | "terms" | "accessibility" | ProductId;
+type Page = "home" | "reserve" | "contact" | "specs" | "downloads" | "careers" | "privacy" | "terms" | "accessibility" | ProductId;
 
 const SITE = "https://www.strygonia.com";
 
@@ -1140,6 +1392,7 @@ const PATHS: Record<Page, string> = {
   home: "/",
   blackbox: "/products/blackbox",
   specs: "/specs",
+  downloads: "/downloads",
   contact: "/contact",
   reserve: "/reserve",
   careers: "/careers",
@@ -1152,6 +1405,7 @@ const META: Record<Page, [title: string, description: string]> = {
   home: ["Strygonia | Bench Instruments for Embedded Engineers", "Strygonia builds precision bench instruments for hardware engineers. BlackBox is a hardware flight recorder that captures voltage, current, and serial data so you can rewind to the moment your board failed."],
   blackbox: ["BlackBox | Hardware Flight Recorder | Strygonia", "BlackBox clips onto your breadboard, Raspberry Pi, or PCB and continuously records voltage, current, UART, resets, and GPIO. When your board faults, scrub back through the timeline. $198.99."],
   specs: ["BlackBox Specifications | Strygonia", "Full technical specifications for BlackBox SG-BB1: ARM processor, high-side current sensing, rolling buffer storage, USB-C, and 6 input channels."],
+  downloads: ["Download the BlackBox App | Strygonia", "Download the BlackBox desktop app for Mac, Windows and Linux, plus the latest BlackBox firmware. Version 1.0.0, with install notes and checksums."],
   contact: ["Contact Strygonia", "Questions about BlackBox, partnership inquiries, or anything else. Email contact@strygonia.com or find us on Instagram."],
   reserve: ["Buy BlackBox: Founder's Edition | Strygonia", "Reserve a BlackBox Founder's Edition. $198.99 for the first production run. Includes the unit, wiring harness, USB-C cable, and all firmware updates."],
   careers: ["Careers | Strygonia", "Join Strygonia. We're building the next generation of bench instruments for embedded engineers."],
@@ -1221,6 +1475,7 @@ export default function App() {
   };
   const goContact = () => go("contact");
   const goSpecs = () => go("specs");
+  const goDownloads = () => go("downloads");
   const goCareers = () => go("careers");
   const goLegal = (p: "privacy" | "terms" | "accessibility") => go(p);
   const goProduct = (id: ProductId) => go(id);
@@ -1252,7 +1507,7 @@ export default function App() {
         onHome={goHome}
         onReserve={() => goReserve()}
         onContact={goContact}
-        onSpecs={goSpecs}
+        onPage={go}
         onProduct={goProduct}
         onSection={goSection}
       />
@@ -1277,6 +1532,8 @@ export default function App() {
         <ContactPage onHome={goHome} />
       ) : page === "specs" ? (
         <SpecsPage onHome={goHome} onReserve={() => goReserve()} />
+      ) : page === "downloads" ? (
+        <DownloadsPage onHome={goHome} onReserve={() => goReserve()} />
       ) : page === "careers" ? (
         <CareersPage onHome={goHome} />
       ) : page in PRODUCTS ? (
@@ -1298,6 +1555,7 @@ export default function App() {
         onCareers={goCareers}
         onProduct={goProduct}
         onSpecs={goSpecs}
+        onDownloads={goDownloads}
         onReserve={() => goReserve()}
         onSection={goSection}
       />

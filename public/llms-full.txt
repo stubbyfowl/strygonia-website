@@ -84,6 +84,7 @@ STM32, ESP32, Raspberry Pi, Arduino, KiCad projects, custom PCBs, breadboards, R
 - Homepage: https://www.strygonia.com/
 - BlackBox: https://www.strygonia.com/products/blackbox
 - Specifications: https://www.strygonia.com/specs
+- Downloads (desktop app and firmware): https://www.strygonia.com/downloads
 - Buy / Reserve: https://www.strygonia.com/reserve
 - Contact: https://www.strygonia.com/contact
 - Careers: https://www.strygonia.com/careers
