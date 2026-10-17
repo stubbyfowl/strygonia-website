@@ -12,8 +12,6 @@ import {
   Lock,
   CreditCard,
   Download,
-  Copy,
-  Check,
 } from "lucide-react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
@@ -24,6 +22,7 @@ import { RewindTimeline } from "@/components/RewindTimeline";
 import { Reveal } from "@/components/Reveal";
 import { ProductDescriptionPage } from "@/components/ProductDescriptionPage";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { images } from "@/assets/images";
@@ -1020,6 +1019,15 @@ const APP_DOWNLOADS: { id: AppPlatform; button: string; name: string; detail: st
 
 const FIRMWARE_FILE = { file: "blackbox-firmware-1.0.0.bin", size: "95 KB", sha256: "3d29e096a9304d21159e6b7b7f82565918204ebfa7ba6da16388d9886f4f69da" };
 
+const CHECKSUMS: [file: string, sha256: string][] = [
+  ...APP_DOWNLOADS.map((d): [string, string] => [d.file, d.sha256]),
+  [FIRMWARE_FILE.file, FIRMWARE_FILE.sha256],
+  ["99-blackbox.rules", "1a778f2abb0a89cc384cee1050fa1435cd12b7956dcd1cd26446ccfe9a204202"],
+];
+
+/* Every download gets the same full-width blue pill; labels wrap on phones instead of overflowing. */
+const DOWNLOAD_BTN = cn(buttonVariants({ size: "lg" }), "ark-pill w-full h-auto min-h-14 py-3 px-6 whitespace-normal text-center leading-snug");
+
 /* Browsers report every Mac as "Intel", so Macs default to Apple silicon (what Apple has sold
    since 2020); Chromium's high-entropy hints correct that for Intel Macs below. */
 function guessPlatform(): AppPlatform | null {
@@ -1035,25 +1043,6 @@ const SMALL_LABEL: React.CSSProperties = { fontFamily: BODY, fontSize: "0.75rem"
 const SUBHEAD: React.CSSProperties = { fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.15rem", color: "var(--ark-ink)", marginBottom: "0.6rem" };
 const NOTE: React.CSSProperties = { fontFamily: BODY, fontSize: "0.9rem", color: "var(--ark-ink-dim)", lineHeight: 1.7 };
 const TEXT_LINK: React.CSSProperties = { fontFamily: BODY, color: "var(--ark-signal)", textDecoration: "underline", textUnderlineOffset: "2px" };
-
-function Sha256({ hash }: { hash: string }) {
-  const [copied, setCopied] = useState(false);
-  const copy = () => {
-    navigator.clipboard?.writeText(hash).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    }, () => {});
-  };
-  return (
-    <div className="flex items-start gap-2 mt-1.5">
-      <span style={{ ...SMALL_LABEL, fontSize: "0.68rem", paddingTop: "0.1rem", flexShrink: 0 }}>SHA-256</span>
-      <code style={{ fontFamily: "var(--ark-mono)", fontSize: "0.7rem", color: "var(--ark-muted)", wordBreak: "break-all", userSelect: "all", lineHeight: 1.5 }}>{hash}</code>
-      <button type="button" onClick={copy} aria-label="Copy SHA-256 checksum" className="ark-focus inline-flex items-center gap-1 flex-shrink-0" style={{ fontFamily: BODY, fontSize: "0.72rem", color: "var(--ark-signal)", background: "none", border: "none", padding: 0, cursor: "pointer" }}>
-        {copied ? <Check size={12} /> : <Copy size={12} />} {copied ? "Copied" : "Copy"}
-      </button>
-    </div>
-  );
-}
 
 function Cmd({ children }: { children: string }) {
   return (
@@ -1074,7 +1063,7 @@ function DownloadsPage({ onHome, onReserve }: { onHome: () => void; onReserve: (
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const primary = APP_DOWNLOADS.find((d) => d.id === platform);
-  const others = APP_DOWNLOADS.filter((d) => d !== primary);
+  const ordered = primary ? [primary, ...APP_DOWNLOADS.filter((d) => d !== primary)] : APP_DOWNLOADS;
 
   const screenshots = [
     ["1-welcome.png", "Welcome screen", "The welcome screen, where you connect a BlackBox or try the demo"],
@@ -1122,39 +1111,20 @@ function DownloadsPage({ onHome, onReserve }: { onHome: () => void; onReserve: (
                   See what your board is doing live, then rewind to the moment it failed. Every rewind is kept as a recording you can open later, and the app reads the BlackBox SD card directly, so long stretches of history open straight from the card.
                 </p>
 
-                {primary ? (
-                  <div className="mb-7">
-                    <a href={`${APP_RELEASE_URL}/${primary.file}`} className={`${buttonVariants({ size: "lg" })} ark-pill`} style={{ fontFamily: BODY, textDecoration: "none" }}>
-                      <Download size={17} /> {primary.button}
-                    </a>
-                    <p style={{ fontFamily: BODY, fontSize: "0.82rem", color: "var(--ark-muted)", marginTop: "0.8rem" }}>
-                      Version {APP_VERSION} · {primary.size} · {primary.detail}
-                    </p>
-                    <Sha256 hash={primary.sha256} />
-                  </div>
-                ) : (
-                  <p style={{ ...NOTE, marginBottom: "1.5rem" }}>BlackBox runs on Mac, Windows and Linux. Open this page on your computer, or pick a download below.</p>
-                )}
-
-                <span style={SMALL_LABEL}>{primary ? "Other platforms" : "All platforms"}</span>
-                <div className="grid gap-0 divide-y mt-2" style={{ borderColor: "var(--ark-line-soft)" }}>
-                  {others.map((d) => (
-                    <div key={d.id} className="py-3.5" style={{ borderColor: "var(--ark-line-soft)" }}>
-                      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                        <span style={{ fontFamily: BODY, fontSize: "0.92rem", fontWeight: 600, color: "var(--ark-ink)" }}>
-                          {d.name} <span style={{ fontWeight: 400, color: "var(--ark-muted)" }}>· {d.detail}</span>
-                        </span>
-                        <a href={`${APP_RELEASE_URL}/${d.file}`} aria-label={`Download for ${d.name}, ${d.size}`} className="ark-focus inline-flex items-center gap-1.5" style={{ ...TEXT_LINK, fontSize: "0.86rem" }}>
-                          <Download size={13} /> {d.size}
-                        </a>
-                      </div>
-                      <Sha256 hash={d.sha256} />
+                {!primary && <p style={{ ...NOTE, marginBottom: "1.2rem" }}>BlackBox runs on Mac, Windows and Linux. Open this page on your computer, or pick a download below.</p>}
+                <div className="grid gap-4">
+                  {ordered.map((d) => (
+                    <div key={d.id}>
+                      <a href={`${APP_RELEASE_URL}/${d.file}`} className={DOWNLOAD_BTN} style={{ fontFamily: BODY, textDecoration: "none" }}>
+                        <Download size={18} /> {d.button}
+                      </a>
+                      <p style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-muted)", marginTop: "0.45rem", textAlign: "center" }}>
+                        {d === primary && <span style={{ color: "var(--ark-signal)", fontWeight: 600 }}>Best match for this computer · </span>}
+                        Version {APP_VERSION} · {d.size} · {d.detail}
+                      </p>
                     </div>
                   ))}
                 </div>
-                <p style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-muted)", marginTop: "1rem" }}>
-                  All checksums in one file: <a href="/downloads/SHA256SUMS.txt" download className="ark-focus" style={TEXT_LINK}>SHA256SUMS.txt</a>
-                </p>
               </div>
 
               <figure>
@@ -1191,9 +1161,11 @@ function DownloadsPage({ onHome, onReserve }: { onHome: () => void; onReserve: (
               <div>
                 <h3 style={SUBHEAD}>Linux</h3>
                 <p style={NOTE}>On Ubuntu, Debian, Mint or Pop!_OS, double-click the .deb to install it. No Terminal needed: it also sets up USB access for BlackBox.</p>
-                <p style={{ ...NOTE, marginTop: "0.9rem" }}>On other Linux, use the AppImage: right-click it, open Properties, tick "Allow executing as program", then double-click it. So the app can see BlackBox without root, install the{" "}
-                  <a href="/downloads/99-blackbox.rules" download className="ark-focus" style={TEXT_LINK}>USB rule</a>, then unplug BlackBox and plug it back in:
+                <p style={{ ...NOTE, marginTop: "0.9rem" }}>On other Linux, use the AppImage: right-click it, open Properties, tick "Allow executing as program", then double-click it. So the app can see BlackBox without root, install the USB rule, then unplug BlackBox and plug it back in:
                 </p>
+                <a href="/downloads/99-blackbox.rules" download className={cn(buttonVariants(), "ark-pill w-full mt-3")} style={{ fontFamily: BODY, textDecoration: "none" }}>
+                  <Download size={15} /> Download USB rule
+                </a>
                 <Cmd>{"sudo cp 99-blackbox.rules /etc/udev/rules.d/ && sudo udevadm control --reload"}</Cmd>
                 <p style={{ ...NOTE, fontSize: "0.84rem" }}>If the AppImage won't start, install FUSE 2 (usually a package called fuse2 or libfuse2).</p>
               </div>
@@ -1211,11 +1183,10 @@ function DownloadsPage({ onHome, onReserve }: { onHome: () => void; onReserve: (
               <p style={{ ...NOTE, marginBottom: "1.2rem" }}>
                 Firmware {FIRMWARE_VERSION} for BlackBox Rev A.{FIRMWARE_BETA && " It's in beta while we finish testing it on real boards."}
               </p>
-              <a href={`/downloads/${FIRMWARE_FILE.file}`} download className={`${buttonVariants({ variant: "outline" })} ark-pill`} style={{ fontFamily: BODY, textDecoration: "none" }}>
-                <Download size={15} /> Download firmware {FIRMWARE_VERSION}
+              <a href={`/downloads/${FIRMWARE_FILE.file}`} download className={DOWNLOAD_BTN} style={{ fontFamily: BODY, textDecoration: "none" }}>
+                <Download size={18} /> Download firmware {FIRMWARE_VERSION}
               </a>
-              <p style={{ fontFamily: BODY, fontSize: "0.82rem", color: "var(--ark-muted)", marginTop: "0.8rem" }}>{FIRMWARE_FILE.file} · {FIRMWARE_FILE.size}</p>
-              <Sha256 hash={FIRMWARE_FILE.sha256} />
+              <p style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-muted)", marginTop: "0.45rem", textAlign: "center" }}>{FIRMWARE_FILE.file} · {FIRMWARE_FILE.size}</p>
 
               <h3 style={{ ...SUBHEAD, marginTop: "1.6rem" }}>How to update</h3>
               <p style={NOTE}>The easiest way is in the app: Settings &gt; Firmware &gt; Update… It uses dfu-util, so install that first.</p>
@@ -1250,6 +1221,16 @@ function DownloadsPage({ onHome, onReserve }: { onHome: () => void; onReserve: (
         <div className="mt-8">
           <Button size="lg" onClick={onReserve}>Reserve a BlackBox <ArrowRight size={14} /></Button>
         </div>
+
+        <section aria-label="SHA-256 checksums" className="mt-20 pt-4" style={{ borderTop: "1px solid var(--ark-line-soft)" }}>
+          <p style={{ fontFamily: BODY, fontSize: "0.62rem", color: "var(--ark-faint)", marginBottom: "0.3rem" }}>
+            SHA-256 checksums ·{" "}
+            <a href="/downloads/SHA256SUMS.txt" download className="ark-focus" style={{ color: "var(--ark-muted)", textDecoration: "underline", textUnderlineOffset: "2px" }}>SHA256SUMS.txt</a>
+          </p>
+          <div style={{ fontFamily: "var(--ark-mono)", fontSize: "0.58rem", lineHeight: 1.7, color: "var(--ark-faint)", whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
+            {CHECKSUMS.map(([file, hash]) => <div key={file}>{hash}  {file}</div>)}
+          </div>
+        </section>
       </div>
     </main>
   );
