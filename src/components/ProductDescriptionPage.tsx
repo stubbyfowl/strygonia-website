@@ -3,6 +3,7 @@ import { DeviceMockup } from "@/components/DeviceMockup";
 import { BlackBoxViewer } from "@/components/BlackBoxViewer";
 import { BlackBoxExploded } from "@/components/BlackBoxExploded";
 import { Reveal } from "@/components/Reveal";
+import { WaitlistForm } from "@/components/WaitlistForm";
 import { Button } from "@/components/ui/button";
 import type { ProductSpec, SignalIcon } from "@/constants/products";
 import { images } from "@/assets/images";
@@ -343,6 +344,11 @@ export function ProductDescriptionPage({
 
       <BuildSheet product={product} />
       {isBlackbox && <BlackBoxGallery />}
+      <section className="relative py-24 px-6 border-t" style={{ background: "var(--ark-bg-2)", borderColor: "var(--ark-line-soft)" }}>
+        <div className="max-w-6xl mx-auto">
+          <WaitlistForm page="product" />
+        </div>
+      </section>
       <ProductCTA product={product} onReserve={onReserve} onContact={onContact} />
     </article>
     </main>

@@ -39,7 +39,8 @@ import {
 import { SOCIAL_LINKS } from "@/constants/social";
 import { PRODUCTS, PRODUCT_IDS, type ProductId } from "@/constants/products";
 import { STRYGONIA_EMAIL } from "@/config/env";
-import { submitToFormspree } from "@/lib/formspree";
+import { submitForm } from "@/lib/forms";
+import { WaitlistForm, HONEYPOT } from "@/components/WaitlistForm";
 import { useSmoothScroll, scrollToTop, scrollToId } from "@/lib/useSmoothScroll";
 
 const { sidakProfile } = images;
@@ -708,7 +709,7 @@ function rejectBlankRequired(form: HTMLFormElement) {
 
 /* ── Contact page ─────────────────────────────────────────────────── */
 function ContactPage({ onHome }: { onHome: () => void }) {
-  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "drafted" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const fields = [
     ["name", "Full name", "Your name", "text", true],
@@ -723,14 +724,11 @@ function ContactPage({ onHome }: { onHome: () => void }) {
     setStatus("submitting");
     setErrorMessage("");
     const form = event.currentTarget;
-    const formData = new FormData(form);
-    formData.set("_subject", "[CONTACT] New Strygonia inquiry");
-    formData.set("form_type", "Contact");
-    formData.set("_replyto", String(formData.get("email") ?? ""));
+    const fields = Object.fromEntries([...new FormData(form)].map(([key, value]) => [key, String(value)]));
     try {
-      const result = await submitToFormspree(formData, "contact");
-      setStatus(result === "drafted" ? "drafted" : "success");
-      if (result === "sent") form.reset();
+      await submitForm("contact", fields);
+      setStatus("success");
+      form.reset();
     } catch (error) {
       setStatus("error");
       setErrorMessage(error instanceof Error ? error.message : `Something went wrong. Email ${STRYGONIA_EMAIL} directly.`);
@@ -763,6 +761,7 @@ function ContactPage({ onHome }: { onHome: () => void }) {
           <Reveal delay={0.1}>
             <Panel className="p-7">
               <form className="grid gap-4" onSubmit={handleSubmit}>
+                {HONEYPOT}
                 <div className="grid sm:grid-cols-2 gap-4">
                   {fields.map(([name, label, placeholder, type, required]) => (
                     <label key={name} className={`grid gap-2 ${name === "subject" ? "sm:col-span-2" : ""}`}>
@@ -778,9 +777,6 @@ function ContactPage({ onHome }: { onHome: () => void }) {
                 <Button type="submit" disabled={status === "submitting"} className="w-full mt-2">
                   {status === "submitting" ? "Sending..." : "Send message"} {status !== "submitting" && <ArrowRight size={14} />}
                 </Button>
-                {status === "drafted" && (
-                  <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(37,99,235,0.06)", borderColor: "rgba(37,99,235,0.18)", color: "var(--ark-signal)", fontFamily: BODY }}>Your email app should open with your message filled in. Hit send there. If nothing opened, email {STRYGONIA_EMAIL}.</div>
-                )}
                 {status === "success" && (
                   <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(37,99,235,0.06)", borderColor: "rgba(37,99,235,0.18)", color: "var(--ark-signal)", fontFamily: BODY }}>Thanks for reaching out. We'll reply to your email soon.</div>
                 )}
@@ -799,7 +795,7 @@ function ContactPage({ onHome }: { onHome: () => void }) {
 
 /* ── Careers page ─────────────────────────────────────────────────── */
 function CareersPage({ onHome }: { onHome: () => void }) {
-  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "drafted" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const fields = [
     ["name", "Full name", "Your name", "text", true],
@@ -814,14 +810,11 @@ function CareersPage({ onHome }: { onHome: () => void }) {
     setStatus("submitting");
     setErrorMessage("");
     const form = event.currentTarget;
-    const formData = new FormData(form);
-    formData.set("_subject", "[APPLICATION] Strygonia job application");
-    formData.set("form_type", "Application");
-    formData.set("_replyto", String(formData.get("email") ?? ""));
+    const fields = Object.fromEntries([...new FormData(form)].map(([key, value]) => [key, String(value)]));
     try {
-      const result = await submitToFormspree(formData, "contact");
-      setStatus(result === "drafted" ? "drafted" : "success");
-      if (result === "sent") form.reset();
+      await submitForm("careers", fields);
+      setStatus("success");
+      form.reset();
     } catch (error) {
       setStatus("error");
       setErrorMessage(error instanceof Error ? error.message : `Something went wrong. Email ${STRYGONIA_EMAIL} directly.`);
@@ -854,6 +847,7 @@ function CareersPage({ onHome }: { onHome: () => void }) {
           <Reveal delay={0.1}>
             <Panel className="p-7">
               <form className="grid gap-4" onSubmit={handleSubmit}>
+                {HONEYPOT}
                 <div className="grid sm:grid-cols-2 gap-4">
                   {fields.map(([name, label, placeholder, type, required]) => (
                     <label key={name} className={`grid gap-2 ${name === "role" ? "sm:col-span-2" : ""}`}>
@@ -873,9 +867,6 @@ function CareersPage({ onHome }: { onHome: () => void }) {
                 <Button type="submit" disabled={status === "submitting"} className="w-full mt-2">
                   {status === "submitting" ? "Sending..." : "Send application"} {status !== "submitting" && <ArrowRight size={14} />}
                 </Button>
-                {status === "drafted" && (
-                  <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(37,99,235,0.06)", borderColor: "rgba(37,99,235,0.18)", color: "var(--ark-signal)", fontFamily: BODY }}>Your email app should open with your message filled in. Hit send there. If nothing opened, email {STRYGONIA_EMAIL}.</div>
-                )}
                 {status === "success" && (
                   <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(37,99,235,0.06)", borderColor: "rgba(37,99,235,0.18)", color: "var(--ark-signal)", fontFamily: BODY }}>Thanks for applying. We'll review and get back to you soon.</div>
                 )}
@@ -1144,6 +1135,12 @@ function DownloadsPage({ onHome, onReserve }: { onHome: () => void; onReserve: (
               </figure>
             ))}
           </div>
+        </Reveal>
+
+        <Reveal className="mt-6">
+          <Panel className="p-7">
+            <WaitlistForm page="downloads" compact />
+          </Panel>
         </Reveal>
 
         <Reveal className="mt-6">
@@ -1499,6 +1496,11 @@ export default function App() {
           <Hero onBlackBox={() => goProduct("blackbox")} />
           <ToolMarquee />
           <Products onProduct={goProduct} onReserve={() => goReserve()} />
+          <section className="relative py-24 px-6 border-t" style={{ background: "var(--ark-bg-2)", borderColor: "var(--ark-line-soft)" }}>
+            <div className="max-w-6xl mx-auto">
+              <WaitlistForm page="home" />
+            </div>
+          </section>
           <div className="ark-dark">
             <BlackBoxExploded
               title="Inside the V1"
