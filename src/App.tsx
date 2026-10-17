@@ -1057,7 +1057,8 @@ function Sha256({ hash }: { hash: string }) {
 
 function Cmd({ children }: { children: string }) {
   return (
-    <code className="block rounded-md px-3 py-2 my-2 overflow-x-auto" style={{ fontFamily: "var(--ark-mono)", fontSize: "0.76rem", lineHeight: 1.6, whiteSpace: "pre", background: "var(--ark-bg-2)", border: "1px solid var(--ark-line-soft)", color: "var(--ark-ink)" }}>
+    // pre-wrap + anywhere: long commands wrap on phones instead of widening the grid column.
+    <code className="block rounded-md px-3 py-2 my-2" style={{ fontFamily: "var(--ark-mono)", fontSize: "0.76rem", lineHeight: 1.6, whiteSpace: "pre-wrap", overflowWrap: "anywhere", background: "var(--ark-bg-2)", border: "1px solid var(--ark-line-soft)", color: "var(--ark-ink)" }}>
       {children}
     </code>
   );
