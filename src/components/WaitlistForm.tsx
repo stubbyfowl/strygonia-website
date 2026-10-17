@@ -6,9 +6,9 @@ import { submitForm } from "@/lib/forms";
 const BODY = "var(--ark-body)";
 const DISPLAY = "var(--ark-display)";
 
-/* Off-screen field people never see. Bots fill in every field, and the server drops those. */
+/* Off-screen field people never see. Bots fill in every field; Formspree drops anything with _gotcha set. */
 export const HONEYPOT = (
-  <input type="text" name="bb_hp" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] w-px h-px opacity-0" />
+  <input type="text" name="_gotcha" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] w-px h-px opacity-0" />
 );
 
 export function WaitlistForm({ page, compact = false }: { page: string; compact?: boolean }) {
@@ -21,8 +21,8 @@ export function WaitlistForm({ page, compact = false }: { page: string; compact?
     const data = new FormData(event.currentTarget);
     setStatus("sending");
     try {
-      const result = await submitForm("waitlist", { email: String(data.get("email") ?? ""), bb_hp: String(data.get("bb_hp") ?? ""), page });
-      setMessage(result.already ? "You're already on the list. We'll email you when BlackBox ships." : "You're on the list. We'll email you when BlackBox ships.");
+      await submitForm("waitlist", { email: String(data.get("email") ?? ""), _gotcha: String(data.get("_gotcha") ?? ""), page });
+      setMessage("You're on the list. We'll email you when BlackBox ships.");
       setStatus("done");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Something went wrong. Please try again.");
