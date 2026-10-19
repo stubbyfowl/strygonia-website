@@ -1,62 +1,28 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "motion/react";
-import {
-  BLACKBOX_MODELS,
-  addStudioLights,
-  createPcbMaterial,
-  createShellMaterial,
-  createShieldMaterial,
-  loadBlackboxStl,
-} from "@/lib/blackboxModels";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { addStudioLights } from "@/lib/blackboxModels";
 import { images } from "@/assets/images";
 
 const DISPLAY = "var(--ark-display)";
 const BODY = "var(--ark-body)";
 const NORDIC = "var(--ark-nordic)";
 
-/* Each part separates over its own slice of the scroll ("window"), top first,
-   so the unit peels apart layer by layer instead of popping open at once. */
-const PART_DEFS = [
-  {
-    key: "top",
-    url: BLACKBOX_MODELS.top,
-    window: [0.02, 0.52] as const,
-    offset: 54,
-    material: createShellMaterial,
-  },
-  {
-    key: "esp32",
-    url: BLACKBOX_MODELS.esp32,
-    window: [0.18, 0.66] as const,
-    offset: 23,
-    material: createShieldMaterial,
-  },
-  {
-    key: "circuit",
-    url: BLACKBOX_MODELS.circuit,
-    window: [0.34, 0.8] as const,
-    offset: 5,
-    material: createPcbMaterial,
-    // The PCB export faces the other way — flip so components sit on top.
-    flip: true,
-  },
-  {
-    key: "bottomPlate",
-    url: BLACKBOX_MODELS.bottomPlate,
-    window: [0.48, 0.98] as const,
-    offset: -30,
-    material: createShellMaterial,
-  },
+/* Rev A board with an "Explode" clip (5 s): parts ripple up 0-2.75 s, then the board peels
+   into its layers 2.5-4.7 s. Scroll scrubs the clip. From 3d/exploded/BlackBox_RevA_explode_web.glb. */
+const MODEL_URL = `${import.meta.env.BASE_URL}models/blackbox-explode.glb`;
+
+/* Parts called out with a pointer once they've lifted off the board. side: which way the label leans. */
+const CALLOUTS = [
+  { node: "U3", title: "STM32H743 microcontroller", body: "The brain. Runs the recording at 400 MHz.", side: -1 },
+  { node: "U8", title: "INA226 power monitor", body: "Measures your board's current and voltage.", side: -1 },
+  { node: "J5", title: "microSD slot", body: "Where the rolling recording is kept.", side: 1 },
+  { node: "J1", title: "USB-C", body: "Power, and the link to the BlackBox Desktop App.", side: 1 },
 ];
 
-function subProgress(p: number, [a, b]: readonly [number, number]) {
-  const t = Math.min(1, Math.max(0, (p - a) / (b - a)));
-  return t * t * (3 - 2 * t);
-}
-
-/* Scroll-driven exploded view of the BlackBox V1 assembly. The section pins
-   for ~3 viewport heights while the four printed/fabbed parts separate. */
 export function BlackBoxExploded({
   eyebrow,
   title,
@@ -71,6 +37,7 @@ export function BlackBoxExploded({
   const progressRef = useRef(0);
   const reducedMotion = useReducedMotion();
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
+  const labelRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ["start start", "end end"] });
   const barScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
@@ -114,52 +81,49 @@ export function BlackBoxExploded({
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(34, 1, 1, 2000);
-    addStudioLights(scene, 1.5);
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const envMap = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    scene.environment = envMap;
+    // Light from above and to the side shows the traces under the solder mask.
+    addStudioLights(scene, 1.1);
 
     const group = new THREE.Group();
     scene.add(group);
-
-    const materials = PART_DEFS.map((d) => d.material());
-    const parts: { mesh: THREE.Mesh; assembledY: number; offset: number; window: readonly [number, number] }[] = [];
+    let model: THREE.Object3D | null = null;
+    let mixer: THREE.AnimationMixer | null = null;
+    let action: THREE.AnimationAction | null = null;
+    let duration = 5;
+    const targets: { obj: THREE.Object3D; showAt: number }[] = [];
     let disposed = false;
 
-    Promise.all(PART_DEFS.map((d) => loadBlackboxStl(d.url)))
-      .then((geometries) => {
+    new GLTFLoader()
+      .setMeshoptDecoder(MeshoptDecoder)
+      .loadAsync(MODEL_URL)
+      .then((gltf) => {
         if (disposed) return;
-
-        /* Geometries arrive centred in their own frames, so rebuild the stack
-           from measured part heights: plate → PCB → module, shell over all. */
-        const size = new THREE.Vector3();
-        const heights = geometries.map((g) => {
-          (g.boundingBox ?? new THREE.Box3()).getSize(size);
-          return size.y;
-        });
-        const [topH, espH, circuitH, plateH] = heights;
-        const plateY = plateH / 2;
-        const circuitY = plateH + 1.5 + circuitH / 2;
-        const espY = plateH + 1.5 + circuitH + espH / 2 - 2;
-        const shellY = plateH - 1 + topH / 2;
-        const assembled = [shellY, espY, circuitY, plateY];
-
-        const minY = 0;
-        const maxY = plateH - 1 + topH;
-        const centerShift = (minY + maxY) / 2;
-
-        PART_DEFS.forEach((def, i) => {
-          const mesh = new THREE.Mesh(geometries[i], materials[i]);
-          if ("flip" in def && def.flip) mesh.rotation.x = Math.PI;
-          group.add(mesh);
-          parts.push({ mesh, assembledY: assembled[i] - centerShift, offset: def.offset, window: def.window });
-        });
+        model = gltf.scene;
+        model.scale.setScalar(1000); // metres to millimetres
+        group.add(model);
+        const clip = gltf.animations.find((a) => a.name === "Explode") ?? gltf.animations[0];
+        if (clip) {
+          duration = clip.duration;
+          mixer = new THREE.AnimationMixer(model);
+          action = mixer.clipAction(clip);
+          action.play();
+          action.paused = true;
+        }
+        for (const c of CALLOUTS) {
+          const obj = model.getObjectByName(c.node);
+          const anim = obj?.userData.anim_s as [number, number] | undefined;
+          targets.push({ obj: obj ?? model, showAt: anim ? anim[1] - 0.2 : 2.6 });
+        }
         setStatus("ready");
       })
       .catch(() => {
         if (!disposed) setStatus("error");
       });
 
-    /* Half-tangents of the vertical/horizontal fov, refreshed on resize, so
-       the dolly can fit the 90 mm-wide assembly on narrow viewports too. */
-    const fit = { vHalf: Math.tan((camera.fov * Math.PI) / 360), hHalf: 0.3 };
+    const fit = { vHalf: Math.tan((camera.fov * Math.PI) / 360), hHalf: 0.3, w: 1, h: 1 };
     const resize = () => {
       const { clientWidth: w, clientHeight: h } = host;
       if (!w || !h) return;
@@ -167,6 +131,8 @@ export function BlackBoxExploded({
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       fit.hHalf = fit.vHalf * camera.aspect;
+      fit.w = w;
+      fit.h = h;
     };
     resize();
     const ro = new ResizeObserver(resize);
@@ -178,23 +144,35 @@ export function BlackBoxExploded({
     });
     io.observe(host);
 
+    const world = new THREE.Vector3();
     let frame = 0;
     const loop = (time: number) => {
       frame = requestAnimationFrame(loop);
       if (!inView) return;
       const p = progressRef.current;
-      for (const part of parts) {
-        part.mesh.position.y = part.assembledY + subProgress(p, part.window) * part.offset;
+      const t = Math.min(1, Math.max(0, (p - 0.04) / 0.88)) * duration;
+      if (action && mixer) {
+        action.time = t;
+        mixer.update(0);
       }
-      group.rotation.y = -0.5 + p * 1.05 + Math.sin(time / 4200) * 0.03;
-      // Dolly out as the stack grows; never let the 90 mm width clip sideways.
-      const zV = (26 + 50 * p) / fit.vHalf;
-      const zH = 64 / fit.hHalf;
-      const z = Math.max(zV, zH) * 1.08;
-      camera.position.set(0, z * 0.24 + p * 6, z);
-      // Look-at rises with progress so the lifted shell clears the fixed navbar.
-      camera.lookAt(0, 4 + p * 18, 0);
+      group.rotation.y = -0.45 + p * 0.9 + Math.sin(time / 4200) * 0.02;
+      // Fit the 74 mm board side to side, and the stack as it grows.
+      const z = Math.max((22 + 34 * p) / fit.vHalf, 48 / fit.hHalf) * 1.12;
+      camera.position.set(0, z * 0.52, z);
+      camera.lookAt(0, 6 + p * 16, 0);
       renderer.render(scene, camera);
+
+      // Pointers: project each called-out part to the screen; fade in once it has lifted, out as the layers peel.
+      targets.forEach((target, i) => {
+        const el = labelRefs.current[i];
+        if (!el) return;
+        target.obj.getWorldPosition(world).project(camera);
+        const x = (world.x * 0.5 + 0.5) * fit.w;
+        const y = (-world.y * 0.5 + 0.5) * fit.h;
+        const fade = Math.min(1, Math.max(0, (t - target.showAt) / 0.35)) * Math.min(1, Math.max(0, (4.5 - t) / 0.35));
+        el.style.transform = `translate(${x}px, ${y}px)`;
+        el.style.opacity = String(reducedMotion ? 0 : fade);
+      });
     };
     frame = requestAnimationFrame(loop);
 
@@ -203,7 +181,18 @@ export function BlackBoxExploded({
       cancelAnimationFrame(frame);
       ro.disconnect();
       io.disconnect();
-      materials.forEach((m) => m.dispose());
+      mixer?.stopAllAction();
+      model?.traverse((object) => {
+        const mesh = object as THREE.Mesh;
+        if (!mesh.isMesh) return;
+        mesh.geometry.dispose();
+        for (const material of [mesh.material].flat()) {
+          for (const value of Object.values(material)) if (value instanceof THREE.Texture) value.dispose();
+          material.dispose();
+        }
+      });
+      envMap.dispose();
+      pmrem.dispose();
       renderer.dispose();
       renderer.forceContextLoss();
       host.removeChild(renderer.domElement);
@@ -258,6 +247,21 @@ export function BlackBoxExploded({
                 </p>
               </motion.div>
             </div>
+          </div>
+
+          {/* pointers to key parts, positioned every frame by the render loop */}
+          <div className="absolute inset-0 pointer-events-none" aria-hidden={status !== "ready"}>
+            {CALLOUTS.map((c, i) => (
+              <div key={c.node} ref={(el) => { labelRefs.current[i] = el; }} className="absolute left-0 top-0" style={{ opacity: 0, willChange: "transform, opacity" }}>
+                <span className="absolute -left-[5px] -top-[5px] w-[10px] h-[10px] rounded-full" style={{ background: "#60a5fa", boxShadow: "0 0 0 4px rgba(96,165,250,0.25), 0 0 14px rgba(96,165,250,0.8)" }} />
+                <span className="absolute top-0 h-px" style={{ width: 56, background: "rgba(147,197,253,0.7)", left: c.side > 0 ? 0 : -56, transform: `rotate(${c.side > 0 ? -28 : 28}deg)`, transformOrigin: c.side > 0 ? "left center" : "right center" }} />
+                <div className="absolute w-[13.5rem] rounded-md px-3 py-2" style={{ top: -52, left: c.side > 0 ? 50 : undefined, right: c.side > 0 ? undefined : 50, textAlign: c.side > 0 ? "left" : "right", background: "rgba(10,14,22,0.82)", border: "1px solid rgba(96,165,250,0.35)", backdropFilter: "blur(6px)" }}>
+                  <div style={{ fontFamily: BODY, fontSize: "0.68rem", fontWeight: 600, letterSpacing: "0.08em", color: "#93c5fd" }}>{c.node}</div>
+                  <div style={{ fontFamily: BODY, fontSize: "0.86rem", fontWeight: 600, color: "#f5f5f4", lineHeight: 1.25 }}>{c.title}</div>
+                  <div style={{ fontFamily: BODY, fontSize: "0.76rem", color: "rgba(245,245,244,0.7)", lineHeight: 1.4, marginTop: 2 }}>{c.body}</div>
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* progress rail */}
