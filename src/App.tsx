@@ -1001,14 +1001,14 @@ const APP_RELEASE_URL = "https://github.com/stubbyfowl/strygonia-website/release
 type AppPlatform = "mac-arm64" | "mac-x64" | "windows" | "linux" | "linux-appimage";
 
 const APP_DOWNLOADS: { id: AppPlatform; button: string; name: string; detail: string; file: string; size: string; sha256: string }[] = [
-  { id: "mac-arm64", button: "Download for Mac (Apple silicon)", name: "Mac, Apple silicon", detail: "M1 and newer, macOS 13 or later", file: "BlackBox-mac-arm64.dmg", size: "133 MB", sha256: "269dc26f7d8028c8668d7c43f672ccaea98d3871502a19d3ea8f371aeba62aae" },
-  { id: "mac-x64", button: "Download for Mac (Intel)", name: "Mac, Intel", detail: "macOS 13 or later", file: "BlackBox-mac-x64.dmg", size: "139 MB", sha256: "a4d573c7010ccc033a16937978677b286fb15f946919ff2f4aa105672a102ebb" },
-  { id: "windows", button: "Download for Windows", name: "Windows", detail: "Windows 10 and 11, 64-bit", file: "BlackBox-windows-x64-setup.exe", size: "116 MB", sha256: "2e8186901e79dada8c47daf533a2c5f79a9dd9b32a210ea763ed6a5ce6cd1775" },
-  { id: "linux", button: "Download for Linux (.deb)", name: "Linux, .deb", detail: "Ubuntu, Debian, Mint and Pop!_OS, 64-bit", file: "BlackBox-linux-amd64.deb", size: "104 MB", sha256: "fa8663e691e366fb2dc9e62b281e95e748bf7620842508b6e1f1f4c1ce61660b" },
-  { id: "linux-appimage", button: "Download for Linux (AppImage)", name: "Other Linux", detail: "64-bit AppImage", file: "BlackBox-linux-x86_64.AppImage", size: "131 MB", sha256: "2e1efbbe3593ee4e94fa6acd186a9c058906965adc386558a8372a677f23560c" },
+  { id: "mac-arm64", button: "Download for Mac (Apple silicon)", name: "Mac, Apple silicon", detail: "M1 and newer, macOS 13 or later", file: "BlackBox-mac-arm64.dmg", size: "133 MB", sha256: "f9bec53e2828db98a657762f5ae8fa8e91ffb898e221dfded9b8a335a642b632" },
+  { id: "mac-x64", button: "Download for Mac (Intel)", name: "Mac, Intel", detail: "macOS 13 or later", file: "BlackBox-mac-x64.dmg", size: "139 MB", sha256: "f0100bbe55e4d89cc3f10e5130fd8aa8f0d52ef615c5e27cb17ae1608733f102" },
+  { id: "windows", button: "Download for Windows", name: "Windows", detail: "Windows 10 and 11, 64-bit", file: "BlackBox-windows-x64-setup.exe", size: "116 MB", sha256: "137918e2e4451111e5608f902979fece25dab1b2ac8cacc0db14d273d7e1861b" },
+  { id: "linux", button: "Download for Linux (.deb)", name: "Linux, .deb", detail: "Ubuntu, Debian, Mint and Pop!_OS, 64-bit", file: "BlackBox-linux-amd64.deb", size: "104 MB", sha256: "c7359cd420cfcaaebaf25660b2cac524e6b6835627bd8656428e941f47be2d7d" },
+  { id: "linux-appimage", button: "Download for Linux (AppImage)", name: "Other Linux", detail: "64-bit AppImage", file: "BlackBox-linux-x86_64.AppImage", size: "131 MB", sha256: "05555d786e6353ed3520b65aa6b03ab51f6a2b721e87a393b91bc4d7ae0afd79" },
 ];
 
-const FIRMWARE_FILE = { file: "blackbox-firmware-1.0.0.bin", size: "95 KB", sha256: "3d29e096a9304d21159e6b7b7f82565918204ebfa7ba6da16388d9886f4f69da" };
+const FIRMWARE_FILE = { file: "blackbox-firmware-1.0.0.bin", size: "95 KB", sha256: "ba7ff642e9b94854196884ad8b22378755e142fb429417a8051fc26124ac937e" };
 
 const CHECKSUMS: [file: string, sha256: string][] = [
   ...APP_DOWNLOADS.map((d): [string, string] => [d.file, d.sha256]),
