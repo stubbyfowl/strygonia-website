@@ -52,7 +52,7 @@ export const PRODUCTS: Record<ProductId, ProductSpec> = {
       { step: "BlackBox", detail: "Sits beside the board and samples every channel against one shared clock." },
       { step: "Rolling buffer", detail: "Onboard memory keeps the most recent window, overwriting the oldest as it goes." },
       { step: "USB-C", detail: "A single cable carries both power and the recording back to your machine." },
-      { step: "The timeline", detail: "Desktop app you scrub through. Graphs, event markers, and the serial log lined up." },
+      { step: "The timeline", detail: "The BlackBox Desktop App, which you scrub through. Graphs, event markers, and the serial log lined up." },
     ],
     signals: [
       { icon: "gauge", title: "Power rails", body: "Up to 2 rails, with brownout and startup-dip detection. Every change is timestamped, so you can see exactly when the voltage left its healthy band." },
@@ -66,7 +66,7 @@ export const PRODUCTS: Record<ProductId, ProductSpec> = {
       "BlackBox V1 recorder in a printed enclosure",
       "Color-coded wiring harness with labelled leads",
       "USB-C cable for power and data",
-      "Desktop timeline app for macOS, Windows, and Linux",
+      "BlackBox Desktop App for macOS, Windows, and Linux",
     ],
     specs: [
       { label: "Processor", value: "32-bit ARM microcontroller" },

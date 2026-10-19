@@ -13,12 +13,13 @@ Contact: contact@strygonia.com
 
 ### BlackBox (SG-BB1)
 - Type: Hardware flight recorder
-- Price: $199 (Founder's Edition, only the first 10 units)
+- Price: $199
+- Founder's Edition: the first 10 BlackBox units sold. After those 10, BlackBox is sold as the standard edition at the same $199.
 - Status: V1 Prototype
 
-BlackBox is a small module you clip onto a breadboard, Raspberry Pi, or custom PCB. It continuously records voltage (2 rails), current (high-side sensor), UART serial output, reset events, 4 GPIO inputs, and 1 analog channel, all timestamped against a shared clock in a rolling buffer. When your board faults, you connect via USB-C and scrub back through a desktop timeline app to see exactly what happened. No need to reproduce the failure.
+BlackBox is a small module you clip onto a breadboard, Raspberry Pi, or custom PCB. It continuously records voltage (2 rails), current (high-side sensor), UART serial output, reset events, 4 GPIO inputs, and 1 analog channel, all timestamped against a shared clock in a rolling buffer. When your board faults, you connect via USB-C and scrub back through the BlackBox Desktop App timeline to see exactly what happened. No need to reproduce the failure.
 
-Includes: BlackBox V1 recorder, color-coded wiring harness, USB-C cable, desktop timeline app (macOS, Windows, Linux).
+Includes: BlackBox V1 recorder, color-coded wiring harness, USB-C cable, BlackBox Desktop App (macOS, Windows, Linux).
 
 Compatible with: STM32, ESP32, Raspberry Pi, Arduino, KiCad projects, custom PCBs, breadboards.
 
@@ -27,7 +28,7 @@ Compatible with: STM32, ESP32, Raspberry Pi, Arduino, KiCad projects, custom PCB
 - Homepage: https://www.strygonia.com/
 - BlackBox product page: https://www.strygonia.com/products/blackbox
 - Specifications: https://www.strygonia.com/specs
-- Downloads (desktop app and firmware): https://www.strygonia.com/downloads
+- Downloads (BlackBox Desktop App and firmware): https://www.strygonia.com/downloads
 - Buy / Reserve: https://www.strygonia.com/reserve
 - Contact: https://www.strygonia.com/contact
 - Instagram: https://www.instagram.com/Strygonia/

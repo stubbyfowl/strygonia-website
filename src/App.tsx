@@ -42,6 +42,7 @@ import { STRYGONIA_EMAIL } from "@/config/env";
 import { submitForm } from "@/lib/forms";
 import { WaitlistForm, HONEYPOT } from "@/components/WaitlistForm";
 import { FoundersEdition } from "@/components/FoundersEdition";
+import { useFounders } from "@/lib/founders";
 import { useSmoothScroll, scrollToTop, scrollToId } from "@/lib/useSmoothScroll";
 
 const { sidakProfile } = images;
@@ -417,7 +418,7 @@ function CheckoutForm() {
 
     const { error } = await stripe.confirmPayment({
       elements,
-      confirmParams: { return_url: `${window.location.origin}/?checkout=success` },
+      confirmParams: { return_url: `${window.location.origin}/reserve` },
     });
 
     if (error) {
@@ -612,9 +613,55 @@ function StripeCheckout() {
   );
 }
 
+function OrderConfirmation({ id, status }: { id: string; status: string }) {
+  const [label, setLabel] = useState<{ edition?: string; number?: number | null; cap?: number } | null>(null);
+  useEffect(() => {
+    if (status !== "succeeded") return;
+    fetch("/api/finalize-order", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ paymentIntent: id }) })
+      .then((r) => (r.ok ? r.json() : null))
+      .then(setLabel, () => {});
+  }, [id, status]);
+
+  const paid = status === "succeeded";
+  const processing = status === "processing";
+  const heading = paid ? "Order confirmed" : processing ? "Payment processing" : "Payment didn't go through";
+  const body = paid
+    ? "Thank you. Your payment went through, and we'll be in touch about shipping."
+    : processing
+      ? "Your payment is processing. We'll confirm your order as soon as it clears."
+      : "Your payment didn't go through, and you haven't been charged. You can try again.";
+
+  return (
+    <Panel className="p-7">
+      <h2 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.6rem", color: "var(--ark-ink)", marginBottom: "0.8rem" }}>{heading}</h2>
+      <p style={{ fontFamily: BODY, fontSize: "0.98rem", color: "var(--ark-ink-dim)", lineHeight: 1.7 }}>{body}</p>
+      {label?.edition === "founders" && (
+        <p className="mt-5 inline-flex items-center rounded-full px-4 py-2" style={{ fontFamily: BODY, fontWeight: 600, fontSize: "0.95rem", color: "var(--ark-signal)", background: "var(--ark-signal-soft)", border: "1px solid var(--ark-signal-glow)" }}>
+          You're Founder's Edition #{label.number} of {label.cap}.
+        </p>
+      )}
+      {label?.edition === "standard" && (
+        <p className="mt-5" style={{ fontFamily: BODY, fontSize: "0.95rem", color: "var(--ark-ink)" }}>Your order is a standard BlackBox. All 10 Founder's Edition units were already claimed.</p>
+      )}
+      {paid || processing ? (
+        <p className="mt-5" style={{ fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-muted)" }}>Questions about your order? Email <a href={`mailto:${STRYGONIA_EMAIL}`} className="ark-focus" style={{ color: "var(--ark-signal)" }}>{STRYGONIA_EMAIL}</a>.</p>
+      ) : (
+        <Button size="lg" className="mt-6" onClick={() => { window.location.href = "/reserve"; }}>Try again <ArrowRight size={14} /></Button>
+      )}
+    </Panel>
+  );
+}
+
 function ReservePage({ onHome }: { onHome: () => void; initialProduct?: ProductId }) {
   const product = PRODUCTS.blackbox;
-  const editionName = "BlackBox: Founder's Edition";
+  const founders = useFounders();
+  const editionName = founders?.soldOut ? "BlackBox" : "BlackBox: Founder's Edition";
+  // Stripe redirects back here after payment with ?payment_intent=…&redirect_status=…
+  const [returned] = useState(() => {
+    const q = new URLSearchParams(window.location.search);
+    const id = q.get("payment_intent");
+    return id ? { id, status: q.get("redirect_status") ?? "" } : null;
+  });
   const [nuke, setNuke] = useState(false);
 
   useEffect(() => {
@@ -641,7 +688,7 @@ function ReservePage({ onHome }: { onHome: () => void; initialProduct?: ProductI
               {editionName}
             </h1>
             <p style={{ fontFamily: BODY, fontSize: "1.05rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, maxWidth: "36rem" }}>
-              The first 10 units we stock. Includes the unit, USB-C cable, wiring harness, and access to firmware and desktop app updates as we ship them.
+              {founders?.soldOut ? "" : "The first 10 units sold are the Founder's Edition. "}Includes the unit, USB-C cable, wiring harness, and access to firmware and BlackBox Desktop App updates as we ship them.
             </p>
 
             <div className="mt-8 max-w-lg">
@@ -660,14 +707,14 @@ function ReservePage({ onHome }: { onHome: () => void; initialProduct?: ProductI
                 </div>
               </div>
               <div className="mt-5 pt-4 flex items-baseline justify-between" style={{ borderTop: "1px solid var(--ark-line-soft)" }}>
-                <span style={{ fontFamily: BODY, fontSize: "0.9rem", color: "var(--ark-muted)" }}>Founders pricing</span>
+                <span style={{ fontFamily: BODY, fontSize: "0.9rem", color: "var(--ark-muted)" }}>Price</span>
                 <span style={{ fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-ink-dim)" }}>$199</span>
               </div>
             </Panel>
           </Reveal>
 
           <Reveal delay={0.1}>
-            <StripeCheckout />
+            {returned ? <OrderConfirmation id={returned.id} status={returned.status} /> : <StripeCheckout />}
           </Reveal>
         </div>
       </div>
@@ -892,11 +939,11 @@ function SpecsPage({ onHome, onReserve }: { onHome: () => void; onReserve: () =>
   ];
   const roadmap = [
     { phase: "Phase 1", detail: "Custom PCB with universal pin header. Voltage, current, and UART recording to SD card." },
-    { phase: "Phase 2", detail: "Desktop viewer over USB-C: timeline, graphs, event markers, zoom, search." },
+    { phase: "Phase 2", detail: "BlackBox Desktop App over USB-C: timeline, graphs, event markers, zoom, search." },
     { phase: "Phase 3", detail: "GPIO recording, reset detection, trigger events, refined harness." },
     { phase: "Phase 4", detail: "Improved enclosure, expanded harness kit, field testing across breadboard, Pi, and PCB." },
   ];
-  const stack = [["PCB design", "KiCad"], ["Firmware", "C · STM32 HAL, TinyUSB, FatFs"], ["Desktop app", "Electron · React"], ["Prototyping", "Python"], ["Version control", "GitHub"]];
+  const stack = [["PCB design", "KiCad"], ["Firmware", "C · STM32 HAL, TinyUSB, FatFs"], ["BlackBox Desktop App", "Electron · React"], ["Prototyping", "Python"], ["Version control", "GitHub"]];
 
   return (
     <main className="relative min-h-screen px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
@@ -1072,12 +1119,12 @@ function DownloadsPage({ onHome, onReserve }: { onHome: () => void; onReserve: (
       <div className="max-w-6xl mx-auto">
         <BackBar onHome={onHome} />
         <Reveal className="max-w-3xl mb-12">
-          <Eyebrow>BlackBox app {APP_VERSION} · Firmware {FIRMWARE_VERSION}</Eyebrow>
+          <Eyebrow>BlackBox Desktop App {APP_VERSION} · Firmware {FIRMWARE_VERSION}</Eyebrow>
           <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.2rem, 4.3vw, 3.6rem)", lineHeight: 0.98, letterSpacing: "0", color: "var(--ark-ink)", marginBottom: "1.2rem" }}>
             Downloads
           </h1>
           <p style={{ fontFamily: BODY, fontSize: "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.8 }}>
-            The BlackBox desktop app and firmware. Both are free. No BlackBox yet? Open the app and choose Try the demo to see it work without any hardware.
+            The BlackBox Desktop App and firmware. Both are free. No BlackBox yet? Open the app and choose Try the demo to see it work without any hardware.
           </p>
         </Reveal>
 
@@ -1085,7 +1132,7 @@ function DownloadsPage({ onHome, onReserve }: { onHome: () => void; onReserve: (
           <Panel className="p-7">
             <div className="grid lg:grid-cols-[0.85fr_1.15fr] gap-8 items-start">
               <div>
-                <h2 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.4rem", color: "var(--ark-ink)", marginBottom: "0.8rem" }}>Desktop app</h2>
+                <h2 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(2.2rem, 4.2vw, 3.2rem)", lineHeight: 1, letterSpacing: "-0.01em", color: "var(--ark-ink)", marginBottom: "1rem" }}>BlackBox Desktop App</h2>
                 <p style={{ ...NOTE, fontSize: "0.95rem", marginBottom: "1.5rem" }}>
                   See what your board is doing live, then rewind to the moment it failed. Every rewind is kept as a recording you can open later, and the app reads the BlackBox SD card directly, so long stretches of history open straight from the card.
                 </p>
@@ -1189,7 +1236,7 @@ function DownloadsPage({ onHome, onReserve }: { onHome: () => void; onReserve: (
           <Reveal delay={0.06}>
             <Panel className="p-7 h-full">
               <h2 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.4rem", color: "var(--ark-ink)", marginBottom: "1.2rem" }}>Release notes</h2>
-              {[[`App ${APP_VERSION}`, appNotes], [`Firmware ${FIRMWARE_VERSION}${FIRMWARE_BETA ? " (beta)" : ""}`, firmwareNotes]].map(([title, notes]) => (
+              {[[`BlackBox Desktop App ${APP_VERSION}`, appNotes], [`Firmware ${FIRMWARE_VERSION}${FIRMWARE_BETA ? " (beta)" : ""}`, firmwareNotes]].map(([title, notes]) => (
                 <div key={title as string} className="mb-6 last:mb-0">
                   <h3 style={SUBHEAD}>{title}</h3>
                   <ul className="grid gap-2.5">
@@ -1372,7 +1419,7 @@ const META: Record<Page, [title: string, description: string]> = {
   home: ["Strygonia | Bench Instruments for Embedded Engineers", "Strygonia builds precision bench instruments for hardware engineers. BlackBox is a hardware flight recorder that captures voltage, current, and serial data so you can rewind to the moment your board failed."],
   blackbox: ["BlackBox | Hardware Flight Recorder | Strygonia", "BlackBox clips onto your breadboard, Raspberry Pi, or PCB and continuously records voltage, current, UART, resets, and GPIO. When your board faults, scrub back through the timeline. $199."],
   specs: ["BlackBox Specifications | Strygonia", "Full technical specifications for BlackBox SG-BB1: ARM processor, high-side current sensing, rolling buffer storage, USB-C, and 6 input channels."],
-  downloads: ["Download the BlackBox App | Strygonia", "Download the BlackBox desktop app for Mac, Windows and Linux, plus the latest BlackBox firmware. Version 1.0.0, with install notes and checksums."],
+  downloads: ["Download the BlackBox Desktop App | Strygonia", "Download the BlackBox Desktop App for Mac, Windows and Linux, plus the latest BlackBox firmware. Version 1.0.0, with install notes and checksums."],
   contact: ["Contact Strygonia", "Questions about BlackBox, partnership inquiries, or anything else. Email contact@strygonia.com or find us on Instagram."],
   reserve: ["Buy BlackBox: Founder's Edition | Strygonia", "Reserve a BlackBox Founder's Edition: only the first 10 units, $199. Includes the unit, wiring harness, USB-C cable, and all firmware updates."],
   careers: ["Careers | Strygonia", "Join Strygonia. We're building the next generation of bench instruments for embedded engineers."],

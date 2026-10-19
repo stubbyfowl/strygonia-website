@@ -1,6 +1,4 @@
-import Stripe from "stripe";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+import { stripe, assignEditions, FOUNDERS_CAP } from "./_founders.js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -10,10 +8,13 @@ export default async function handler(req, res) {
 
   try {
     const { shipping } = req.body || {};
+    // Provisional label; the order is finally labelled (Founder's N of 10, or standard) once it's paid.
+    const { claimed } = await assignEditions();
     const params = {
       amount: 19900,
       currency: "usd",
-      description: "BlackBox: Founder's Edition",
+      description: claimed < FOUNDERS_CAP ? "BlackBox: Founder's Edition" : "BlackBox",
+      metadata: { product: "blackbox" },
       automatic_payment_methods: { enabled: true },
     };
 

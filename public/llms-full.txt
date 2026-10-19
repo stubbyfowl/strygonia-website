@@ -15,7 +15,8 @@ Instagram: https://www.instagram.com/Strygonia/
 A hardware flight recorder for your bench.
 
 - Type: Hardware flight recorder
-- Price: $199 (Founder's Edition: only the first 10 units we stock)
+- Price: $199
+- Founder's Edition: the first 10 BlackBox units sold. After those 10, BlackBox is sold as the standard edition at the same $199.
 - Status: V1 prototype
 - Buy: https://www.strygonia.com/reserve
 - Product page: https://www.strygonia.com/products/blackbox
@@ -42,7 +43,7 @@ BlackBox runs continuously while your board runs, keeping a rolling window of ev
 3. BlackBox: Sits beside the board and samples every channel against one shared clock.
 4. Rolling buffer: Onboard memory keeps the most recent window, overwriting the oldest as it goes.
 5. USB-C: A single cable carries both power and the recording back to your machine.
-6. The timeline: Desktop app you scrub through. Graphs, event markers, and the serial log lined up.
+6. The timeline: the BlackBox Desktop App, which you scrub through. Graphs, event markers, and the serial log lined up.
 
 ### V1 channels
 
@@ -73,7 +74,7 @@ Specs are subject to change as the hardware is validated. Full spec page: https:
 - BlackBox V1 recorder in a printed enclosure
 - Color-coded wiring harness with labelled leads
 - USB-C cable for power and data
-- Desktop timeline app for macOS, Windows, and Linux
+- BlackBox Desktop App for macOS, Windows, and Linux
 
 ### Compatible with
 
@@ -84,7 +85,7 @@ STM32, ESP32, Raspberry Pi, Arduino, KiCad projects, custom PCBs, breadboards, R
 - Homepage: https://www.strygonia.com/
 - BlackBox: https://www.strygonia.com/products/blackbox
 - Specifications: https://www.strygonia.com/specs
-- Downloads (desktop app and firmware): https://www.strygonia.com/downloads
+- Downloads (BlackBox Desktop App and firmware): https://www.strygonia.com/downloads
 - Buy / Reserve: https://www.strygonia.com/reserve
 - Contact: https://www.strygonia.com/contact
 - Careers: https://www.strygonia.com/careers
