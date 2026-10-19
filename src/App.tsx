@@ -1389,7 +1389,7 @@ function Footer({
           </div>
         </div>
         <div className="pt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3" style={{ borderTop: "1px solid var(--ark-line-soft)" }}>
-          <p style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-faint)" }}>© 2026 Strygonia, Inc.</p>
+          <p style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-faint)" }}>© 2026 Strygonia LLC™</p>
           <p style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-faint)" }}>Bench instruments for embedded engineers</p>
         </div>
       </div>
