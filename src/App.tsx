@@ -1539,7 +1539,7 @@ export default function App() {
           <div className="ark-dark">
             <BlackBoxExploded
               title="Inside the V1"
-              subtitle="Printed shell, carrier PCB, radio module, bottom plate. Everything comes apart for inspection and repair."
+              subtitle="All 105 parts lift off the board, then the board itself peels apart: silkscreen, solder mask, copper, and the FR4 core."
             />
           </div>
           <Team />

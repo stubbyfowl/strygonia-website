@@ -319,7 +319,7 @@ export function ProductDescriptionPage({
       {isBlackbox && (
         <BlackBoxExploded
           title="Scroll to take it apart."
-          subtitle="Four parts between you and the recorder: the printed shell lifts, the radio module and carrier PCB separate, and the bottom plate drops away."
+          subtitle="Watch the Rev A board come apart: every part lifts off, then the board peels into its layers."
         />
       )}
 
