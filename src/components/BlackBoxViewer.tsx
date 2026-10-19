@@ -76,7 +76,8 @@ export function BlackBoxViewer({ className = "" }: { className?: string }) {
         model.position.sub(box.getCenter(new THREE.Vector3()));
         scene.add(model);
         const sphere = box.getBoundingSphere(new THREE.Sphere());
-        const distance = (sphere.radius / Math.tan((camera.fov * Math.PI) / 360)) * 1.08;
+        // Closer than the bounding sphere needs: the board is flat, so even its diagonal stays inside the wide frame while it spins.
+        const distance = (sphere.radius / Math.tan((camera.fov * Math.PI) / 360)) * 0.86;
         camera.position.copy(new THREE.Vector3(0.5, 0.62, 0.72).normalize().multiplyScalar(distance));
         controls.target.set(0, 0, 0);
         controls.update();
