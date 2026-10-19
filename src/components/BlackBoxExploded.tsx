@@ -159,7 +159,7 @@ export function BlackBoxExploded({
       // Fit the 74 mm board side to side, and the stack as it grows.
       const z = Math.max((24 + 58 * p) / fit.vHalf, 50 / fit.hHalf) * 1.15;
       camera.position.set(0, z * 0.52, z);
-      camera.lookAt(0, 4 + p * 30, 0);
+      camera.lookAt(0, 6 + p * 36, 0);
       renderer.render(scene, camera);
 
       // Pointers: project each called-out part to the screen; fade in once it has lifted, out as the layers peel.
@@ -169,7 +169,7 @@ export function BlackBoxExploded({
         target.obj.getWorldPosition(world).project(camera);
         const x = (world.x * 0.5 + 0.5) * fit.w;
         const y = (-world.y * 0.5 + 0.5) * fit.h;
-        const fade = Math.min(1, Math.max(0, (t - target.showAt) / 0.35)) * Math.min(1, Math.max(0, (4.5 - t) / 0.35));
+        const fade = Math.min(1, Math.max(0, (t - target.showAt) / 0.35)) * Math.min(1, Math.max(0, (4.0 - t) / 0.3));
         el.style.transform = `translate(${x}px, ${y}px)`;
         el.style.opacity = String(reducedMotion ? 0 : fade);
       });
@@ -254,8 +254,8 @@ export function BlackBoxExploded({
             {CALLOUTS.map((c, i) => (
               <div key={c.node} ref={(el) => { labelRefs.current[i] = el; }} className="absolute left-0 top-0" style={{ opacity: 0, willChange: "transform, opacity" }}>
                 <span className="absolute -left-[5px] -top-[5px] w-[10px] h-[10px] rounded-full" style={{ background: "#60a5fa", boxShadow: "0 0 0 4px rgba(96,165,250,0.25), 0 0 14px rgba(96,165,250,0.8)" }} />
-                <span className="absolute top-0 h-px" style={{ width: 56, background: "rgba(147,197,253,0.7)", left: c.side > 0 ? 0 : -56, transform: `rotate(${(c.side > 0 ? -28 : 28) * ("below" in c && c.below ? -1 : 1)}deg)`, transformOrigin: c.side > 0 ? "left center" : "right center" }} />
-                <div className="absolute w-[13.5rem] rounded-md px-3 py-2" style={{ top: "below" in c && c.below ? 22 : -52, left: c.side > 0 ? 50 : undefined, right: c.side > 0 ? undefined : 50, textAlign: c.side > 0 ? "left" : "right", background: "rgba(10,14,22,0.82)", border: "1px solid rgba(96,165,250,0.35)", backdropFilter: "blur(6px)" }}>
+                <span className="absolute top-0 h-px" style={{ width: 72, background: "rgba(147,197,253,0.7)", left: c.side > 0 ? 0 : -72, transform: `rotate(${(c.side > 0 ? -28 : 28) * ("below" in c && c.below ? -1 : 1)}deg)`, transformOrigin: c.side > 0 ? "left center" : "right center" }} />
+                <div className="absolute w-[9.5rem] sm:w-[13.5rem] rounded-md px-3 py-2" style={{ top: "below" in c && c.below ? 30 : -62, left: c.side > 0 ? 64 : undefined, right: c.side > 0 ? undefined : 64, textAlign: c.side > 0 ? "left" : "right", background: "rgba(10,14,22,0.82)", border: "1px solid rgba(96,165,250,0.35)", backdropFilter: "blur(6px)" }}>
                   <div style={{ fontFamily: BODY, fontSize: "0.68rem", fontWeight: 600, letterSpacing: "0.08em", color: "#93c5fd" }}>{c.node}</div>
                   <div style={{ fontFamily: BODY, fontSize: "0.86rem", fontWeight: 600, color: "#f5f5f4", lineHeight: 1.25 }}>{c.title}</div>
                   <div style={{ fontFamily: BODY, fontSize: "0.76rem", color: "rgba(245,245,244,0.7)", lineHeight: 1.4, marginTop: 2 }}>{c.body}</div>
