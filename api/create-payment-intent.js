@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   try {
     const { shipping } = req.body || {};
     const params = {
-      amount: 19899,
+      amount: 19900,
       currency: "usd",
       description: "BlackBox: Founder's Edition",
       automatic_payment_methods: { enabled: true },

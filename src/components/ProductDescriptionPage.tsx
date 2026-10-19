@@ -4,6 +4,7 @@ import { BlackBoxViewer } from "@/components/BlackBoxViewer";
 import { BlackBoxExploded } from "@/components/BlackBoxExploded";
 import { Reveal } from "@/components/Reveal";
 import { WaitlistForm } from "@/components/WaitlistForm";
+import { FoundersEdition } from "@/components/FoundersEdition";
 import { Button } from "@/components/ui/button";
 import type { ProductSpec, SignalIcon } from "@/constants/products";
 import { images } from "@/assets/images";
@@ -235,26 +236,6 @@ function BlackBoxGallery() {
   );
 }
 
-/* ── Closing CTA, so the page doesn't dead-end after the gallery ───── */
-function ProductCTA({ product, onReserve, onContact }: { product: ProductSpec; onReserve?: () => void; onContact?: () => void }) {
-  return (
-    <section className="relative py-28 px-6" style={{ background: "var(--ark-bg-2)", borderTop: "1px solid var(--ark-line-soft)" }}>
-      <div className="max-w-6xl mx-auto">
-        <h2 className="" style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(1.8rem, 3.2vw, 2.6rem)", lineHeight: 1, color: "var(--ark-ink)", maxWidth: "24rem" }}>
-          Get a {product.name}
-        </h2>
-        <p className="mt-5" style={{ fontFamily: BODY, fontSize: "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, maxWidth: "34rem" }}>
-          {product.name} is currently a {product.status.toLowerCase()}. $198.99 for the Founder's Edition. Includes the unit, harness, and ongoing firmware updates.
-        </p>
-        <div className="flex flex-wrap gap-4 mt-9">
-          {onReserve && <PrimaryBtn onClick={onReserve}>{product.reserveLabel} <ArrowRight size={17} /></PrimaryBtn>}
-          {onContact && <GhostBtn onClick={onContact}>Talk to us</GhostBtn>}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 export function ProductDescriptionPage({
   product,
   onHome,
@@ -349,7 +330,7 @@ export function ProductDescriptionPage({
           <WaitlistForm page="product" />
         </div>
       </section>
-      <ProductCTA product={product} onReserve={onReserve} onContact={onContact} />
+      <FoundersEdition onReserve={onReserve} onContact={onContact} />
     </article>
     </main>
   );

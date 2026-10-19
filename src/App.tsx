@@ -41,6 +41,7 @@ import { PRODUCTS, PRODUCT_IDS, type ProductId } from "@/constants/products";
 import { STRYGONIA_EMAIL } from "@/config/env";
 import { submitForm } from "@/lib/forms";
 import { WaitlistForm, HONEYPOT } from "@/components/WaitlistForm";
+import { FoundersEdition } from "@/components/FoundersEdition";
 import { useSmoothScroll, scrollToTop, scrollToId } from "@/lib/useSmoothScroll";
 
 const { sidakProfile } = images;
@@ -386,24 +387,7 @@ function Team() {
 
 /* ── CTA ──────────────────────────────────────────────────────────── */
 function CTA({ onReserve, onContact }: { onReserve: () => void; onContact: () => void }) {
-  return (
-    <section className="relative py-28 px-6 overflow-hidden border-t" style={{ background: "var(--ark-bg)", borderColor: "var(--ark-line-soft)" }}>
-      <div className="max-w-2xl mx-auto">
-        <h2 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 0.95, letterSpacing: "-0.01em", color: "var(--ark-ink)" }}>
-          Get a Founder's Edition
-        </h2>
-        <p style={{ fontFamily: BODY, fontSize: "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, margin: "1rem 0 0" }}>
-          $198.99 for the first production run. Includes the unit, harness, and all firmware updates.
-        </p>
-        <div className="flex flex-wrap gap-4 mt-8">
-          <Button size="lg" onClick={onReserve}>
-            Buy now <ArrowRight size={17} />
-          </Button>
-          <Button variant="outline" size="lg" onClick={onContact}>Questions?</Button>
-        </div>
-      </div>
-    </section>
-  );
+  return <FoundersEdition onReserve={onReserve} onContact={onContact} />;
 }
 
 /* ── Reserve page ─────────────────────────────────────────────────── */
@@ -453,7 +437,7 @@ function CheckoutForm() {
         size="lg"
         disabled={!stripe || status === "processing"}
       >
-        {status === "processing" ? "Processing..." : <><Lock size={14} /> Pay $198.99</>}
+        {status === "processing" ? "Processing..." : <><Lock size={14} /> Pay $199</>}
       </Button>
       {status === "error" && (
         <div className="mt-4 rounded-lg px-4 py-3 border" style={{ background: "rgba(28,25,23,0.06)", borderColor: "rgba(28,25,23,0.14)", color: "var(--ark-fault-2)", fontFamily: BODY, fontSize: "0.85rem" }}>
@@ -622,7 +606,7 @@ function StripeCheckout() {
       )}
 
       <p className="mt-5 text-center" style={{ fontFamily: BODY, fontSize: "0.78rem", color: "var(--ark-faint)" }}>
-        Secured by Stripe · $198.99 USD
+        Secured by Stripe · $199 USD
       </p>
     </Panel>
   );
@@ -657,10 +641,14 @@ function ReservePage({ onHome }: { onHome: () => void; initialProduct?: ProductI
               {editionName}
             </h1>
             <p style={{ fontFamily: BODY, fontSize: "1.05rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, maxWidth: "36rem" }}>
-              First production run. Includes the unit, USB-C cable, wiring harness, and access to firmware and desktop app updates as we ship them.
+              The first 10 units we stock. Includes the unit, USB-C cable, wiring harness, and access to firmware and desktop app updates as we ship them.
             </p>
 
-            <Panel className="mt-8 p-6 max-w-lg">
+            <div className="mt-8 max-w-lg">
+              <FoundersEdition compact />
+            </div>
+
+            <Panel className="mt-6 p-6 max-w-lg">
               <div className="flex items-center gap-5">
                 <div className="w-28 flex-shrink-0 rounded-lg overflow-hidden" style={{ border: "1px solid var(--ark-line)" }}>
                   <DeviceMockup kind="blackbox" className="w-full h-auto" />
@@ -673,7 +661,7 @@ function ReservePage({ onHome }: { onHome: () => void; initialProduct?: ProductI
               </div>
               <div className="mt-5 pt-4 flex items-baseline justify-between" style={{ borderTop: "1px solid var(--ark-line-soft)" }}>
                 <span style={{ fontFamily: BODY, fontSize: "0.9rem", color: "var(--ark-muted)" }}>Founders pricing</span>
-                <span style={{ fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-ink-dim)" }}>$198.99</span>
+                <span style={{ fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-ink-dim)" }}>$199</span>
               </div>
             </Panel>
           </Reveal>
@@ -1382,11 +1370,11 @@ const PATHS: Record<Page, string> = {
 
 const META: Record<Page, [title: string, description: string]> = {
   home: ["Strygonia | Bench Instruments for Embedded Engineers", "Strygonia builds precision bench instruments for hardware engineers. BlackBox is a hardware flight recorder that captures voltage, current, and serial data so you can rewind to the moment your board failed."],
-  blackbox: ["BlackBox | Hardware Flight Recorder | Strygonia", "BlackBox clips onto your breadboard, Raspberry Pi, or PCB and continuously records voltage, current, UART, resets, and GPIO. When your board faults, scrub back through the timeline. $198.99."],
+  blackbox: ["BlackBox | Hardware Flight Recorder | Strygonia", "BlackBox clips onto your breadboard, Raspberry Pi, or PCB and continuously records voltage, current, UART, resets, and GPIO. When your board faults, scrub back through the timeline. $199."],
   specs: ["BlackBox Specifications | Strygonia", "Full technical specifications for BlackBox SG-BB1: ARM processor, high-side current sensing, rolling buffer storage, USB-C, and 6 input channels."],
   downloads: ["Download the BlackBox App | Strygonia", "Download the BlackBox desktop app for Mac, Windows and Linux, plus the latest BlackBox firmware. Version 1.0.0, with install notes and checksums."],
   contact: ["Contact Strygonia", "Questions about BlackBox, partnership inquiries, or anything else. Email contact@strygonia.com or find us on Instagram."],
-  reserve: ["Buy BlackBox: Founder's Edition | Strygonia", "Reserve a BlackBox Founder's Edition. $198.99 for the first production run. Includes the unit, wiring harness, USB-C cable, and all firmware updates."],
+  reserve: ["Buy BlackBox: Founder's Edition | Strygonia", "Reserve a BlackBox Founder's Edition: only the first 10 units, $199. Includes the unit, wiring harness, USB-C cable, and all firmware updates."],
   careers: ["Careers | Strygonia", "Join Strygonia. We're building the next generation of bench instruments for embedded engineers."],
   privacy: ["Privacy Policy | Strygonia", "How Strygonia collects, uses, and protects your personal information."],
   terms: ["Terms of Service | Strygonia", "The terms that govern use of the Strygonia website and purchases of Strygonia products."],

@@ -78,7 +78,7 @@ export const PRODUCTS: Record<ProductId, ProductSpec> = {
     ],
     status: "V1 prototype",
     mockup: "blackbox",
-    reserveLabel: "Buy | $198.99",
+    reserveLabel: "Buy | $199",
   },
 };
 

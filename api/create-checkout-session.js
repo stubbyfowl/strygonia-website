@@ -20,7 +20,7 @@ export default async function handler(req, res) {
               description:
                 "Early-access prototype unit with founders pricing, build updates, and priority support.",
             },
-            unit_amount: 19899,
+            unit_amount: 19900,
           },
           quantity: 1,
         },

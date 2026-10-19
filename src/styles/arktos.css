@@ -91,6 +91,30 @@
 }
 
 
+/* Founder's Edition: a shine sweeps across the big "10"; the ten board tiles light up in turn. */
+.ark-shine {
+  background: linear-gradient(100deg, #f5f5f4 35%, #60a5fa 50%, #f5f5f4 65%);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: ark-shine 4.5s ease-in-out infinite;
+}
+@keyframes ark-shine {
+  0%        { background-position: 100% 0; }
+  55%, 100% { background-position: 0% 0; }
+}
+.ark-slot {
+  color: #60a5fa;
+  background: rgba(37, 99, 235, 0.10);
+  border: 1px solid rgba(96, 165, 250, 0.35);
+  animation: ark-slot 2.8s ease-in-out infinite;
+}
+@keyframes ark-slot {
+  0%, 100% { box-shadow: 0 0 0 rgba(37, 99, 235, 0); border-color: rgba(96, 165, 250, 0.35); }
+  12%      { box-shadow: 0 0 20px rgba(59, 130, 246, 0.6); border-color: rgba(147, 197, 253, 0.95); color: #bfdbfe; }
+}
+
 .ark-led { animation: ark-pulse 1.9s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 .ark-led-ring { animation: ark-ring 1.9s ease-out infinite; transform-box: fill-box; transform-origin: center; }
 @keyframes ark-ring {
