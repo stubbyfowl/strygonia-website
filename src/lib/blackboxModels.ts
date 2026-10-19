@@ -7,11 +7,9 @@ import {
 } from "three";
 import { STLLoader } from "three/addons/loaders/STLLoader.js";
 
-/* BlackBox CAD exports, served from public/models. `full` is the complete
-   assembly used by the interactive viewer; the rest are the individual parts
-   the exploded view animates. */
+/* BlackBox CAD exports, served from public/models: the individual parts the
+   exploded view animates. (The 360° viewer loads the Rev A board GLB itself.) */
 export const BLACKBOX_MODELS = {
-  full: `${import.meta.env.BASE_URL}models/blackbox-full.stl`,
   top: `${import.meta.env.BASE_URL}models/blackbox-top.stl`,
   circuit: `${import.meta.env.BASE_URL}models/blackbox-circuit.stl`,
   esp32: `${import.meta.env.BASE_URL}models/blackbox-esp32.stl`,

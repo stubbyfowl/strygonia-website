@@ -1,17 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import {
-  BLACKBOX_MODELS,
-  addStudioLights,
-  createShellMaterial,
-  loadBlackboxStl,
-} from "@/lib/blackboxModels";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { addStudioLights } from "@/lib/blackboxModels";
 import { images } from "@/assets/images";
 
 const BODY = "var(--ark-body)";
 
-/* Interactive 360° viewer for the full BlackBox assembly. Auto-rotates until
+/* BlackBox Rev A board (from 3d/BlackBox_RevA.glb), compressed with gltf-transform:
+   meshopt geometry, 1536px WebP textures, 18.2 MB -> 2.1 MB. In metres, Y-up. */
+const MODEL_URL = `${import.meta.env.BASE_URL}models/blackbox-reva.glb`;
+
+/* Interactive 360° viewer for the BlackBox Rev A board. Auto-rotates until
    the user grabs it; zoom stays off so the page keeps the scroll wheel. */
 export function BlackBoxViewer({ className = "" }: { className?: string }) {
   const hostRef = useRef<HTMLDivElement | null>(null);
@@ -43,7 +45,11 @@ export function BlackBoxViewer({ className = "" }: { className?: string }) {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(34, 1, 1, 2000);
-    addStudioLights(scene, 1.3);
+    // Reflections for the gold pads and clearcoat, plus the site's studio rig.
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const envMap = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    scene.environment = envMap;
+    addStudioLights(scene, 0.9);
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
@@ -55,17 +61,23 @@ export function BlackBoxViewer({ className = "" }: { className?: string }) {
     controls.minPolarAngle = 0.55;
     controls.maxPolarAngle = 2.15;
 
-    const material = createShellMaterial();
     let disposed = false;
+    let model: THREE.Object3D | null = null;
 
-    loadBlackboxStl(BLACKBOX_MODELS.full)
-      .then((geometry) => {
+    new GLTFLoader()
+      .setMeshoptDecoder(MeshoptDecoder)
+      .loadAsync(MODEL_URL)
+      .then((gltf) => {
         if (disposed) return;
-        scene.add(new THREE.Mesh(geometry, material));
-        const sphere = new THREE.Sphere();
-        (geometry.boundingBox ?? new THREE.Box3().setFromObject(scene)).getBoundingSphere(sphere);
-        const distance = (sphere.radius / Math.tan((camera.fov * Math.PI) / 360)) * 1.18;
-        camera.position.set(distance * 0.55, distance * 0.42, distance * 0.78);
+        model = gltf.scene;
+        model.scale.setScalar(1000); // metres to millimetres, to suit the camera's near/far planes
+        model.updateMatrixWorld(true);
+        const box = new THREE.Box3().setFromObject(model);
+        model.position.sub(box.getCenter(new THREE.Vector3()));
+        scene.add(model);
+        const sphere = box.getBoundingSphere(new THREE.Sphere());
+        const distance = (sphere.radius / Math.tan((camera.fov * Math.PI) / 360)) * 1.08;
+        camera.position.copy(new THREE.Vector3(0.5, 0.62, 0.72).normalize().multiplyScalar(distance));
         controls.target.set(0, 0, 0);
         controls.update();
         setStatus("ready");
@@ -112,7 +124,17 @@ export function BlackBoxViewer({ className = "" }: { className?: string }) {
       io.disconnect();
       renderer.domElement.removeEventListener("pointerdown", onGrab);
       controls.dispose();
-      material.dispose();
+      model?.traverse((object) => {
+        const mesh = object as THREE.Mesh;
+        if (!mesh.isMesh) return;
+        mesh.geometry.dispose();
+        for (const material of [mesh.material].flat()) {
+          for (const value of Object.values(material)) if (value instanceof THREE.Texture) value.dispose();
+          material.dispose();
+        }
+      });
+      envMap.dispose();
+      pmrem.dispose();
       renderer.dispose();
       renderer.forceContextLoss();
       host.removeChild(renderer.domElement);
