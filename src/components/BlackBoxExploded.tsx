@@ -172,6 +172,15 @@ export function BlackBoxExploded({
         const fade = Math.min(1, Math.max(0, (t - target.showAt) / 0.35)) * Math.min(1, Math.max(0, (4.0 - t) / 0.3));
         el.style.transform = `translate(${x}px, ${y}px)`;
         el.style.opacity = String(reducedMotion ? 0 : fade);
+        // Keep the label box on screen (phones): slide it inward; the dot stays on the part.
+        const box = el.lastElementChild as HTMLElement | null;
+        if (box) {
+          const w = box.offsetWidth;
+          const want = CALLOUTS[i].side > 0 ? x + 64 : x - 64 - w;
+          const left = Math.min(Math.max(want, 8), fit.w - 8 - w);
+          box.style.left = `${left - x}px`;
+          box.style.right = "auto";
+        }
       });
     };
     frame = requestAnimationFrame(loop);
