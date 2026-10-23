@@ -745,7 +745,13 @@ function QtyStepper({ sku, qty }: { sku: Sku; qty: number }) {
 const SKU_ORDER = Object.keys(CATALOG) as Sku[];
 
 function CartPanel() {
-  const { lines, total } = useCart();
+  const { lines, subtotal, shipping, total } = useCart();
+  const row = (label: string, value: string) => (
+    <div className="flex items-baseline justify-between py-1">
+      <span style={{ fontFamily: BODY, fontSize: "0.9rem", color: "var(--ark-muted)" }}>{label}</span>
+      <span style={{ fontFamily: BODY, fontSize: "0.95rem", color: "var(--ark-ink)" }}>{value}</span>
+    </div>
+  );
   return (
     <Panel className="p-6">
       <ul>
@@ -769,7 +775,14 @@ function CartPanel() {
           );
         })}
       </ul>
-      <div className="mt-2 pt-4 flex items-baseline justify-between" style={{ borderTop: "1px solid var(--ark-line)" }}>
+      <div className="mt-2 pt-3" style={{ borderTop: "1px solid var(--ark-line)" }}>
+        {row("Subtotal", usd(subtotal))}
+        {row("Shipping", shipping ? usd(shipping) : "Included")}
+      </div>
+      {shipping > 0 && (
+        <p style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-muted)", marginTop: "0.2rem" }}>Shipping is included when your order has a BlackBox.</p>
+      )}
+      <div className="mt-3 pt-3 flex items-baseline justify-between" style={{ borderTop: "1px solid var(--ark-line-soft)" }}>
         <span style={{ fontFamily: BODY, fontSize: "0.9rem", color: "var(--ark-muted)" }}>Total</span>
         <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.5rem", color: "var(--ark-ink)" }}>{usd(total)}</span>
       </div>

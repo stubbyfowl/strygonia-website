@@ -3,6 +3,13 @@ import { stripe, describeOrder } from "./_founders.js";
 // The real prices, in cents. The browser only sends which items and how many; it never sets the amount.
 const PRICES = { blackbox: 19900, "case-white": 2500, "case-black": 2500 };
 const MAX_QTY = 10;
+const CASE_ONLY_SHIPPING = 500; // shipping is included with a BlackBox; case-only orders pay $5
+
+export function priceCart(qty) {
+  const subtotal = Object.entries(qty).reduce((sum, [sku, n]) => sum + PRICES[sku] * n, 0);
+  const shipping = qty.blackbox ? 0 : CASE_ONLY_SHIPPING;
+  return { subtotal, shipping, amount: subtotal + shipping };
+}
 
 /* Cart from the browser -> { sku: qty }, or null if anything about it is off. */
 export function parseItems(items) {
@@ -28,7 +35,7 @@ export default async function handler(req, res) {
 
   try {
     const { shipping } = req.body || {};
-    const amount = Object.entries(qty).reduce((sum, [sku, n]) => sum + PRICES[sku] * n, 0);
+    const { amount, shipping: shippingCents } = priceCart(qty);
     // product=blackbox marks orders that include a BlackBox (the Founder's count only searches those);
     // case-only orders are product=case. The order is labelled with Founder's numbers once it's paid.
     const metadata = {
@@ -36,6 +43,7 @@ export default async function handler(req, res) {
       blackbox_qty: String(qty.blackbox ?? 0),
       case_white_qty: String(qty["case-white"] ?? 0),
       case_black_qty: String(qty["case-black"] ?? 0),
+      shipping_cents: String(shippingCents),
     };
     const params = {
       amount,

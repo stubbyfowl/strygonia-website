@@ -18,4 +18,7 @@ export const CATALOG: Record<Sku, { name: string; variant?: string; price: numbe
 
 export const MAX_QTY = 10;
 
+/* Display only; the server adds the same $5 to case-only orders. Included with a BlackBox. */
+export const CASE_ONLY_SHIPPING = 5;
+
 export const usd = (dollars: number) => `$${Number.isInteger(dollars) ? dollars : dollars.toFixed(2)}`;

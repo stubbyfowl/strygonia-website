@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 
 process.env.STRIPE_SECRET_KEY ||= "sk_test_dummy";
 const { assignEditions, describeOrder } = await import("../api/_founders.js");
-const { parseItems } = await import("../api/create-payment-intent.js");
+const { parseItems, priceCart } = await import("../api/create-payment-intent.js");
 
 function fakeStripe(pis) {
   return {
@@ -83,4 +83,11 @@ for (const bad of [[], [{ sku: "blackbox", qty: 0 }], [{ sku: "blackbox", qty: 1
   assert.equal(parseItems(bad), null, `should reject ${JSON.stringify(bad)}`);
 }
 
-console.log("founders labelling + cart parsing: all checks passed");
+// Shipping: $5 on case-only orders, included whenever there's a BlackBox.
+assert.deepEqual(priceCart({ "case-white": 1 }), { subtotal: 2500, shipping: 500, amount: 3000 });
+assert.deepEqual(priceCart({ "case-white": 2, "case-black": 1 }), { subtotal: 7500, shipping: 500, amount: 8000 });
+assert.deepEqual(priceCart({ blackbox: 1, "case-black": 1 }), { subtotal: 22400, shipping: 0, amount: 22400 });
+assert.deepEqual(priceCart({ blackbox: 2 }), { subtotal: 39800, shipping: 0, amount: 39800 });
+assert.equal(describeOrder({ product: "case", blackbox_qty: "0", case_white_qty: "1", case_black_qty: "0", shipping_cents: "500" }), "BlackBox Case (Arctic White) + Shipping ($5.00)");
+
+console.log("founders labelling + cart parsing + shipping: all checks passed");

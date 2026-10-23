@@ -21,6 +21,8 @@ export function describeOrder(metadata, numbers = []) {
     const n = Number(metadata[key] ?? 0);
     if (n > 0) parts.push(times(n, label));
   }
+  const shipping = Number(metadata.shipping_cents ?? 0);
+  if (shipping > 0) parts.push(`Shipping ($${(shipping / 100).toFixed(2)})`);
   return parts.join(" + ");
 }
 

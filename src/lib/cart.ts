@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { CATALOG, MAX_QTY, type Sku } from "@/constants/catalog";
+import { CASE_ONLY_SHIPPING, CATALOG, MAX_QTY, type Sku } from "@/constants/catalog";
 
 export type CartLine = { sku: Sku; qty: number };
 
@@ -74,10 +74,14 @@ const subscribe = (fn: () => void) => {
 
 export function useCart() {
   const current = useSyncExternalStore(subscribe, () => lines);
+  const subtotal = current.reduce((n, l) => n + l.qty * CATALOG[l.sku].price, 0);
+  const shipping = current.length && !current.some((l) => l.sku === "blackbox") ? CASE_ONLY_SHIPPING : 0;
   return {
     lines: current,
     count: current.reduce((n, l) => n + l.qty, 0),
-    total: current.reduce((n, l) => n + l.qty * CATALOG[l.sku].price, 0),
+    subtotal,
+    shipping,
+    total: subtotal + shipping,
     has: (sku: Sku) => current.some((l) => l.sku === sku),
   };
 }
