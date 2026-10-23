@@ -83,11 +83,12 @@ for (const bad of [[], [{ sku: "blackbox", qty: 0 }], [{ sku: "blackbox", qty: 1
   assert.equal(parseItems(bad), null, `should reject ${JSON.stringify(bad)}`);
 }
 
-// Shipping: $5 on case-only orders, included whenever there's a BlackBox.
+// Shipping: a flat $5 per order, whatever's in it.
 assert.deepEqual(priceCart({ "case-white": 1 }), { subtotal: 2500, shipping: 500, amount: 3000 });
 assert.deepEqual(priceCart({ "case-white": 2, "case-black": 1 }), { subtotal: 7500, shipping: 500, amount: 8000 });
-assert.deepEqual(priceCart({ blackbox: 1, "case-black": 1 }), { subtotal: 22400, shipping: 0, amount: 22400 });
-assert.deepEqual(priceCart({ blackbox: 2 }), { subtotal: 39800, shipping: 0, amount: 39800 });
+assert.deepEqual(priceCart({ blackbox: 1, "case-black": 1 }), { subtotal: 22400, shipping: 500, amount: 22900 });
+assert.deepEqual(priceCart({ blackbox: 2 }), { subtotal: 39800, shipping: 500, amount: 40300 });
+assert.equal(describeOrder({ product: "blackbox", blackbox_qty: "1", case_white_qty: "0", case_black_qty: "0", shipping_cents: "500" }, [4]), "BlackBox: Founder's Edition (#4 of 10) + Shipping ($5.00)");
 assert.equal(describeOrder({ product: "case", blackbox_qty: "0", case_white_qty: "1", case_black_qty: "0", shipping_cents: "500" }), "BlackBox Case (Arctic White) + Shipping ($5.00)");
 
 console.log("founders labelling + cart parsing + shipping: all checks passed");

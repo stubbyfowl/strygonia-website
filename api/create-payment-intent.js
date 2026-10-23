@@ -3,11 +3,11 @@ import { stripe, describeOrder } from "./_founders.js";
 // The real prices, in cents. The browser only sends which items and how many; it never sets the amount.
 const PRICES = { blackbox: 19900, "case-white": 2500, "case-black": 2500 };
 const MAX_QTY = 10;
-const CASE_ONLY_SHIPPING = 500; // shipping is included with a BlackBox; case-only orders pay $5
+const SHIPPING = 500; // flat $5 per order
 
 export function priceCart(qty) {
   const subtotal = Object.entries(qty).reduce((sum, [sku, n]) => sum + PRICES[sku] * n, 0);
-  const shipping = qty.blackbox ? 0 : CASE_ONLY_SHIPPING;
+  const shipping = SHIPPING;
   return { subtotal, shipping, amount: subtotal + shipping };
 }
 

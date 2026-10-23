@@ -777,11 +777,8 @@ function CartPanel() {
       </ul>
       <div className="mt-2 pt-3" style={{ borderTop: "1px solid var(--ark-line)" }}>
         {row("Subtotal", usd(subtotal))}
-        {row("Shipping", shipping ? usd(shipping) : "Included")}
+        {row("Shipping", usd(shipping))}
       </div>
-      {shipping > 0 && (
-        <p style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-muted)", marginTop: "0.2rem" }}>Shipping is included when your order has a BlackBox.</p>
-      )}
       <div className="mt-3 pt-3 flex items-baseline justify-between" style={{ borderTop: "1px solid var(--ark-line-soft)" }}>
         <span style={{ fontFamily: BODY, fontSize: "0.9rem", color: "var(--ark-muted)" }}>Total</span>
         <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.5rem", color: "var(--ark-ink)" }}>{usd(total)}</span>
