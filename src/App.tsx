@@ -731,23 +731,25 @@ function QtyStepper({ sku, qty }: { sku: Sku; qty: number }) {
   const item = CATALOG[sku];
   return (
     <div className="inline-flex items-center gap-2" role="group" aria-label={`Quantity of ${item.name}${item.variant ? `, ${item.variant}` : ""}`}>
-      <button type="button" className="ark-focus inline-flex items-center justify-center w-8 h-8 rounded-full" style={{ ...ICON_BTN, opacity: qty <= 1 ? 0.4 : 1 }} disabled={qty <= 1} onClick={() => cart.setQty(sku, qty - 1)} aria-label="One fewer">
+      <button type="button" className="ark-focus inline-flex items-center justify-center w-8 h-8 rounded-full" style={{ ...ICON_BTN, opacity: qty <= 1 ? 0.4 : 1 }} disabled={qty <= 1} onClick={() => cart.step(sku, -1)} aria-label="One fewer">
         <Minus size={14} />
       </button>
       <span aria-live="polite" style={{ fontFamily: BODY, fontWeight: 600, minWidth: "1.5rem", textAlign: "center", color: "var(--ark-ink)" }}>{qty}</span>
-      <button type="button" className="ark-focus inline-flex items-center justify-center w-8 h-8 rounded-full" style={{ ...ICON_BTN, opacity: qty >= MAX_QTY ? 0.4 : 1 }} disabled={qty >= MAX_QTY} onClick={() => cart.setQty(sku, qty + 1)} aria-label="One more">
+      <button type="button" className="ark-focus inline-flex items-center justify-center w-8 h-8 rounded-full" style={{ ...ICON_BTN, opacity: qty >= MAX_QTY ? 0.4 : 1 }} disabled={qty >= MAX_QTY} onClick={() => cart.step(sku, 1)} aria-label="One more">
         <Plus size={14} />
       </button>
     </div>
   );
 }
 
+const SKU_ORDER = Object.keys(CATALOG) as Sku[];
+
 function CartPanel() {
   const { lines, total } = useCart();
   return (
     <Panel className="p-6">
       <ul>
-        {lines.map(({ sku, qty }) => {
+        {[...lines].sort((a, b) => SKU_ORDER.indexOf(a.sku) - SKU_ORDER.indexOf(b.sku)).map(({ sku, qty }) => {
           const item = CATALOG[sku];
           return (
             <li key={sku} className="flex flex-wrap items-center gap-x-4 gap-y-3 py-4 first:pt-0 border-b last:border-b-0" style={{ borderColor: "var(--ark-line-soft)" }}>

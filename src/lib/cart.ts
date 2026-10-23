@@ -42,6 +42,10 @@ export const cart = {
   add(sku: Sku, qty = 1) {
     cart.setQty(sku, qtyOf(sku) + qty);
   },
+  /* Quantity steppers: reads the stored quantity (not a possibly stale render) and stays within 1..MAX_QTY. */
+  step(sku: Sku, delta: number) {
+    cart.setQty(sku, Math.max(1, Math.min(MAX_QTY, qtyOf(sku) + delta)));
+  },
   /* "Buy" buttons: make sure it's in the cart without stacking a second one on every click. */
   ensure(sku: Sku) {
     if (!qtyOf(sku)) cart.add(sku);
