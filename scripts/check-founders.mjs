@@ -1,8 +1,9 @@
-// Self-check for the Founder's Edition labelling. Run: node scripts/check-founders.mjs
+// Self-check for Founder's Edition labelling and cart parsing. Run: node scripts/check-founders.mjs
 import assert from "node:assert/strict";
 
 process.env.STRIPE_SECRET_KEY ||= "sk_test_dummy";
-const { assignEditions } = await import("../api/_founders.js");
+const { assignEditions, describeOrder } = await import("../api/_founders.js");
+const { parseItems } = await import("../api/create-payment-intent.js");
 
 function fakeStripe(pis) {
   return {
@@ -22,23 +23,25 @@ function fakeStripe(pis) {
     },
   };
 }
-const order = (id, created, extra = {}) => ({ id, created, status: "succeeded", metadata: { product: "blackbox" }, ...extra });
+const order = (id, created, meta = {}, extra = {}) => ({
+  id, created, status: "succeeded",
+  metadata: { product: "blackbox", blackbox_qty: "1", case_white_qty: "0", case_black_qty: "0", ...meta },
+  ...extra,
+});
+const get = (s, id) => s.store.find((x) => x.id === id);
 
-// Launch rush: 12 paid orders arrive out of order -> the 10 oldest are Founder's #1-10, the rest standard.
+// Launch rush: 12 single-unit orders paid out of order -> the 10 oldest are #1-10, the rest standard.
 const rush = fakeStripe([7, 3, 11, 1, 9, 12, 2, 5, 10, 4, 8, 6].map((n) => order(`pi_${n}`, 1000 + n)));
 let r = await assignEditions(rush);
 assert.equal(r.claimed, 10);
 for (let n = 1; n <= 10; n++) {
-  const p = rush.store.find((x) => x.id === `pi_${n}`);
-  assert.equal(p.metadata.edition, "founders");
-  assert.equal(p.metadata.founders_number, String(n));
-  assert.equal(p.description, `BlackBox: Founder's Edition (${n} of 10)`);
+  assert.equal(get(rush, `pi_${n}`).metadata.edition, "founders");
+  assert.equal(get(rush, `pi_${n}`).metadata.founders_numbers, String(n));
+  assert.equal(get(rush, `pi_${n}`).description, `BlackBox: Founder's Edition (#${n} of 10)`);
 }
 for (const id of ["pi_11", "pi_12"]) {
-  const p = rush.store.find((x) => x.id === id);
-  assert.equal(p.metadata.edition, "standard");
-  assert.equal(p.metadata.founders_number, undefined);
-  assert.equal(p.description, "BlackBox");
+  assert.equal(get(rush, id).metadata.edition, "standard");
+  assert.equal(get(rush, id).description, "BlackBox");
 }
 
 // Running again changes nothing.
@@ -47,22 +50,37 @@ r = await assignEditions(rush);
 assert.equal(r.claimed, 10);
 assert.equal(JSON.stringify(rush.store), snapshot);
 
-// Numbering continues after existing Founder's orders; unpaid and non-BlackBox payments are ignored;
-// a just-paid order that search hasn't caught up with yet still gets labelled.
-const later = fakeStripe([
-  order("pi_a", 1, { metadata: { product: "blackbox", edition: "founders", founders_number: "1" } }),
-  order("pi_b", 2, { metadata: { product: "blackbox", edition: "founders", founders_number: "2" } }),
-  order("pi_unpaid", 3, { status: "requires_payment_method" }),
-  order("pi_site", 4, { metadata: { business: "sidakswebsites" } }),
-  order("pi_new", 5),
-  order("pi_lag", 6, { notYetSearchable: true }),
+// Units, not orders: a 3-unit order takes three numbers; one straddling unit 10 is "mixed";
+// cases in a mixed order never count, and case-only orders aren't even searched.
+const units = fakeStripe([
+  order("pi_a", 1, { blackbox_qty: "3", case_black_qty: "2" }),
+  order("pi_caseonly", 2, { product: "case", blackbox_qty: "0", case_white_qty: "4" }),
+  order("pi_b", 3, { blackbox_qty: "6" }),
+  order("pi_c", 4, { blackbox_qty: "3", case_white_qty: "1" }),
+  order("pi_unpaid", 5, { blackbox_qty: "2" }, { status: "requires_payment_method" }),
+  order("pi_lag", 6, { blackbox_qty: "1" }, { notYetSearchable: true }),
 ]);
-const justPaid = structuredClone(later.store.find((x) => x.id === "pi_lag"));
-r = await assignEditions(later, justPaid);
-assert.equal(r.claimed, 4);
-assert.equal(r.labels.get("pi_new").number, 3);
-assert.equal(r.labels.get("pi_lag").number, 4);
-assert.equal(later.store.find((x) => x.id === "pi_unpaid").metadata.edition, undefined);
-assert.equal(later.store.find((x) => x.id === "pi_site").metadata.edition, undefined);
+r = await assignEditions(units, structuredClone(get(units, "pi_lag")));
+assert.equal(r.claimed, 10);
+assert.deepEqual(r.labels.get("pi_a").numbers, [1, 2, 3]);
+assert.equal(get(units, "pi_a").description, "BlackBox: Founder's Edition (#1, #2, #3 of 10) + 2 × BlackBox Case (Stealth Black)");
+assert.deepEqual(r.labels.get("pi_b").numbers, [4, 5, 6, 7, 8, 9]);
+assert.equal(get(units, "pi_c").metadata.edition, "mixed");
+assert.deepEqual(r.labels.get("pi_c").numbers, [10]);
+assert.equal(get(units, "pi_c").description, "BlackBox: Founder's Edition (#10 of 10) + 2 × BlackBox + BlackBox Case (Arctic White)");
+assert.equal(get(units, "pi_lag").metadata.edition, "standard");
+assert.equal(get(units, "pi_caseonly").metadata.edition, undefined);
+assert.equal(get(units, "pi_unpaid").metadata.edition, undefined);
 
-console.log("founders labelling: all checks passed");
+// Descriptions for case-only orders.
+assert.equal(describeOrder({ product: "case", blackbox_qty: "0", case_white_qty: "1", case_black_qty: "0" }), "BlackBox Case (Arctic White)");
+
+// Cart parsing: the browser can choose items and quantities, never prices.
+assert.deepEqual(parseItems([{ sku: "blackbox", qty: 1 }, { sku: "case-black", qty: 2 }]), { blackbox: 1, "case-black": 2 });
+assert.deepEqual(parseItems(undefined), { blackbox: 1 });
+for (const bad of [[], [{ sku: "blackbox", qty: 0 }], [{ sku: "blackbox", qty: 11 }], [{ sku: "blackbox", qty: 1.5 }], [{ sku: "toaster", qty: 1 }],
+  [{ sku: "blackbox", qty: 1 }, { sku: "blackbox", qty: 1 }], [{ sku: "__proto__", qty: 1 }], "blackbox", [{ sku: "case-white", qty: "2", price: 1 }, null]]) {
+  assert.equal(parseItems(bad), null, `should reject ${JSON.stringify(bad)}`);
+}
+
+console.log("founders labelling + cart parsing: all checks passed");

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Activity, ArrowLeft, ArrowRight, CircuitBoard, Gauge, Radio, Terminal, Zap } from "lucide-react";
 import { DeviceMockup } from "@/components/DeviceMockup";
 import { BlackBoxViewer } from "@/components/BlackBoxViewer";
@@ -6,6 +7,8 @@ import { Reveal } from "@/components/Reveal";
 import { WaitlistForm } from "@/components/WaitlistForm";
 import { FoundersEdition } from "@/components/FoundersEdition";
 import { Button } from "@/components/ui/button";
+import { CaseColourPicker } from "@/components/CaseColourPicker";
+import { CATALOG, usd, type CaseColour } from "@/constants/catalog";
 import type { ProductSpec, SignalIcon } from "@/constants/products";
 import { images } from "@/assets/images";
 
@@ -241,17 +244,19 @@ export function ProductDescriptionPage({
   onHome,
   onBack,
   backLabel,
-  onReserve,
+  onBuy,
   onContact,
 }: {
   product: ProductSpec;
   onHome: () => void;
   onBack: () => void;
   backLabel: string;
-  onReserve?: () => void;
+  onBuy?: (caseColour: CaseColour | null) => void;
   onContact?: () => void;
 }) {
   const isBlackbox = product.id === "blackbox";
+  const [caseColour, setCaseColour] = useState<CaseColour | null>(null);
+  const casePrice = CATALOG["case-black"].price;
   return (
     <main>
     <article>
@@ -293,8 +298,18 @@ export function ProductDescriptionPage({
                 {product.summary}
               </p>
 
+              {onBuy && isBlackbox && (
+                <div className="mb-6">
+                  <p style={{ fontFamily: BODY, fontSize: "0.78rem", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ark-muted)", marginBottom: "0.6rem" }}>Add a case</p>
+                  <CaseColourPicker value={caseColour} onChange={setCaseColour} allowNone priceSuffix={`+${usd(casePrice)}`} />
+                </div>
+              )}
               <div className="flex flex-wrap gap-4">
-                {onReserve && <PrimaryBtn onClick={onReserve}>{product.reserveLabel} <ArrowRight size={17} /></PrimaryBtn>}
+                {onBuy && (
+                  <PrimaryBtn onClick={() => onBuy(caseColour)}>
+                    {caseColour ? `Buy | ${usd(CATALOG.blackbox.price + casePrice)}` : product.reserveLabel} <ArrowRight size={17} />
+                  </PrimaryBtn>
+                )}
                 {onContact && <GhostBtn onClick={onContact}>Talk to us</GhostBtn>}
               </div>
             </Reveal>
@@ -330,7 +345,7 @@ export function ProductDescriptionPage({
           <WaitlistForm page="product" />
         </div>
       </section>
-      <FoundersEdition onReserve={onReserve} onContact={onContact} />
+      <FoundersEdition onReserve={onBuy && (() => onBuy(null))} onContact={onContact} />
     </article>
     </main>
   );

@@ -12,6 +12,11 @@ import {
   Lock,
   CreditCard,
   Download,
+  Minus,
+  Plus,
+  Trash2,
+  Package,
+  ShoppingBag,
 } from "lucide-react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
@@ -44,6 +49,10 @@ import { WaitlistForm, HONEYPOT } from "@/components/WaitlistForm";
 import { FoundersEdition } from "@/components/FoundersEdition";
 import { useFounders } from "@/lib/founders";
 import { useSmoothScroll, scrollToTop, scrollToId } from "@/lib/useSmoothScroll";
+import { CasePage } from "@/components/CasePage";
+import { CaseColourPicker } from "@/components/CaseColourPicker";
+import { cart, useCart, type CartLine } from "@/lib/cart";
+import { CASE_COLOURS, CATALOG, MAX_QTY, usd, type CaseColour, type Sku } from "@/constants/catalog";
 
 const { sidakProfile } = images;
 
@@ -150,7 +159,7 @@ function PageLink({
 function Navbar({
   scrolled,
   onHome,
-  onReserve,
+  onPurchase,
   onContact,
   onPage,
   onProduct,
@@ -158,13 +167,17 @@ function Navbar({
 }: {
   scrolled: boolean;
   onHome: () => void;
-  onReserve: () => void;
+  onPurchase: () => void;
   onContact: () => void;
   onPage: (page: "specs" | "downloads") => void;
   onProduct: (id: ProductId) => void;
   onSection: (section: string) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const { count } = useCart();
+  const badge = count > 0 && (
+    <span className="ml-1.5 inline-flex items-center justify-center rounded-full min-w-[1.25rem] h-5 px-1" style={{ background: "#fff", color: "var(--ark-signal)", fontSize: "0.7rem", fontWeight: 700 }}>{count}</span>
+  );
 
   const handleNav = (link: NavItem) => {
     if (link.kind === "section") onSection(link.section);
@@ -211,14 +224,22 @@ function Navbar({
           <PageLink href={PATHS.contact} onNavigate={onContact} className="ark-focus text-sm transition-colors px-1 inline-block" style={{ fontFamily: BODY, color: scrolled ? "var(--ark-ink-dim)" : "rgba(255,255,255,0.7)" }}>
             Contact
           </PageLink>
-          <Button size="sm" onClick={onReserve}>
-            Reserve
+          <Button size="sm" onClick={onPurchase} aria-label={count ? `Purchase, ${count} in cart` : "Purchase"}>
+            Purchase{badge}
           </Button>
         </div>
 
-        <button className="ark-focus md:hidden" style={{ color: scrolled ? "var(--ark-ink-dim)" : "#fff" }} onClick={() => setOpen(!open)} aria-label="Menu">
-          {open ? <X size={20} /> : <Menu size={20} />}
-        </button>
+        <div className="md:hidden flex items-center gap-4">
+          {count > 0 && (
+            <PageLink href={PATHS.purchase} onNavigate={onPurchase} className="ark-focus relative inline-flex" aria-label={`Cart, ${count} item${count === 1 ? "" : "s"}`} style={{ color: scrolled ? "var(--ark-ink)" : "#fff" }}>
+              <ShoppingBag size={20} />
+              <span className="absolute -top-1.5 -right-2 inline-flex items-center justify-center rounded-full min-w-[1.1rem] h-[1.1rem] px-1" style={{ background: "var(--ark-signal)", color: "#fff", fontSize: "0.65rem", fontWeight: 700 }}>{count}</span>
+            </PageLink>
+          )}
+          <button className="ark-focus" style={{ color: scrolled ? "var(--ark-ink-dim)" : "#fff" }} onClick={() => setOpen(!open)} aria-label="Menu">
+            {open ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </div>
 
       {open && (
@@ -234,7 +255,7 @@ function Navbar({
           </ul>
           <div className="mt-5 pt-5 border-t flex flex-col gap-3" style={{ borderColor: "var(--ark-line-soft)" }}>
             <Button variant="outline" className="w-full" onClick={() => { setOpen(false); onContact(); }}>Contact</Button>
-            <Button className="w-full" onClick={() => { setOpen(false); onReserve(); }}>Reserve</Button>
+            <Button className="w-full" onClick={() => { setOpen(false); onPurchase(); }}>Purchase{badge}</Button>
           </div>
         </nav>
       )}
@@ -335,7 +356,25 @@ function ProductRow({
   );
 }
 
-function Products({ onProduct, onReserve }: { onProduct: (id: ProductId) => void; onReserve: () => void }) {
+function CaseRow({ onOpen }: { onOpen: () => void }) {
+  return (
+    <div className="grid lg:grid-cols-[0.95fr_1.05fr] gap-10 lg:gap-16 items-center">
+      <PageLink href={PATHS.case} onNavigate={onOpen} className="ark-focus block rounded-lg overflow-hidden" style={{ border: "1px solid var(--ark-line)" }}>
+        <img src="/products/case/black-front-right.jpg" alt="BlackBox Case in Stealth Black" width={1600} height={900} loading="lazy" className="block w-full h-auto" />
+      </PageLink>
+      <div>
+        <h3 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(1.9rem, 3.4vw, 2.8rem)", lineHeight: 0.98, color: "var(--ark-ink)", marginBottom: "1rem" }}>BlackBox Case</h3>
+        <p style={{ fontFamily: BODY, fontSize: "1.05rem", color: "var(--ark-muted)", marginBottom: "1rem" }}>A snug two-piece case for BlackBox. {usd(CATALOG["case-black"].price)}.</p>
+        <p style={{ fontFamily: BODY, fontSize: "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.75, maxWidth: "34rem", marginBottom: "2rem" }}>
+          In Arctic White or Stealth Black. Every port, all four LEDs and the TRIGGER button still work with it on, and it's held together by BlackBox's own four mounting holes.
+        </p>
+        <Button size="lg" onClick={onOpen}>Explore the case <ArrowRight size={17} /></Button>
+      </div>
+    </div>
+  );
+}
+
+function Products({ onProduct, onReserve, onCase }: { onProduct: (id: ProductId) => void; onReserve: () => void; onCase: () => void }) {
   return (
     <section id="products" className="ark-dark relative py-28 px-6 overflow-hidden" style={{ background: "var(--ark-bg)" }}>
       <div className="max-w-6xl mx-auto relative z-10">
@@ -344,7 +383,7 @@ function Products({ onProduct, onReserve }: { onProduct: (id: ProductId) => void
             What we make
           </h2>
           <p style={{ fontFamily: BODY, fontSize: "1.05rem", color: "var(--ark-ink-dim)", lineHeight: 1.8 }}>
-            One instrument so far. It watches your board's power rail, serial output, and GPIO lines continuously, keeping a rolling record so you can see exactly what happened when something goes wrong.
+            One instrument so far, and a case for it. BlackBox watches your board's power rail, serial output, and GPIO lines continuously, keeping a rolling record so you can see exactly what happened when something goes wrong.
           </p>
         </Reveal>
 
@@ -352,6 +391,7 @@ function Products({ onProduct, onReserve }: { onProduct: (id: ProductId) => void
           {PRODUCT_IDS.map((id, i) => (
             <ProductRow key={id} id={id} index={i} onExplore={onProduct} onReserve={onReserve} />
           ))}
+          <CaseRow onOpen={onCase} />
         </div>
       </div>
     </section>
@@ -391,7 +431,7 @@ function CTA({ onReserve, onContact }: { onReserve: () => void; onContact: () =>
   return <FoundersEdition onReserve={onReserve} onContact={onContact} />;
 }
 
-/* ── Reserve page ─────────────────────────────────────────────────── */
+/* ── Purchase page (cart + checkout) ─────────────────────────────── */
 const FORM_LABEL_STYLE: React.CSSProperties = { fontFamily: BODY, fontSize: "0.78rem", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ark-muted)" };
 const FORM_FIELD_CLASS = "ark-focus w-full rounded-lg px-4 py-3 outline-none border";
 const FORM_FIELD_STYLE: React.CSSProperties = { background: "rgba(28,25,23,0.04)", borderColor: "var(--ark-line)", color: "var(--ark-ink)", fontFamily: BODY };
@@ -404,7 +444,7 @@ function BackBar({ onHome, label = "Back to Strygonia" }: { onHome: () => void; 
   );
 }
 
-function CheckoutForm() {
+function CheckoutForm({ amount }: { amount: number }) {
   const stripe = useStripe();
   const elements = useElements();
   const [status, setStatus] = useState<"idle" | "processing" | "success" | "error">("idle");
@@ -418,7 +458,7 @@ function CheckoutForm() {
 
     const { error } = await stripe.confirmPayment({
       elements,
-      confirmParams: { return_url: `${window.location.origin}/reserve` },
+      confirmParams: { return_url: `${window.location.origin}${PATHS.purchase}` },
     });
 
     if (error) {
@@ -438,7 +478,7 @@ function CheckoutForm() {
         size="lg"
         disabled={!stripe || status === "processing"}
       >
-        {status === "processing" ? "Processing..." : <><Lock size={14} /> Pay $199</>}
+        {status === "processing" ? "Processing..." : <><Lock size={14} /> Pay {usd(amount / 100)}</>}
       </Button>
       {status === "error" && (
         <div className="mt-4 rounded-lg px-4 py-3 border" style={{ background: "rgba(28,25,23,0.06)", borderColor: "rgba(28,25,23,0.14)", color: "var(--ark-fault-2)", fontFamily: BODY, fontSize: "0.85rem" }}>
@@ -538,24 +578,38 @@ function ShippingForm({ onComplete, initial }: { onComplete: (data: ShippingAddr
   );
 }
 
-function StripeCheckout() {
+function StripeCheckout({ items, total }: { items: CartLine[]; total: number }) {
   const [step, setStep] = useState<"shipping" | "payment">("shipping");
-  const [shipping, setShipping] = useState<{ name: string; line1: string; line2: string; city: string; state: string; postal_code: string; country: string } | null>(null);
+  const [shipping, setShipping] = useState<ShippingAddress | null>(null);
   const [clientSecret, setClientSecret] = useState("");
+  const [amount, setAmount] = useState(0);
   const [error, setError] = useState("");
 
-  const handleShippingComplete = (data: typeof shipping & {}) => {
+  // The payment is created for one exact cart. If the cart changes, start the payment step over.
+  const itemsKey = JSON.stringify(items);
+  useEffect(() => {
+    setClientSecret("");
+    setError("");
+    setStep((s) => (s === "payment" ? "shipping" : s));
+  }, [itemsKey]);
+
+  const handleShippingComplete = (data: ShippingAddress) => {
     setShipping(data);
     setStep("payment");
     fetch("/api/create-payment-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ shipping: { name: data.name, address: { line1: data.line1, line2: data.line2, city: data.city, state: data.state, postal_code: data.postal_code, country: data.country || "US" } } }),
+      body: JSON.stringify({
+        items: items.map(({ sku, qty }) => ({ sku, qty })),
+        shipping: { name: data.name, address: { line1: data.line1, line2: data.line2, city: data.city, state: data.state, postal_code: data.postal_code, country: data.country || "US" } },
+      }),
     })
       .then((r) => r.json())
       .then((d) => {
-        if (d.clientSecret) setClientSecret(d.clientSecret);
-        else setError(d.error || "Could not initialize checkout.");
+        if (d.clientSecret) {
+          setClientSecret(d.clientSecret);
+          setAmount(d.amount);
+        } else setError(d.error || "Could not initialize checkout.");
       })
       .catch(() => setError("Could not connect to payment server."));
   };
@@ -597,7 +651,7 @@ function StripeCheckout() {
             </div>
           )}
           <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: "stripe", variables: { colorPrimary: "#2563eb", borderRadius: "8px" } } }}>
-            <CheckoutForm />
+            <CheckoutForm amount={amount} />
           </Elements>
         </>
       ) : (
@@ -607,55 +661,172 @@ function StripeCheckout() {
       )}
 
       <p className="mt-5 text-center" style={{ fontFamily: BODY, fontSize: "0.78rem", color: "var(--ark-faint)" }}>
-        Secured by Stripe · $199 USD
+        Secured by Stripe · {usd(total)} USD
       </p>
     </Panel>
   );
 }
 
+const listNumbers = (ns: number[]) => {
+  const tags = ns.map((n) => `#${n}`);
+  return tags.length < 2 ? tags.join("") : `${tags.slice(0, -1).join(", ")} and ${tags[tags.length - 1]}`;
+};
+
 function OrderConfirmation({ id, status }: { id: string; status: string }) {
-  const [label, setLabel] = useState<{ edition?: string; number?: number | null; cap?: number } | null>(null);
+  const [label, setLabel] = useState<{ numbers?: number[]; blackbox?: number; cases?: number; cap?: number } | null>(null);
+  const paid = status === "succeeded";
+  const processing = status === "processing";
+
   useEffect(() => {
-    if (status !== "succeeded") return;
+    if (paid || processing) cart.clear();
+    if (!paid) return;
     fetch("/api/finalize-order", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ paymentIntent: id }) })
       .then((r) => (r.ok ? r.json() : null))
       .then(setLabel, () => {});
-  }, [id, status]);
+  }, [id, paid, processing]);
 
-  const paid = status === "succeeded";
-  const processing = status === "processing";
   const heading = paid ? "Order confirmed" : processing ? "Payment processing" : "Payment didn't go through";
   const body = paid
     ? "Thank you. Your payment went through, and we'll be in touch about shipping."
     : processing
       ? "Your payment is processing. We'll confirm your order as soon as it clears."
-      : "Your payment didn't go through, and you haven't been charged. You can try again.";
+      : "Your payment didn't go through, and you haven't been charged. Your cart is still here, so you can try again.";
+  const numbers = label?.numbers ?? [];
+  const standard = Math.max(0, (label?.blackbox ?? 0) - numbers.length);
+  const cases = label?.cases ?? 0;
 
   return (
     <Panel className="p-7">
       <h2 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.6rem", color: "var(--ark-ink)", marginBottom: "0.8rem" }}>{heading}</h2>
       <p style={{ fontFamily: BODY, fontSize: "0.98rem", color: "var(--ark-ink-dim)", lineHeight: 1.7 }}>{body}</p>
-      {label?.edition === "founders" && (
+      {numbers.length > 0 && (
         <p className="mt-5 inline-flex items-center rounded-full px-4 py-2" style={{ fontFamily: BODY, fontWeight: 600, fontSize: "0.95rem", color: "var(--ark-signal)", background: "var(--ark-signal-soft)", border: "1px solid var(--ark-signal-glow)" }}>
-          You're Founder's Edition #{label.number} of {label.cap}.
+          You're Founder's Edition {listNumbers(numbers)} of {label?.cap ?? 10}.
         </p>
       )}
-      {label?.edition === "standard" && (
-        <p className="mt-5" style={{ fontFamily: BODY, fontSize: "0.95rem", color: "var(--ark-ink)" }}>Your order is a standard BlackBox. All 10 Founder's Edition units were already claimed.</p>
+      {standard > 0 && (
+        <p className="mt-4" style={{ fontFamily: BODY, fontSize: "0.95rem", color: "var(--ark-ink)", lineHeight: 1.6 }}>
+          {numbers.length > 0
+            ? `The other ${standard === 1 ? "BlackBox is a" : `${standard} BlackBoxes are`} standard edition: that order used up the last Founder's Edition units.`
+            : `${standard === 1 ? "Your BlackBox is a" : `Your ${standard} BlackBoxes are`} standard edition. All 10 Founder's Edition units were already claimed.`}
+        </p>
+      )}
+      {cases > 0 && (
+        <p className="mt-4" style={{ fontFamily: BODY, fontSize: "0.9rem", color: "var(--ark-ink-dim)", lineHeight: 1.6 }}>
+          {cases === 1 ? "Your case is" : "Your cases are"} 3D printed to order, so allow a few extra days.
+        </p>
       )}
       {paid || processing ? (
         <p className="mt-5" style={{ fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-muted)" }}>Questions about your order? Email <a href={`mailto:${STRYGONIA_EMAIL}`} className="ark-focus" style={{ color: "var(--ark-signal)" }}>{STRYGONIA_EMAIL}</a>.</p>
       ) : (
-        <Button size="lg" className="mt-6" onClick={() => { window.location.href = "/reserve"; }}>Try again <ArrowRight size={14} /></Button>
+        <Button size="lg" className="mt-6" onClick={() => { window.location.href = PATHS.purchase; }}>Try again <ArrowRight size={14} /></Button>
       )}
     </Panel>
   );
 }
 
-function ReservePage({ onHome }: { onHome: () => void; initialProduct?: ProductId }) {
-  const product = PRODUCTS.blackbox;
-  const founders = useFounders();
-  const editionName = founders?.soldOut ? "BlackBox" : "BlackBox: Founder's Edition";
+const ICON_BTN: React.CSSProperties = { border: "1px solid var(--ark-line)", background: "transparent", color: "var(--ark-ink)", cursor: "pointer" };
+
+function QtyStepper({ sku, qty }: { sku: Sku; qty: number }) {
+  const item = CATALOG[sku];
+  return (
+    <div className="inline-flex items-center gap-2" role="group" aria-label={`Quantity of ${item.name}${item.variant ? `, ${item.variant}` : ""}`}>
+      <button type="button" className="ark-focus inline-flex items-center justify-center w-8 h-8 rounded-full" style={{ ...ICON_BTN, opacity: qty <= 1 ? 0.4 : 1 }} disabled={qty <= 1} onClick={() => cart.setQty(sku, qty - 1)} aria-label="One fewer">
+        <Minus size={14} />
+      </button>
+      <span aria-live="polite" style={{ fontFamily: BODY, fontWeight: 600, minWidth: "1.5rem", textAlign: "center", color: "var(--ark-ink)" }}>{qty}</span>
+      <button type="button" className="ark-focus inline-flex items-center justify-center w-8 h-8 rounded-full" style={{ ...ICON_BTN, opacity: qty >= MAX_QTY ? 0.4 : 1 }} disabled={qty >= MAX_QTY} onClick={() => cart.setQty(sku, qty + 1)} aria-label="One more">
+        <Plus size={14} />
+      </button>
+    </div>
+  );
+}
+
+function CartPanel() {
+  const { lines, total } = useCart();
+  return (
+    <Panel className="p-6">
+      <ul>
+        {lines.map(({ sku, qty }) => {
+          const item = CATALOG[sku];
+          return (
+            <li key={sku} className="flex flex-wrap items-center gap-x-4 gap-y-3 py-4 first:pt-0 border-b last:border-b-0" style={{ borderColor: "var(--ark-line-soft)" }}>
+              <img src={item.image} alt="" width={80} height={45} className="w-20 h-[45px] object-cover rounded-md flex-shrink-0" style={{ border: "1px solid var(--ark-line)" }} />
+              <div className="min-w-0 flex-1">
+                <div style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.05rem", color: "var(--ark-ink)" }}>{item.name}</div>
+                <div style={{ fontFamily: BODY, fontSize: "0.82rem", color: "var(--ark-muted)" }}>{item.variant ? `${item.variant} · ` : ""}{usd(item.price)} each</div>
+              </div>
+              <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                <QtyStepper sku={sku} qty={qty} />
+                <span style={{ fontFamily: BODY, fontWeight: 600, color: "var(--ark-ink)", minWidth: "3.5rem", textAlign: "right" }}>{usd(item.price * qty)}</span>
+                <button type="button" onClick={() => cart.remove(sku)} className="ark-focus" aria-label={`Remove ${item.name}${item.variant ? ` (${item.variant})` : ""}`} style={{ color: "var(--ark-muted)", background: "none", border: "none", cursor: "pointer", padding: 4 }}>
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      <div className="mt-2 pt-4 flex items-baseline justify-between" style={{ borderTop: "1px solid var(--ark-line)" }}>
+        <span style={{ fontFamily: BODY, fontSize: "0.9rem", color: "var(--ark-muted)" }}>Total</span>
+        <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.5rem", color: "var(--ark-ink)" }}>{usd(total)}</span>
+      </div>
+    </Panel>
+  );
+}
+
+const addCase = (c: CaseColour | null) => {
+  if (c) cart.add(CASE_COLOURS[c].sku);
+};
+
+function CaseUpsell({ onCase }: { onCase: () => void }) {
+  return (
+    <Panel className="p-5">
+      <div className="flex items-center gap-4">
+        <img src="/products/case/black-front-right.jpg" alt="" width={96} height={54} className="w-24 h-[54px] object-cover rounded-md flex-shrink-0" style={{ border: "1px solid var(--ark-line)" }} />
+        <div className="min-w-0">
+          <div style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.1rem", color: "var(--ark-ink)" }}>Add a BlackBox Case: {usd(CATALOG["case-black"].price)}</div>
+          <div style={{ fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-ink-dim)", lineHeight: 1.5 }}>
+            Every port and LED still works with it on.{" "}
+            <button type="button" onClick={onCase} className="ark-focus" style={{ color: "var(--ark-signal)", textDecoration: "underline", textUnderlineOffset: "2px", background: "none", border: "none", padding: 0, cursor: "pointer" }}>See the case</button>
+          </div>
+        </div>
+      </div>
+      <div className="mt-4">
+        <CaseColourPicker value={null} onChange={addCase} priceSuffix={`+${usd(CATALOG["case-black"].price)}`} />
+      </div>
+    </Panel>
+  );
+}
+
+function EmptyCart({ onCase }: { onCase: () => void }) {
+  return (
+    <div className="grid sm:grid-cols-2 gap-4">
+      <Panel className="p-5 flex flex-col">
+        <img src={CATALOG.blackbox.image} alt="BlackBox Rev A board" width={320} height={180} className="w-full aspect-[16/9] object-cover rounded-md" style={{ border: "1px solid var(--ark-line)" }} />
+        <div className="mt-4 flex items-baseline justify-between">
+          <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.15rem", color: "var(--ark-ink)" }}>BlackBox</span>
+          <span style={{ fontFamily: BODY, fontWeight: 600, color: "var(--ark-ink)" }}>{usd(CATALOG.blackbox.price)}</span>
+        </div>
+        <Button className="w-full mt-4" onClick={() => cart.add("blackbox")}>Add to cart</Button>
+      </Panel>
+      <Panel className="p-5">
+        <img src="/products/case/black-front-right.jpg" alt="BlackBox Case in Stealth Black" width={320} height={180} className="w-full aspect-[16/9] object-cover rounded-md" style={{ border: "1px solid var(--ark-line)" }} />
+        <div className="mt-4 flex items-baseline justify-between">
+          <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.15rem", color: "var(--ark-ink)" }}>BlackBox Case</span>
+          <span style={{ fontFamily: BODY, fontWeight: 600, color: "var(--ark-ink)" }}>{usd(CATALOG["case-black"].price)}</span>
+        </div>
+        <p style={{ fontFamily: BODY, fontSize: "0.78rem", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ark-muted)", margin: "0.8rem 0 0.5rem" }}>Add in</p>
+        <CaseColourPicker value={null} onChange={addCase} />
+        <button type="button" onClick={onCase} className="ark-focus mt-3" style={{ fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-signal)", textDecoration: "underline", textUnderlineOffset: "2px", background: "none", border: "none", padding: 0, cursor: "pointer" }}>See the case</button>
+      </Panel>
+    </div>
+  );
+}
+
+function PurchasePage({ onHome, onCase }: { onHome: () => void; onCase: () => void }) {
+  const { lines, total, count, has } = useCart();
+  const hasCase = has("case-white") || has("case-black");
   // Stripe redirects back here after payment with ?payment_intent=…&redirect_status=…
   const [returned] = useState(() => {
     const q = new URLSearchParams(window.location.search);
@@ -684,37 +855,35 @@ function ReservePage({ onHome }: { onHome: () => void; initialProduct?: ProductI
         <BackBar onHome={onHome} />
         <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-10 items-start">
           <Reveal>
-            <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.2rem, 4.3vw, 3.6rem)", lineHeight: 0.98, letterSpacing: "0", color: "var(--ark-ink)", marginBottom: "1.3rem" }}>
-              {editionName}
+            <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.2rem, 4.3vw, 3.6rem)", lineHeight: 0.98, letterSpacing: "0", color: "var(--ark-ink)", marginBottom: "1.1rem" }}>
+              Purchase
             </h1>
-            <p style={{ fontFamily: BODY, fontSize: "1.05rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, maxWidth: "36rem" }}>
-              {founders?.soldOut ? "" : "The first 10 units sold are the Founder's Edition. "}Includes the unit, USB-C cable, wiring harness, and access to firmware and BlackBox Desktop App updates as we ship them.
-            </p>
-
-            <div className="mt-8 max-w-lg">
-              <FoundersEdition compact />
-            </div>
-
-            <Panel className="mt-6 p-6 max-w-lg">
-              <div className="flex items-center gap-5">
-                <div className="w-28 flex-shrink-0 rounded-lg overflow-hidden" style={{ border: "1px solid var(--ark-line)" }}>
-                  <DeviceMockup kind="blackbox" className="w-full h-auto" />
+            {!returned && (
+              <p style={{ fontFamily: BODY, fontSize: "1.05rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, maxWidth: "36rem" }}>
+                {count ? "Review your cart, then check out securely with Stripe." : "Your cart is empty. Add something to get started."}
+              </p>
+            )}
+            {!returned &&
+              (count ? (
+                <div className="mt-8 grid gap-5 max-w-xl">
+                  <CartPanel />
+                  {has("blackbox") && !hasCase && <CaseUpsell onCase={onCase} />}
+                  {hasCase && (
+                    <p className="inline-flex items-center gap-2" style={{ fontFamily: BODY, fontSize: "0.88rem", color: "var(--ark-muted)" }}>
+                      <Package size={15} /> Cases are 3D printed to order, so allow a few extra days.
+                    </p>
+                  )}
+                  {has("blackbox") && <FoundersEdition compact />}
                 </div>
-                <div className="min-w-0">
-                  <div style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.05rem", color: "var(--ark-ink)" }}>{editionName}</div>
-                  <div style={{ fontFamily: BODY, fontSize: "0.78rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--ark-muted)", marginTop: "3px" }}>{product.code} · {product.status}</div>
-                  <div style={{ fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-ink-dim)", lineHeight: 1.55, marginTop: "0.6rem" }}>{product.tagline}</div>
+              ) : (
+                <div className="mt-8 max-w-xl">
+                  <EmptyCart onCase={onCase} />
                 </div>
-              </div>
-              <div className="mt-5 pt-4 flex items-baseline justify-between" style={{ borderTop: "1px solid var(--ark-line-soft)" }}>
-                <span style={{ fontFamily: BODY, fontSize: "0.9rem", color: "var(--ark-muted)" }}>Price</span>
-                <span style={{ fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-ink-dim)" }}>$199</span>
-              </div>
-            </Panel>
+              ))}
           </Reveal>
 
           <Reveal delay={0.1}>
-            {returned ? <OrderConfirmation id={returned.id} status={returned.status} /> : <StripeCheckout />}
+            {returned ? <OrderConfirmation id={returned.id} status={returned.status} /> : count > 0 ? <StripeCheckout items={lines} total={total} /> : null}
           </Reveal>
         </div>
       </div>
@@ -1019,7 +1188,7 @@ function SpecsPage({ onHome, onReserve }: { onHome: () => void; onReserve: () =>
         </Reveal>
 
         <div className="mt-8">
-          <Button size="lg" onClick={onReserve}>Reserve a BlackBox <ArrowRight size={14} /></Button>
+          <Button size="lg" onClick={onReserve}>Purchase a BlackBox <ArrowRight size={14} /></Button>
         </div>
       </div>
     </main>
@@ -1251,7 +1420,7 @@ function DownloadsPage({ onHome, onReserve }: { onHome: () => void; onReserve: (
         </div>
 
         <div className="mt-8">
-          <Button size="lg" onClick={onReserve}>Reserve a BlackBox <ArrowRight size={14} /></Button>
+          <Button size="lg" onClick={onReserve}>Purchase a BlackBox <ArrowRight size={14} /></Button>
         </div>
 
         <section aria-label="SHA-256 checksums" className="mt-20 pt-4" style={{ borderTop: "1px solid var(--ark-line-soft)" }}>
@@ -1343,7 +1512,8 @@ function Footer({
   onProduct,
   onSpecs,
   onDownloads,
-  onReserve,
+  onPurchase,
+  onCase,
   onSection,
 }: {
   onLegalPage: (page: "privacy" | "terms" | "accessibility") => void;
@@ -1352,11 +1522,12 @@ function Footer({
   onProduct: (id: ProductId) => void;
   onSpecs: () => void;
   onDownloads: () => void;
-  onReserve: () => void;
+  onPurchase: () => void;
+  onCase: () => void;
   onSection: (section: string) => void;
 }) {
   const columns: FooterColumn[] = [
-    { title: "Products", links: [{ label: "BlackBox", href: PATHS.blackbox, action: () => onProduct("blackbox") }, { label: "Reserve", href: PATHS.reserve, action: onReserve }] },
+    { title: "Products", links: [{ label: "BlackBox", href: PATHS.blackbox, action: () => onProduct("blackbox") }, { label: "BlackBox Case", href: PATHS.case, action: onCase }, { label: "Purchase", href: PATHS.purchase, action: onPurchase }] },
     { title: "Explore", links: [{ label: "Specs", href: PATHS.specs, action: onSpecs }, { label: "Downloads", href: PATHS.downloads, action: onDownloads }, { label: "Team", href: "/#team", action: () => onSection("team") }] },
     { title: "Company", links: [{ label: "Contact", href: PATHS.contact, action: onContact }, { label: "Careers", href: PATHS.careers, action: onCareers }] },
     { title: "Legal", links: [{ label: "Privacy", href: PATHS.privacy, action: () => onLegalPage("privacy") }, { label: "Terms", href: PATHS.terms, action: () => onLegalPage("terms") }, { label: "Accessibility", href: PATHS.accessibility, action: () => onLegalPage("accessibility") }] },
@@ -1398,7 +1569,7 @@ function Footer({
 }
 
 /* ── Root ─────────────────────────────────────────────────────────── */
-type Page = "home" | "reserve" | "contact" | "specs" | "downloads" | "careers" | "privacy" | "terms" | "accessibility" | ProductId;
+type Page = "home" | "purchase" | "case" | "contact" | "specs" | "downloads" | "careers" | "privacy" | "terms" | "accessibility" | ProductId;
 
 const SITE = "https://www.strygonia.com";
 
@@ -1408,7 +1579,8 @@ const PATHS: Record<Page, string> = {
   specs: "/specs",
   downloads: "/downloads",
   contact: "/contact",
-  reserve: "/reserve",
+  purchase: "/purchase",
+  case: "/products/case",
   careers: "/careers",
   privacy: "/privacy",
   terms: "/terms",
@@ -1421,7 +1593,8 @@ const META: Record<Page, [title: string, description: string]> = {
   specs: ["BlackBox Specifications | Strygonia", "Full technical specifications for BlackBox SG-BB1: ARM processor, high-side current sensing, rolling buffer storage, USB-C, and 6 input channels."],
   downloads: ["Download the BlackBox Desktop App | Strygonia", "Download the BlackBox Desktop App for Mac, Windows and Linux, plus the latest BlackBox firmware. Version 1.0.0, with install notes and checksums."],
   contact: ["Contact Strygonia", "Questions about BlackBox, partnership inquiries, or anything else. Email contact@strygonia.com or find us on Instagram."],
-  reserve: ["Buy BlackBox: Founder's Edition | Strygonia", "Reserve a BlackBox Founder's Edition: only the first 10 units, $199. Includes the unit, wiring harness, USB-C cable, and all firmware updates."],
+  purchase: ["Purchase | Strygonia", "Your cart and checkout for BlackBox ($199, the first 10 units are the Founder's Edition) and the BlackBox Case ($25, Arctic White or Stealth Black)."],
+  case: ["BlackBox Case | Strygonia", "A snug two-piece case for BlackBox in Arctic White or Stealth Black. Every port stays usable, the four LEDs shine through, and it's held together by BlackBox's own mounting holes. $25."],
   careers: ["Careers | Strygonia", "Join Strygonia. We're building the next generation of bench instruments for embedded engineers."],
   privacy: ["Privacy Policy | Strygonia", "How Strygonia collects, uses, and protects your personal information."],
   terms: ["Terms of Service | Strygonia", "The terms that govern use of the Strygonia website and purchases of Strygonia products."],
@@ -1430,13 +1603,13 @@ const META: Record<Page, [title: string, description: string]> = {
 
 const pageFromPath = (path: string): Page => {
   const clean = path.toLowerCase().replace(/\/+$/, "") || "/";
+  if (clean === "/reserve") return "purchase"; // old name; the server also redirects it
   return (Object.keys(PATHS) as Page[]).find((p) => PATHS[p] === clean) ?? "home";
 };
 
 export default function App() {
   const [scrolled, setScrolled] = useState(false);
   const [page, setPage] = useState<Page>(() => pageFromPath(window.location.pathname));
-  const [reserveProduct, setReserveProduct] = useState<ProductId>("blackbox");
   const [pendingSection, setPendingSection] = useState<string | null>(
     () => (pageFromPath(window.location.pathname) === "home" && window.location.hash.slice(1)) || null,
   );
@@ -1483,9 +1656,13 @@ export default function App() {
     requestAnimationFrame(() => scrollToTop(true));
   };
   const goHome = () => go("home");
-  const goReserve = (product?: ProductId) => {
-    if (product) setReserveProduct(product);
-    go("reserve");
+  const goPurchase = () => go("purchase");
+  const goCase = () => go("case");
+  // "Buy" buttons put the item in the cart (once) and open the Purchase page.
+  const buyBlackBox = (caseColour: CaseColour | null = null) => {
+    cart.ensure("blackbox");
+    if (caseColour) cart.ensure(CASE_COLOURS[caseColour].sku);
+    goPurchase();
   };
   const goContact = () => go("contact");
   const goSpecs = () => go("specs");
@@ -1519,7 +1696,7 @@ export default function App() {
       <Navbar
         scrolled={scrolled || page !== "home"}
         onHome={goHome}
-        onReserve={() => goReserve()}
+        onPurchase={goPurchase}
         onContact={goContact}
         onPage={go}
         onProduct={goProduct}
@@ -1530,7 +1707,7 @@ export default function App() {
         <main>
           <Hero onBlackBox={() => goProduct("blackbox")} />
           <ToolMarquee />
-          <Products onProduct={goProduct} onReserve={() => goReserve()} />
+          <Products onProduct={goProduct} onReserve={() => buyBlackBox()} onCase={goCase} />
           <section className="relative py-24 px-6 border-t" style={{ background: "var(--ark-bg-2)", borderColor: "var(--ark-line-soft)" }}>
             <div className="max-w-6xl mx-auto">
               <WaitlistForm page="home" />
@@ -1543,16 +1720,18 @@ export default function App() {
             />
           </div>
           <Team />
-          <CTA onReserve={() => goReserve()} onContact={goContact} />
+          <CTA onReserve={() => buyBlackBox()} onContact={goContact} />
         </main>
-      ) : page === "reserve" ? (
-        <ReservePage onHome={goHome} initialProduct={reserveProduct} />
+      ) : page === "purchase" ? (
+        <PurchasePage onHome={goHome} onCase={goCase} />
+      ) : page === "case" ? (
+        <CasePage onHome={goHome} onBlackBox={() => goProduct("blackbox")} onPurchase={goPurchase} onBuyBundle={(c) => buyBlackBox(c)} />
       ) : page === "contact" ? (
         <ContactPage onHome={goHome} />
       ) : page === "specs" ? (
-        <SpecsPage onHome={goHome} onReserve={() => goReserve()} />
+        <SpecsPage onHome={goHome} onReserve={() => buyBlackBox()} />
       ) : page === "downloads" ? (
-        <DownloadsPage onHome={goHome} onReserve={() => goReserve()} />
+        <DownloadsPage onHome={goHome} onReserve={() => buyBlackBox()} />
       ) : page === "careers" ? (
         <CareersPage onHome={goHome} />
       ) : page in PRODUCTS ? (
@@ -1561,7 +1740,7 @@ export default function App() {
           onHome={goHome}
           onBack={goHome}
           backLabel="All products"
-          onReserve={() => goReserve(page as ProductId)}
+          onBuy={buyBlackBox}
           onContact={goContact}
         />
       ) : (
@@ -1575,7 +1754,8 @@ export default function App() {
         onProduct={goProduct}
         onSpecs={goSpecs}
         onDownloads={goDownloads}
-        onReserve={() => goReserve()}
+        onPurchase={goPurchase}
+        onCase={goCase}
         onSection={goSection}
       />
       <CookieBanner onPrivacy={() => goLegal("privacy")} />

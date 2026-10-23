@@ -23,13 +23,19 @@ Includes: BlackBox V1 recorder, color-coded wiring harness, USB-C cable, BlackBo
 
 Compatible with: STM32, ESP32, Raspberry Pi, Arduino, KiCad projects, custom PCBs, breadboards.
 
+### BlackBox Case
+- Price: $25
+- Colors: Arctic White, Stealth Black
+- A snug two-piece case for BlackBox. Every port stays usable (USB-C, microSD, target cable, power terminal), the four status LEDs shine through the lid, and the TRIGGER button works through a press-tab. Held together by BlackBox's own four mounting holes with 4 × M2.5 screws. 78.8 × 58.8 × 17 mm. 3D printed to order.
+
 ## Links
 
 - Homepage: https://www.strygonia.com/
 - BlackBox product page: https://www.strygonia.com/products/blackbox
 - Specifications: https://www.strygonia.com/specs
 - Downloads (BlackBox Desktop App and firmware): https://www.strygonia.com/downloads
-- Buy / Reserve: https://www.strygonia.com/reserve
+- Purchase (cart and checkout): https://www.strygonia.com/purchase
+- BlackBox Case: https://www.strygonia.com/products/case
 - Contact: https://www.strygonia.com/contact
 - Instagram: https://www.instagram.com/Strygonia/
 - Full detail for LLMs: https://www.strygonia.com/llms-full.txt
