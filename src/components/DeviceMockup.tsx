@@ -3,7 +3,7 @@
 import { images } from "@/assets/images";
 
 const RENDERS: Record<"blackbox", { src: string; alt: string }> = {
-  blackbox: { src: images.blackbox1, alt: "BlackBox Rev A PCB top view" },
+  blackbox: { src: images.blackbox1, alt: "BlackBox Rev C PCB top view" },
 };
 
 export function DeviceMockup({

@@ -11,7 +11,7 @@ const DISPLAY = "var(--ark-display)";
 const BODY = "var(--ark-body)";
 const NORDIC = "var(--ark-nordic)";
 
-/* Rev A board with an "Explode" clip (5 s): parts ripple up 0-2.75 s, then the board peels
+/* Rev C board with an "Explode" clip (5 s): parts ripple up 0-2.75 s, then the board peels
    into its layers 2.5-4.7 s. Scroll scrubs the clip. From 3d/exploded/BlackBox_RevA_explode_web.glb. */
 const MODEL_URL = `${import.meta.env.BASE_URL}models/blackbox-explode.glb`;
 
@@ -224,7 +224,7 @@ export function BlackBoxExploded({
             <div className="absolute inset-0 flex items-center justify-center px-6">
               <img
                 src={images.blackbox3}
-                alt="BlackBox Rev A PCB profile view"
+                alt="BlackBox Rev C PCB profile view"
                 className="max-h-[70vh] w-auto max-w-full rounded-lg"
                 style={{ border: "1px solid var(--ark-line)" }}
               />

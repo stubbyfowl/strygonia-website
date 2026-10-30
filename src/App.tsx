@@ -815,7 +815,7 @@ function EmptyCart({ onCase }: { onCase: () => void }) {
   return (
     <div className="grid sm:grid-cols-2 gap-4">
       <Panel className="p-5 flex flex-col">
-        <img src={CATALOG.blackbox.image} alt="BlackBox Rev A board" width={320} height={180} className="w-full aspect-[16/9] object-cover rounded-md" style={{ border: "1px solid var(--ark-line)" }} />
+        <img src={CATALOG.blackbox.image} alt="BlackBox Rev C board" width={320} height={180} className="w-full aspect-[16/9] object-cover rounded-md" style={{ border: "1px solid var(--ark-line)" }} />
         <div className="mt-4 flex items-baseline justify-between">
           <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.15rem", color: "var(--ark-ink)" }}>BlackBox</span>
           <span style={{ fontFamily: BODY, fontWeight: 600, color: "var(--ark-ink)" }}>{usd(CATALOG.blackbox.price)}</span>
@@ -1289,7 +1289,7 @@ function DownloadsPage({ onHome, onReserve }: { onHome: () => void; onReserve: (
     "Try the demo works without any hardware.",
   ];
   const firmwareNotes = [
-    "First release for BlackBox Rev A.",
+    "First release for BlackBox Rev C.",
     "Records two power rails, AUX, board current, two serial ports (baud rate detected automatically), four GPIO and reset to the microSD card, all the time.",
     "Flags dips and surges, overcurrent, resets, stopped heartbeats, and serial lines with words like panic, error or watchdog.",
     "Safe to pull the card or the power while recording: at most the last half second is lost.",
@@ -1395,7 +1395,7 @@ function DownloadsPage({ onHome, onReserve }: { onHome: () => void; onReserve: (
                 {FIRMWARE_BETA && <Badge variant="outline" className="text-[0.72rem] tracking-[0.06em] uppercase font-semibold" style={{ fontFamily: BODY }}>Beta</Badge>}
               </div>
               <p style={{ ...NOTE, marginBottom: "1.2rem" }}>
-                Firmware {FIRMWARE_VERSION} for BlackBox Rev A.{FIRMWARE_BETA && " It's in beta while we finish testing it on real boards."}
+                Firmware {FIRMWARE_VERSION} for BlackBox Rev C.{FIRMWARE_BETA && " It's in beta while we finish testing it on real boards."}
               </p>
               <a href={`/downloads/${FIRMWARE_FILE.file}`} download className={DOWNLOAD_BTN} style={{ fontFamily: BODY, textDecoration: "none" }}>
                 <Download size={18} /> Download firmware {FIRMWARE_VERSION}

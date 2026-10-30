@@ -12,7 +12,7 @@ const BODY = "var(--ark-body)";
 
 /* Case base and lid from the enclosure kit's render-stl files (mm, Z up, assembled, board
    centre at x/y 0, case floor at z 0). Rendered only, never linked for download. The board
-   is the Rev A GLB; its underside sits 3.24 mm above the case floor. */
+   is the Rev C GLB; its underside sits 3.24 mm above the case floor. */
 const BASE_URL = `${import.meta.env.BASE_URL}models/case/case-base.stl`;
 const LID_URL = `${import.meta.env.BASE_URL}models/case/case-lid.stl`;
 const BOARD_URL = `${import.meta.env.BASE_URL}models/blackbox-reva.glb`;

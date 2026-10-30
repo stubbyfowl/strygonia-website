@@ -8,7 +8,7 @@ import {
 import { STLLoader } from "three/addons/loaders/STLLoader.js";
 
 /* BlackBox CAD exports, served from public/models: the individual parts the
-   exploded view animates. (The 360° viewer loads the Rev A board GLB itself.) */
+   exploded view animates. (The 360° viewer loads the Rev C board GLB itself.) */
 export const BLACKBOX_MODELS = {
   top: `${import.meta.env.BASE_URL}models/blackbox-top.stl`,
   circuit: `${import.meta.env.BASE_URL}models/blackbox-circuit.stl`,

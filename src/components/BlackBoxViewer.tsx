@@ -9,11 +9,11 @@ import { images } from "@/assets/images";
 
 const BODY = "var(--ark-body)";
 
-/* BlackBox Rev A board (from 3d/BlackBox_RevA.glb), compressed with gltf-transform:
+/* BlackBox Rev C board (from 3d/BlackBox_RevA.glb), compressed with gltf-transform:
    meshopt geometry, 1536px WebP textures, 18.2 MB -> 2.1 MB. In metres, Y-up. */
 const MODEL_URL = `${import.meta.env.BASE_URL}models/blackbox-reva.glb`;
 
-/* Interactive 360° viewer for the BlackBox Rev A board. Auto-rotates until
+/* Interactive 360° viewer for the BlackBox Rev C board. Auto-rotates until
    the user grabs it; zoom stays off so the page keeps the scroll wheel. */
 export function BlackBoxViewer({ className = "" }: { className?: string }) {
   const hostRef = useRef<HTMLDivElement | null>(null);
@@ -158,7 +158,7 @@ export function BlackBoxViewer({ className = "" }: { className?: string }) {
       )}
 
       {status === "error" && (
-        <img src={images.blackbox1} alt="BlackBox Rev A PCB top view" className="absolute inset-0 w-full h-full object-cover" />
+        <img src={images.blackbox1} alt="BlackBox Rev C PCB top view" className="absolute inset-0 w-full h-full object-cover" />
       )}
 
       {status === "ready" && (

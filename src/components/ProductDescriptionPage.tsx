@@ -192,24 +192,24 @@ function BuildSheet({ product }: { product: ProductSpec }) {
   );
 }
 
-/* BlackBox render gallery — the three Rev A PCB renders. */
+/* BlackBox render gallery — the three Rev C PCB renders. */
 const GALLERY_SHOTS = [
   {
     src: blackbox1,
-    alt: "BlackBox Rev A PCB top view, components, ICs, and signal routing visible",
-    caption: "Rev A · top side",
+    alt: "BlackBox Rev C PCB top view, components, ICs, and signal routing visible",
+    caption: "Rev C · top side",
     full: true,
   },
   {
     src: blackbox2,
-    alt: "BlackBox Rev A PCB bottom view, ground plane and bottom-side passives",
-    caption: "Rev A · bottom side",
+    alt: "BlackBox Rev C PCB bottom view, ground plane and bottom-side passives",
+    caption: "Rev C · bottom side",
     full: false,
   },
   {
     src: blackbox3,
-    alt: "BlackBox Rev A PCB profile view, board thickness, connector heights, and component clearances",
-    caption: "Rev A · profile",
+    alt: "BlackBox Rev C PCB profile view, board thickness, connector heights, and component clearances",
+    caption: "Rev C · profile",
     full: false,
   },
 ];
@@ -334,7 +334,7 @@ export function ProductDescriptionPage({
       {isBlackbox && (
         <BlackBoxExploded
           title="Scroll to take it apart."
-          subtitle="Watch the Rev A board come apart: every part lifts off, then the board peels into its layers."
+          subtitle="Watch the Rev C board come apart: every part lifts off, then the board peels into its layers."
         />
       )}
 
