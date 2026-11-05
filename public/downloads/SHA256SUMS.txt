@@ -3,5 +3,5 @@
 0c02834cdc5af623606409e9f12966fffa3e0bb65dfbe5e5756db14d903da193  BlackBox-App-v6-Mac-Apple-Silicon.dmg
 2059d5fc4c50d39a197dea185af13137aead9991f1d5ef425ab358896b411c8e  BlackBox-App-v6-Mac-Intel.dmg
 d9ea2f45ef9fb5f33f2437e6f1daebf983b9fd5cf306a108e147079b2b949cc7  BlackBox-App-v6-Windows.exe
-ba7ff642e9b94854196884ad8b22378755e142fb429417a8051fc26124ac937e  blackbox-firmware-1.0.0.bin
+9468620b3461ee5e5c89e22a6bcf3210e22acc333787e8604a6a1daf63305fd7  blackbox-firmware-1.0.1.bin
 1a778f2abb0a89cc384cee1050fa1435cd12b7956dcd1cd26446ccfe9a204202  99-blackbox.rules

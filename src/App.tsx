@@ -1210,8 +1210,8 @@ function SpecsPage({ onHome, onReserve }: { onHome: () => void; onReserve: () =>
 /* ── Legal ────────────────────────────────────────────────────────── */
 /* ── Downloads ────────────────────────────────────────────────────── */
 const APP_VERSION = "v6";
-const FIRMWARE_VERSION = "1.0.0";
-const FIRMWARE_BETA = true; // set to false once firmware 1.0.0 has been tested on real boards
+const FIRMWARE_VERSION = "1.0.1";
+const FIRMWARE_BETA = true; // set to false once the firmware has passed every bench test (rails, inputs, UARTs, calibration)
 const APP_RELEASE_URL = "https://github.com/stubbyfowl/strygonia-website/releases/download/app-v6";
 
 type AppPlatform = "mac-arm64" | "mac-x64" | "windows" | "linux" | "linux-appimage";
@@ -1224,7 +1224,7 @@ const APP_DOWNLOADS: { id: AppPlatform; button: string; name: string; detail: st
   { id: "linux-appimage", button: "Download for Linux (AppImage)", name: "Other Linux", detail: "64-bit AppImage", file: "BlackBox-App-v6-Linux.AppImage", size: "131 MB", sha256: "3d9e4f9d5d7180778ef4b346c7628de07679b1014ea1bc0b1316f5d9addf11d1" },
 ];
 
-const FIRMWARE_FILE = { file: "blackbox-firmware-1.0.0.bin", size: "95 KB", sha256: "ba7ff642e9b94854196884ad8b22378755e142fb429417a8051fc26124ac937e" };
+const FIRMWARE_FILE = { file: "blackbox-firmware-1.0.1.bin", size: "96 KB", sha256: "9468620b3461ee5e5c89e22a6bcf3210e22acc333787e8604a6a1daf63305fd7" };
 
 const CHECKSUMS: [file: string, sha256: string][] = [
   ...APP_DOWNLOADS.map((d): [string, string] => [d.file, d.sha256]),
@@ -1290,7 +1290,8 @@ function DownloadsPage({ onHome, onReserve }: { onHome: () => void; onReserve: (
     "Try the demo works without any hardware.",
   ];
   const firmwareNotes = [
-    "First release for BlackBox Rev C.",
+    "New in 1.0.1, from testing the first real boards: records on SD cards that already hold files (it used to need an empty card), SD problems now say exactly what went wrong, and a normal power-up no longer shows as a brown-out.",
+    "1.0.0 was the first release for BlackBox Rev C.",
     "Records two power rails, AUX, board current, two serial ports (baud rate detected automatically), four GPIO and reset to the microSD card, all the time.",
     "Flags dips and surges, overcurrent, resets, stopped heartbeats, and serial lines with words like panic, error or watchdog.",
     "Safe to pull the card or the power while recording: at most the last half second is lost.",
