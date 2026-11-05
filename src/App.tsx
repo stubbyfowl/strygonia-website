@@ -1209,19 +1209,19 @@ function SpecsPage({ onHome, onReserve }: { onHome: () => void; onReserve: () =>
 
 /* ── Legal ────────────────────────────────────────────────────────── */
 /* ── Downloads ────────────────────────────────────────────────────── */
-const APP_VERSION = "v5";
+const APP_VERSION = "v6";
 const FIRMWARE_VERSION = "1.0.0";
 const FIRMWARE_BETA = true; // set to false once firmware 1.0.0 has been tested on real boards
-const APP_RELEASE_URL = "https://github.com/stubbyfowl/strygonia-website/releases/download/app-v5";
+const APP_RELEASE_URL = "https://github.com/stubbyfowl/strygonia-website/releases/download/app-v6";
 
 type AppPlatform = "mac-arm64" | "mac-x64" | "windows" | "linux" | "linux-appimage";
 
 const APP_DOWNLOADS: { id: AppPlatform; button: string; name: string; detail: string; file: string; size: string; sha256: string }[] = [
-  { id: "mac-arm64", button: "Download for Mac (Apple silicon)", name: "Mac, Apple silicon", detail: "M1 and newer, macOS 13 or later", file: "BlackBox-App-v5-Mac-Apple-Silicon.dmg", size: "133 MB", sha256: "2a3a50d2ac129db1c73a68f3a1e469f61bfc32e6723eb5613295388bd674105e" },
-  { id: "mac-x64", button: "Download for Mac (Intel)", name: "Mac, Intel", detail: "macOS 13 or later", file: "BlackBox-App-v5-Mac-Intel.dmg", size: "139 MB", sha256: "449d5c031fcec1a4172ada6aa4587438624521faa1fdb7e270781b43c547ee0b" },
-  { id: "windows", button: "Download for Windows", name: "Windows", detail: "Windows 10 and 11, 64-bit", file: "BlackBox-App-v5-Windows.exe", size: "116 MB", sha256: "d44407e5bedbcfe31e18b775e4e4cd2c253128f3317d55285725fedd7f64693a" },
-  { id: "linux", button: "Download for Linux (.deb)", name: "Linux, .deb", detail: "Ubuntu, Debian, Mint and Pop!_OS, 64-bit", file: "BlackBox-App-v5-Linux.deb", size: "104 MB", sha256: "bbc44345727ac402f74244db26b7cc948a50d8227c592132d3883e3bad3fa948" },
-  { id: "linux-appimage", button: "Download for Linux (AppImage)", name: "Other Linux", detail: "64-bit AppImage", file: "BlackBox-App-v5-Linux.AppImage", size: "131 MB", sha256: "198eb0416da8a7f0e58c1730e885da458be40e38e28824cc085ccfec0c302c90" },
+  { id: "mac-arm64", button: "Download for Mac (Apple silicon)", name: "Mac, Apple silicon", detail: "M1 and newer, macOS 13 or later", file: "BlackBox-App-v6-Mac-Apple-Silicon.dmg", size: "133 MB", sha256: "0c02834cdc5af623606409e9f12966fffa3e0bb65dfbe5e5756db14d903da193" },
+  { id: "mac-x64", button: "Download for Mac (Intel)", name: "Mac, Intel", detail: "macOS 13 or later", file: "BlackBox-App-v6-Mac-Intel.dmg", size: "139 MB", sha256: "2059d5fc4c50d39a197dea185af13137aead9991f1d5ef425ab358896b411c8e" },
+  { id: "windows", button: "Download for Windows", name: "Windows", detail: "Windows 10 and 11, 64-bit", file: "BlackBox-App-v6-Windows.exe", size: "116 MB", sha256: "d9ea2f45ef9fb5f33f2437e6f1daebf983b9fd5cf306a108e147079b2b949cc7" },
+  { id: "linux", button: "Download for Linux (.deb)", name: "Linux, .deb", detail: "Ubuntu, Debian, Mint and Pop!_OS, 64-bit", file: "BlackBox-App-v6-Linux.deb", size: "104 MB", sha256: "6334225b727d1b68db14d00c58cb39ea91890b5791387f9ee5c685d621862c67" },
+  { id: "linux-appimage", button: "Download for Linux (AppImage)", name: "Other Linux", detail: "64-bit AppImage", file: "BlackBox-App-v6-Linux.AppImage", size: "131 MB", sha256: "3d9e4f9d5d7180778ef4b346c7628de07679b1014ea1bc0b1316f5d9addf11d1" },
 ];
 
 const FIRMWARE_FILE = { file: "blackbox-firmware-1.0.0.bin", size: "95 KB", sha256: "ba7ff642e9b94854196884ad8b22378755e142fb429417a8051fc26124ac937e" };
@@ -1279,7 +1279,8 @@ function DownloadsPage({ onHome, onReserve }: { onHome: () => void; onReserve: (
   ];
 
   const appNotes = [
-    "New in v5: you choose where recordings are kept. The first time one is saved, BlackBox asks for a folder (Documents is suggested). The Recordings screen shows it, opens it, and can move it.",
+    "New in v6: works with real BlackBox boards. Fixes from bringing up the first boards: the app finds BlackBox and connects by itself, and reads its status correctly.",
+    "Since v5: you choose where recordings are kept. The first time one is saved, BlackBox asks for a folder (Documents is suggested). The Recordings screen shows it, opens it, and can move it.",
     "For Mac (Apple silicon and Intel), Windows, and Linux (.deb and AppImage).",
     "Device view: live power rails, board current, the four inputs, reset and the serial console, with a plain-language \"What happened\" feed.",
     "Rewind pulls the last 1 to 60 minutes off the SD card. Mark this moment drops a marker.",
@@ -1604,7 +1605,7 @@ const META: Record<Page, [title: string, description: string]> = {
   home: ["Strygonia | Bench Instruments for Embedded Engineers", "Strygonia builds precision bench instruments for hardware engineers. BlackBox is a hardware flight recorder that captures voltage, current, and serial data so you can rewind to the moment your board failed."],
   blackbox: ["BlackBox | Hardware Flight Recorder | Strygonia", "BlackBox clips onto your breadboard, Raspberry Pi, or PCB and continuously records voltage, current, UART, resets, and GPIO. When your board faults, scrub back through the timeline. $199."],
   specs: ["BlackBox Specifications | Strygonia", "Full technical specifications for BlackBox SG-BB1: ARM processor, high-side current sensing, rolling buffer storage, USB-C, and 6 input channels."],
-  downloads: ["Download the BlackBox Desktop App | Strygonia", "Download the BlackBox Desktop App for Mac, Windows and Linux, plus the latest BlackBox firmware. App v5, with install notes and checksums."],
+  downloads: ["Download the BlackBox Desktop App | Strygonia", "Download the BlackBox Desktop App for Mac, Windows and Linux, plus the latest BlackBox firmware. App v6, with install notes and checksums."],
   contact: ["Contact Strygonia", "Questions about BlackBox, partnership inquiries, or anything else. Email contact@strygonia.com or find us on Instagram."],
   purchase: ["Purchase | Strygonia", "Your cart and checkout for BlackBox ($199, the first 10 units are the Founder's Edition) and the BlackBox Case ($25, Arctic White or Stealth Black)."],
   case: ["BlackBox Case | Strygonia", "A snug two-piece case for BlackBox in Arctic White or Stealth Black. Every port stays usable, the four LEDs shine through, and it's held together by BlackBox's own mounting holes. $25."],
