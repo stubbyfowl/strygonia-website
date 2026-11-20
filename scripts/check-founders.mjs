@@ -83,12 +83,24 @@ for (const bad of [[], [{ sku: "blackbox", qty: 0 }], [{ sku: "blackbox", qty: 1
   assert.equal(parseItems(bad), null, `should reject ${JSON.stringify(bad)}`);
 }
 
-// Shipping: a flat $5 per order, whatever's in it.
-assert.deepEqual(priceCart({ "case-white": 1 }), { subtotal: 2500, shipping: 500, amount: 3000 });
-assert.deepEqual(priceCart({ "case-white": 2, "case-black": 1 }), { subtotal: 7500, shipping: 500, amount: 8000 });
-assert.deepEqual(priceCart({ blackbox: 1, "case-black": 1 }), { subtotal: 22400, shipping: 500, amount: 22900 });
-assert.deepEqual(priceCart({ blackbox: 2 }), { subtotal: 39800, shipping: 500, amount: 40300 });
+// Shipping: USPS postage from Phoenix. One BlackBox packs to 10 oz (16 oz row), a lone case to 5 oz (8 oz row).
+const ship = (qty, country, postal_code) => priceCart(qty, { country, postal_code })?.shipping ?? null;
+assert.equal(ship({ blackbox: 1 }, "US", "85004"), 1005); // Phoenix, zone 1
+assert.equal(ship({ blackbox: 1 }, "US", "90210"), 1110); // Beverly Hills, zone 4
+assert.equal(ship({ blackbox: 1 }, "US", "10001"), 1365); // New York, zone 8
+assert.equal(ship({ blackbox: 1 }, "US", "96813"), 1365); // Honolulu, zone 8
+assert.equal(ship({ blackbox: 1 }, "US", "09001"), 1270); // APO under 1 lb, zone 7
+assert.equal(ship({ blackbox: 1 }, "GU", "96910"), 1365); // Guam
+assert.equal(ship({ "case-white": 1 }, "US", "85004"), 840);
+assert.equal(ship({ blackbox: 1 }, "CA", "M5V 2T6"), 2600); // Canada, price group 1
+assert.equal(ship({ blackbox: 1 }, "NR"), 3835); // Nauru, price group 4
+assert.equal(ship({ blackbox: 1 }, "AU", "2000"), 4125); // Australia, price group 12
+assert.equal(ship({ blackbox: 1 }, "US", "8500"), null); // no 5-digit ZIP
+for (const blocked of ["CU", "IR", "KP", "SY", "RU", "BY", "SO", "XX", ""]) assert.equal(ship({ blackbox: 1 }, blocked, "12345"), null, blocked);
+// Biggest cart abroad: 80 oz of items splits into two 44 oz packages (48 oz row).
+assert.deepEqual(priceCart({ blackbox: 10, "case-white": 10, "case-black": 10 }, { country: "CA" }), { subtotal: 249000, shipping: 7700, service: "USPS First-Class Package International, price group 1, 2 packages", amount: 256700 });
+assert.equal(priceCart({ blackbox: 1, "case-black": 1 }, { country: "US", postal_code: "85004" }).amount, 22400 + 1005);
 assert.equal(describeOrder({ product: "blackbox", blackbox_qty: "1", case_white_qty: "0", case_black_qty: "0", shipping_cents: "500" }, [4]), "BlackBox: Founder's Edition (#4 of 10) + Shipping ($5.00)");
-assert.equal(describeOrder({ product: "case", blackbox_qty: "0", case_white_qty: "1", case_black_qty: "0", shipping_cents: "500" }), "BlackBox Case (Arctic White) + Shipping ($5.00)");
+assert.equal(describeOrder({ product: "case", blackbox_qty: "0", case_white_qty: "1", case_black_qty: "0", shipping_cents: "840" }), "BlackBox Case (Arctic White) + Shipping ($8.40)");
 
 console.log("founders labelling + cart parsing + shipping: all checks passed");

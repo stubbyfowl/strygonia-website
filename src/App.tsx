@@ -52,7 +52,8 @@ import { useSmoothScroll, scrollToTop, scrollToId } from "@/lib/useSmoothScroll"
 import { CasePage } from "@/components/CasePage";
 import { CaseColourPicker } from "@/components/CaseColourPicker";
 import { cart, useCart, type CartLine } from "@/lib/cart";
-import { CASE_COLOURS, CATALOG, MAX_QTY, SHIPPING, usd, type CaseColour, type Sku } from "@/constants/catalog";
+import { CASE_COLOURS, CATALOG, MAX_QTY, usd, type CaseColour, type Sku } from "@/constants/catalog";
+import { DOMESTIC, SHIP_COUNTRIES, quoteShipping } from "../api/_shipping.js";
 
 const { sidakProfile } = images;
 
@@ -499,24 +500,30 @@ function validate(form: { name: string; line1: string; city: string; state: stri
   if (!line1 || line1.length < 5 || !/\d/.test(line1)) e.line1 = "Enter a street address (e.g. 123 Main St).";
   const city = form.city.trim();
   if (!city || city.length < 2 || /^\d+$/.test(city)) e.city = "Enter a valid city name.";
-  // State and ZIP are required for US addresses only; plenty of countries have neither.
-  const country = form.country.trim().toUpperCase();
-  const isUS = country === "US";
+  // State is required for US addresses only, and a ZIP wherever USPS uses ZIP codes; plenty of countries have neither.
+  const country = form.country;
   const state = form.state.trim();
-  if (isUS && state.length < 2) e.state = "Enter a state (e.g. CA).";
+  if (country === "US" && state.length < 2) e.state = "Enter a state (e.g. CA).";
   const zip = form.postal_code.trim();
-  if (isUS ? !/^\d{5}(-\d{4})?$/.test(zip) : zip !== "" && !/^[A-Za-z0-9\s-]{3,10}$/.test(zip)) e.postal_code = "Enter a valid postal code.";
-  if (!/^[A-Z]{2}$/.test(country)) e.country = "Enter a 2-letter country code (e.g. US).";
+  if (DOMESTIC.has(country) ? !/^\d{5}(-\d{4})?$/.test(zip) : zip !== "" && !/^[A-Za-z0-9\s-]{3,10}$/.test(zip)) e.postal_code = "Enter a valid postal code.";
+  if (!SHIP_COUNTRIES.includes(country)) e.country = "Choose a country.";
   return e;
 }
 
 type ShippingAddress = { name: string; line1: string; line2: string; city: string; state: string; postal_code: string; country: string };
+type ShipTo = { country: string; postal_code: string };
 
-function ShippingForm({ onComplete, initial }: { onComplete: (data: ShippingAddress) => void; initial: ShippingAddress | null }) {
+const countryName = (code: string) => new Intl.DisplayNames(["en"], { type: "region" }).of(code) ?? code;
+// United States first, then everywhere else A to Z.
+const COUNTRY_OPTIONS = SHIP_COUNTRIES.map((code) => ({ code, name: countryName(code) })).sort((a, b) => (a.code === "US" ? -1 : b.code === "US" ? 1 : a.name.localeCompare(b.name)));
+
+function ShippingForm({ onComplete, onDraft, initial }: { onComplete: (data: ShippingAddress) => void; onDraft: (to: ShipTo) => void; initial: ShippingAddress | null }) {
   const [form, setForm] = useState(initial ?? { name: "", line1: "", line2: "", city: "", state: "", postal_code: "", country: "US" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState(false);
-  const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+  // The cart quotes shipping as soon as there's a country and ZIP.
+  useEffect(() => onDraft({ country: form.country, postal_code: form.postal_code }), [form.country, form.postal_code]); // eslint-disable-line react-hooks/exhaustive-deps
+  const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const next = { ...form, [k]: e.target.value };
     setForm(next);
     if (touched) setErrors(validate(next));
@@ -526,7 +533,7 @@ function ShippingForm({ onComplete, initial }: { onComplete: (data: ShippingAddr
     const e = validate(form);
     setErrors(e);
     setTouched(true);
-    if (Object.keys(e).length === 0) onComplete({ ...form, country: form.country.trim().toUpperCase() });
+    if (Object.keys(e).length === 0) onComplete(form);
   };
 
   const fieldStyle = (k: string) => errors[k] ? { ...FORM_FIELD_STYLE, borderColor: "var(--ark-fault)" } : FORM_FIELD_STYLE;
@@ -567,7 +574,9 @@ function ShippingForm({ onComplete, initial }: { onComplete: (data: ShippingAddr
         </div>
         <div>
           <label htmlFor="ship-country" style={FORM_LABEL_STYLE}>Country</label>
-          <input id="ship-country" autoComplete="country" className={FORM_FIELD_CLASS} style={fieldStyle("country")} placeholder="US" value={form.country} onChange={set("country")} />
+          <select id="ship-country" autoComplete="country" className={FORM_FIELD_CLASS} style={fieldStyle("country")} value={form.country} onChange={set("country")}>
+            {COUNTRY_OPTIONS.map(({ code, name }) => <option key={code} value={code}>{name}</option>)}
+          </select>
           {errors.country && <p style={FIELD_ERROR_STYLE}>{errors.country}</p>}
         </div>
       </div>
@@ -578,7 +587,7 @@ function ShippingForm({ onComplete, initial }: { onComplete: (data: ShippingAddr
   );
 }
 
-function StripeCheckout({ items, total }: { items: CartLine[]; total: number }) {
+function StripeCheckout({ items, total, onDraft }: { items: CartLine[]; total: number; onDraft: (to: ShipTo) => void }) {
   const [step, setStep] = useState<"shipping" | "payment">("shipping");
   const [shipping, setShipping] = useState<ShippingAddress | null>(null);
   const [clientSecret, setClientSecret] = useState("");
@@ -601,7 +610,7 @@ function StripeCheckout({ items, total }: { items: CartLine[]; total: number }) 
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         items: items.map(({ sku, qty }) => ({ sku, qty })),
-        shipping: { name: data.name, address: { line1: data.line1, line2: data.line2, city: data.city, state: data.state, postal_code: data.postal_code, country: data.country || "US" } },
+        shipping: { name: data.name, address: { line1: data.line1, line2: data.line2, city: data.city, state: data.state, postal_code: data.postal_code, country: data.country } },
       }),
     })
       .then((r) => r.json())
@@ -626,7 +635,7 @@ function StripeCheckout({ items, total }: { items: CartLine[]; total: number }) 
       </div>
 
       {step === "shipping" ? (
-        <ShippingForm onComplete={handleShippingComplete} initial={shipping} />
+        <ShippingForm onComplete={handleShippingComplete} onDraft={onDraft} initial={shipping} />
       ) : error ? (
         <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(28,25,23,0.06)", borderColor: "rgba(28,25,23,0.14)", color: "var(--ark-fault-2)", fontFamily: BODY, fontSize: "0.85rem" }}>
           {error}
@@ -642,7 +651,7 @@ function StripeCheckout({ items, total }: { items: CartLine[]; total: number }) 
             <div className="mb-5 rounded-lg px-4 py-3" style={{ background: "rgba(28,25,23,0.04)", fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-ink-dim)" }}>
               <span style={{ fontWeight: 600, color: "var(--ark-ink)" }}>{shipping.name}</span>
               <br />{shipping.line1}{shipping.line2 ? `, ${shipping.line2}` : ""}
-              <br />{shipping.city}, {shipping.state} {shipping.postal_code}
+              <br />{shipping.city}, {shipping.state} {shipping.postal_code}{shipping.country !== "US" && `, ${countryName(shipping.country)}`}
               <div className="mt-2">
                 <button onClick={() => { setStep("shipping"); setClientSecret(""); }} style={{ fontFamily: BODY, fontSize: "0.78rem", color: "var(--ark-signal)", background: "none", border: "none", padding: 0, cursor: "pointer", textDecoration: "underline", textUnderlineOffset: "2px" }}>
                   Edit address
@@ -662,7 +671,7 @@ function StripeCheckout({ items, total }: { items: CartLine[]; total: number }) 
 
       <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
         {/* Stripe's official badge, from stripe.com/newsroom/brand-assets */}
-        <img src="/powered-by-stripe.svg" alt="Powered by Stripe" width={150} height={34} />
+        <img src="/powered-by-stripe.svg" alt="Powered by Stripe" width={190} height={43} />
         <span style={{ fontFamily: BODY, fontSize: "0.78rem", color: "var(--ark-faint)" }}>{usd(total)} USD</span>
       </div>
     </Panel>
@@ -746,8 +755,10 @@ function QtyStepper({ sku, qty }: { sku: Sku; qty: number }) {
 
 const SKU_ORDER = Object.keys(CATALOG) as Sku[];
 
-function CartPanel() {
-  const { lines, subtotal, shipping, total } = useCart();
+/* shipping: cents, undefined until there's an address, null if we can't ship there. */
+function CartPanel({ shipping }: { shipping: number | null | undefined }) {
+  const { lines, subtotal } = useCart();
+  const total = subtotal + (shipping ?? 0) / 100;
   const row = (label: string, value: string) => (
     <div className="flex items-baseline justify-between py-1">
       <span style={{ fontFamily: BODY, fontSize: "0.9rem", color: "var(--ark-muted)" }}>{label}</span>
@@ -779,12 +790,15 @@ function CartPanel() {
       </ul>
       <div className="mt-2 pt-3" style={{ borderTop: "1px solid var(--ark-line)" }}>
         {row("Subtotal", usd(subtotal))}
-        {row("Shipping", usd(shipping))}
+        {row("Shipping", shipping === undefined ? "Enter your address" : shipping === null ? "Not available" : usd(shipping / 100))}
       </div>
       <div className="mt-3 pt-3 flex items-baseline justify-between" style={{ borderTop: "1px solid var(--ark-line-soft)" }}>
-        <span style={{ fontFamily: BODY, fontSize: "0.9rem", color: "var(--ark-muted)" }}>Total</span>
+        <span style={{ fontFamily: BODY, fontSize: "0.9rem", color: "var(--ark-muted)" }}>{typeof shipping === "number" ? "Total" : "Total before shipping"}</span>
         <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.5rem", color: "var(--ark-ink)" }}>{usd(total)}</span>
       </div>
+      <p style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-muted)", marginTop: "0.4rem" }}>
+        Shipping is USPS postage from Phoenix, Arizona, worked out from your address.
+      </p>
     </Panel>
   );
 }
@@ -839,8 +853,13 @@ function EmptyCart({ onCase }: { onCase: () => void }) {
 }
 
 function PurchasePage({ onHome, onCase }: { onHome: () => void; onCase: () => void }) {
-  const { lines, total, count, has } = useCart();
+  const { lines, subtotal, count, has } = useCart();
   const hasCase = has("case-white") || has("case-black");
+  const [shipTo, setShipTo] = useState<ShipTo | null>(null);
+  // No quote until a ZIP is in for US addresses; the server prices the same way when the order is placed.
+  const shipping = !shipTo || (DOMESTIC.has(shipTo.country) && !/^\d{5}/.test(shipTo.postal_code.trim()))
+    ? undefined
+    : quoteShipping(Object.fromEntries(lines.map((l) => [l.sku, l.qty])), shipTo)?.cents ?? null;
   // Stripe redirects back here after payment with ?payment_intent=…&redirect_status=…
   const [returned] = useState(() => {
     const q = new URLSearchParams(window.location.search);
@@ -880,7 +899,7 @@ function PurchasePage({ onHome, onCase }: { onHome: () => void; onCase: () => vo
             {!returned &&
               (count ? (
                 <div className="mt-8 grid gap-5 max-w-xl">
-                  <CartPanel />
+                  <CartPanel shipping={shipping} />
                   {has("blackbox") && !hasCase && <CaseUpsell onCase={onCase} />}
                   {hasCase && (
                     <p className="inline-flex items-center gap-2" style={{ fontFamily: BODY, fontSize: "0.88rem", color: "var(--ark-muted)" }}>
@@ -897,7 +916,7 @@ function PurchasePage({ onHome, onCase }: { onHome: () => void; onCase: () => vo
           </Reveal>
 
           <Reveal delay={0.1}>
-            {returned ? <OrderConfirmation id={returned.id} status={returned.status} /> : count > 0 ? <StripeCheckout items={lines} total={total} /> : null}
+            {returned ? <OrderConfirmation id={returned.id} status={returned.status} /> : count > 0 ? <StripeCheckout items={lines} total={subtotal + (shipping ?? 0) / 100} onDraft={setShipTo} /> : null}
           </Reveal>
         </div>
       </div>
@@ -1470,7 +1489,7 @@ function LegalPage({ type, onHome, a11y, onToggleA11y }: { type: "privacy" | "te
         ]
         : [
         { title: "Use of the site", body: "This site describes Strygonia products and lets you buy them. Specifications and features can change between hardware revisions." },
-        { title: "Orders and payment", body: `Prices are in US dollars, and every order adds a flat ${usd(SHIPPING)} shipping fee. Payments are processed by Stripe: your card details go straight to Stripe, and we never see or store them. Your order is placed once your payment goes through, and we'll be in touch about shipping.` },
+        { title: "Orders and payment", body: `Prices are in US dollars. Shipping is charged at USPS postage rates from Phoenix, Arizona, worked out from your address at checkout. Payments are processed by Stripe: your card details go straight to Stripe, and we never see or store them. Your order is placed once your payment goes through, and we'll be in touch about shipping.` },
         { title: "Founder's Edition", body: "The first 10 BlackBox units paid for are the Founder's Edition, numbered in the order payments go through. Every unit after that is the standard edition at the same price. BlackBox Case orders don't count toward the 10." },
         { title: "Returns", body: "All sales are final. If your order arrives damaged, or we sent the wrong item, we'll repair or replace it. The full Return Policy is at strygonia.com/returns." },
         { title: "Software and firmware", body: "The BlackBox Desktop App and BlackBox firmware are free to download at strygonia.com/downloads. Firmware marked beta is still being tested on real boards." },

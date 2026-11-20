@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/Reveal";
 import { CaseViewer } from "@/components/CaseViewer";
 import { CaseColourPicker } from "@/components/CaseColourPicker";
-import { CASE_COLOURS, SHIPPING, CATALOG, usd, type CaseColour } from "@/constants/catalog";
+import { CASE_COLOURS, CATALOG, usd, type CaseColour } from "@/constants/catalog";
 import { cart } from "@/lib/cart";
 
 const DISPLAY = "var(--ark-display)";
@@ -127,7 +127,7 @@ export function CasePage({
                   <Package size={15} /> 3D printed to order, so allow a few extra days to ship.
                 </p>
                 <p style={{ fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-muted)", marginTop: "0.3rem" }}>
-                  Shipping is a flat {usd(SHIPPING)} per order.
+                  Shipping is USPS postage from Phoenix, worked out from your address at checkout.
                 </p>
               </Reveal>
 

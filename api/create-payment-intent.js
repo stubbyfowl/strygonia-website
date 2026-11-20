@@ -1,14 +1,15 @@
 import { stripe, describeOrder } from "./_founders.js";
+import { quoteShipping } from "./_shipping.js";
 
 // The real prices, in cents. The browser only sends which items and how many; it never sets the amount.
 const PRICES = { blackbox: 19900, "case-white": 2500, "case-black": 2500 };
 const MAX_QTY = 10;
-const SHIPPING = 500; // flat $5 per order
 
-export function priceCart(qty) {
+/* Subtotal plus USPS postage from Phoenix to the address (see _shipping.js), or null if we don't ship there. */
+export function priceCart(qty, address) {
   const subtotal = Object.entries(qty).reduce((sum, [sku, n]) => sum + PRICES[sku] * n, 0);
-  const shipping = SHIPPING;
-  return { subtotal, shipping, amount: subtotal + shipping };
+  const quote = quoteShipping(qty, address);
+  return quote && { subtotal, shipping: quote.cents, service: quote.service, amount: subtotal + quote.cents };
 }
 
 /* Cart from the browser -> { sku: qty }, or null if anything about it is off. */
@@ -33,9 +34,13 @@ export default async function handler(req, res) {
   const qty = parseItems(req.body?.items);
   if (!qty) return res.status(400).json({ error: "Your cart couldn't be read. Refresh the page and try again." });
 
+  const { shipping } = req.body || {};
+  if (!shipping?.name || !shipping?.address) return res.status(400).json({ error: "Enter your shipping address first." });
+  const priced = priceCart(qty, shipping.address);
+  if (!priced) return res.status(400).json({ error: "We can't ship to that address. Check the country and ZIP or postal code, or email contact@strygonia.com." });
+
   try {
-    const { shipping } = req.body || {};
-    const { amount, shipping: shippingCents } = priceCart(qty);
+    const { amount, shipping: shippingCents, service } = priced;
     // product=blackbox marks orders that include a BlackBox (the Founder's count only searches those);
     // case-only orders are product=case. The order is labelled with Founder's numbers once it's paid.
     const metadata = {
@@ -44,6 +49,7 @@ export default async function handler(req, res) {
       case_white_qty: String(qty["case-white"] ?? 0),
       case_black_qty: String(qty["case-black"] ?? 0),
       shipping_cents: String(shippingCents),
+      shipping_service: service,
     };
     const params = {
       amount,
@@ -51,10 +57,7 @@ export default async function handler(req, res) {
       description: describeOrder(metadata),
       metadata,
       automatic_payment_methods: { enabled: true },
-    };
-
-    if (shipping?.name && shipping?.address) {
-      params.shipping = {
+      shipping: {
         name: shipping.name,
         address: {
           line1: shipping.address.line1,
@@ -62,13 +65,13 @@ export default async function handler(req, res) {
           city: shipping.address.city,
           state: shipping.address.state || undefined,
           postal_code: shipping.address.postal_code || undefined,
-          country: shipping.address.country || "US",
+          country: shipping.address.country,
         },
-      };
-    }
+      },
+    };
 
     const paymentIntent = await stripe.paymentIntents.create(params);
-    return res.status(200).json({ clientSecret: paymentIntent.client_secret, amount });
+    return res.status(200).json({ clientSecret: paymentIntent.client_secret, amount, shipping: shippingCents });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
