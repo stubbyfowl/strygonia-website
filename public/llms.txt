@@ -15,11 +15,11 @@ Contact: contact@strygonia.com
 - Type: Hardware flight recorder
 - Price: $199
 - Founder's Edition: the first 10 BlackBox units sold. After those 10, BlackBox is sold as the standard edition at the same $199.
-- Status: V1 Prototype
+- Status: In stock (V1, Rev C board)
 
 BlackBox is a small module you clip onto a breadboard, Raspberry Pi, or custom PCB. It continuously records voltage (2 rails), current (high-side sensor), UART serial output, reset events, 4 GPIO inputs, and 1 analog channel, all timestamped against a shared clock in a rolling buffer. When your board faults, you connect via USB-C and scrub back through the BlackBox Desktop App timeline to see exactly what happened. No need to reproduce the failure.
 
-Includes: BlackBox V1 recorder, color-coded wiring harness, USB-C cable, BlackBox Desktop App (macOS, Windows, Linux).
+Includes: BlackBox V1 recorder (case sold separately), color-coded wiring harness, USB-C cable, BlackBox Desktop App (macOS, Windows, Linux).
 
 Compatible with: STM32, ESP32, Raspberry Pi, Arduino, KiCad projects, custom PCBs, breadboards.
 

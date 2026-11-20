@@ -17,7 +17,7 @@ A hardware flight recorder for your bench.
 - Type: Hardware flight recorder
 - Price: $199
 - Founder's Edition: the first 10 BlackBox units sold. After those 10, BlackBox is sold as the standard edition at the same $199.
-- Status: V1 prototype
+- Status: In stock (V1, Rev C board)
 - Buy: https://www.strygonia.com/purchase
 - Product page: https://www.strygonia.com/products/blackbox
 
@@ -65,13 +65,13 @@ Six inputs on one harness. Every sample shares the same clock, so a voltage dip,
 | Storage | Onboard, rolling buffer |
 | Link | USB-C to USB-C, power + data |
 | Targets | Breadboard / Raspberry Pi / custom PCB |
-| Status | V1 prototype |
+| Status | In stock |
 
-Specs are subject to change as the hardware is validated. Full spec page: https://www.strygonia.com/specs
+Full spec page: https://www.strygonia.com/specs
 
 ### What ships with it
 
-- BlackBox V1 recorder in a printed enclosure
+- BlackBox V1 recorder, Rev C board (case sold separately)
 - Color-coded wiring harness with labelled leads
 - USB-C cable for power and data
 - BlackBox Desktop App for macOS, Windows, and Linux

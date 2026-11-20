@@ -1,6 +1,6 @@
 import { STRYGONIA_EMAIL } from "@/config/env";
 
-export const ACCESSIBILITY_LAST_UPDATED = "June 26, 2026";
+export const ACCESSIBILITY_LAST_UPDATED = "November 20, 2026";
 
 export const ACCESSIBILITY_SECTIONS = [
   {
@@ -13,11 +13,11 @@ export const ACCESSIBILITY_SECTIONS = [
   },
   {
     title: "Standards & testing",
-    body: "We aim to conform with WCAG 2.1 Level AA where practical for a prototype marketing site. We regularly review color contrast, focus states, form labels, semantic headings, and keyboard navigation as pages evolve.",
+    body: "We aim to conform with WCAG 2.1 Level AA across the site. We regularly review color contrast, focus states, form labels, semantic headings, and keyboard navigation as pages evolve.",
   },
   {
     title: "Known limitations",
-    body: "Some product renders, background photography, and scroll-driven animations may be reduced or removed in accessibility mode. Third-party embeds, if added in the future, may not fully match site accessibility settings.",
+    body: "Some product renders, background photography, and scroll-driven animations may be reduced or removed in accessibility mode. The payment form on the Purchase page is provided by Stripe and may not fully follow accessibility mode.",
   },
   {
     title: "Feedback",

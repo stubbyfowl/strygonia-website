@@ -52,7 +52,7 @@ import { useSmoothScroll, scrollToTop, scrollToId } from "@/lib/useSmoothScroll"
 import { CasePage } from "@/components/CasePage";
 import { CaseColourPicker } from "@/components/CaseColourPicker";
 import { cart, useCart, type CartLine } from "@/lib/cart";
-import { CASE_COLOURS, CATALOG, MAX_QTY, usd, type CaseColour, type Sku } from "@/constants/catalog";
+import { CASE_COLOURS, CATALOG, MAX_QTY, SHIPPING, usd, type CaseColour, type Sku } from "@/constants/catalog";
 
 const { sidakProfile } = images;
 
@@ -1107,7 +1107,7 @@ function SpecsPage({ onHome, onReserve }: { onHome: () => void; onReserve: () =>
     ["Storage", "Onboard memory that keeps a rolling record of the last window."],
     ["Power & link", "A single USB-C connection carrying both power and data, regulated on board."],
     ["Interface", "A universal header and a color-coded harness for breadboards, Pi headers, and PCB test points."],
-    ["Enclosure", "A 3D-printed shell over a custom-fabricated carrier board."],
+    ["Case", "Sold separately: the BlackBox Case, 3D printed to order in Arctic White or Stealth Black."],
   ];
   const targets = [
     ["Target 3.3V → Voltage input", "via harness"],
@@ -1119,10 +1119,10 @@ function SpecsPage({ onHome, onReserve }: { onHome: () => void; onReserve: () =>
     ["Target power → INA228 inline", "current sense"],
   ];
   const roadmap = [
-    { phase: "Phase 1", detail: "Custom PCB with universal pin header. Voltage, current, and UART recording to SD card." },
-    { phase: "Phase 2", detail: "BlackBox Desktop App over USB-C: timeline, graphs, event markers, zoom, search." },
-    { phase: "Phase 3", detail: "GPIO recording, reset detection, trigger events, refined harness." },
-    { phase: "Phase 4", detail: "Improved enclosure, expanded harness kit, field testing across breadboard, Pi, and PCB." },
+    { phase: "Phase 1", status: "Done", detail: "Custom PCB with universal pin header. Voltage, current, and UART recording to SD card." },
+    { phase: "Phase 2", status: "Done", detail: "BlackBox Desktop App over USB-C: timeline, graphs, event markers, zoom, search." },
+    { phase: "Phase 3", status: "In testing", detail: "GPIO recording, reset detection, trigger events, refined harness." },
+    { phase: "Phase 4", status: "Next", detail: "Improved enclosure, expanded harness kit, field testing across breadboard, Pi, and PCB." },
   ];
   const stack = [["PCB design", "KiCad"], ["Firmware", "C · STM32 HAL, TinyUSB, FatFs"], ["BlackBox Desktop App", "Electron · React"], ["Prototyping", "Python"], ["Version control", "GitHub"]];
 
@@ -1131,12 +1131,12 @@ function SpecsPage({ onHome, onReserve }: { onHome: () => void; onReserve: () =>
       <div className="max-w-6xl mx-auto">
         <BackBar onHome={onHome} />
         <Reveal className="max-w-3xl mb-12">
-          <Eyebrow>BlackBox · SG-BB1 · V1 prototype</Eyebrow>
+          <Eyebrow>BlackBox · SG-BB1 · V1 · Rev C</Eyebrow>
           <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.2rem, 4.3vw, 3.6rem)", lineHeight: 0.98, letterSpacing: "0", color: "var(--ark-ink)", marginBottom: "1.2rem" }}>
             Specifications
           </h1>
           <p style={{ fontFamily: BODY, fontSize: "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.8 }}>
-            What's in the V1 prototype and where it's headed. Specs are subject to change as we validate the hardware.
+            What's in BlackBox V1, and what's coming next.
           </p>
         </Reveal>
 
@@ -1191,7 +1191,7 @@ function SpecsPage({ onHome, onReserve }: { onHome: () => void; onReserve: () =>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {roadmap.map((r) => (
                 <div key={r.phase} className="p-5 rounded-lg" style={{ background: "var(--ark-bg-2)", border: "1px solid var(--ark-line-soft)" }}>
-                  <div style={{ fontFamily: BODY, fontSize: "0.82rem", fontWeight: 600, letterSpacing: "0.04em", color: "var(--ark-signal)", marginBottom: "0.6rem" }}>{r.phase}</div>
+                  <div style={{ fontFamily: BODY, fontSize: "0.82rem", fontWeight: 600, letterSpacing: "0.04em", color: "var(--ark-signal)", marginBottom: "0.6rem" }}>{r.phase} · {r.status}</div>
                   <p style={{ fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-ink-dim)", lineHeight: 1.7 }}>{r.detail}</p>
                 </div>
               ))}
@@ -1467,9 +1467,11 @@ function LegalPage({ type, onHome, a11y, onToggleA11y }: { type: "privacy" | "te
           { title: "Questions", body: "Not sure BlackBox will work with your setup? Email contact@strygonia.com before you order and we'll help you check." },
         ]
         : [
-        { title: "Use of the site", body: "This site presents Strygonia concepts, prototype information, and early-access opportunities. Product details may change as engineering validation continues." },
-        { title: "Reservations", body: "Joining the reserve list is an expression of interest only. It does not reserve final inventory, guarantee price, confirm specifications, or require payment." },
-        { title: "Prototype status", body: "BlackBox is in prototype development. Performance, compatibility, materials, availability, and shipping windows may change before launch." },
+        { title: "Use of the site", body: "This site describes Strygonia products and lets you buy them. Specifications and features can change between hardware revisions." },
+        { title: "Orders and payment", body: `Prices are in US dollars, and every order adds a flat ${usd(SHIPPING)} shipping fee. Payments are processed by Stripe: your card details go straight to Stripe, and we never see or store them. Your order is placed once your payment goes through, and we'll be in touch about shipping.` },
+        { title: "Founder's Edition", body: "The first 10 BlackBox units paid for are the Founder's Edition, numbered in the order payments go through. Every unit after that is the standard edition at the same price. BlackBox Case orders don't count toward the 10." },
+        { title: "Returns", body: "All sales are final. If your order arrives damaged, or we sent the wrong item, we'll repair or replace it. The full Return Policy is at strygonia.com/returns." },
+        { title: "Software and firmware", body: "The BlackBox Desktop App and BlackBox firmware are free to download at strygonia.com/downloads. Firmware marked beta is still being tested on real boards." },
         { title: "Site content", body: "Strygonia names, graphics, product concepts, and site assets are presented for Strygonia and may not be reused as a competing product identity without permission." },
       ];
 
@@ -1483,8 +1485,8 @@ function LegalPage({ type, onHome, a11y, onToggleA11y }: { type: "privacy" | "te
             {isPrivacy ? "Privacy Policy" : isAccessibility ? "Accessibility Statement" : isReturns ? "Return Policy" : "Terms of Service"}
           </h1>
           <p style={{ fontFamily: BODY, fontSize: "0.95rem", color: "var(--ark-ink-dim)", lineHeight: 1.75, maxWidth: "42rem", marginBottom: "2rem" }}>
-            Last updated {isPrivacy ? PRIVACY_POLICY_LAST_UPDATED : isAccessibility ? ACCESSIBILITY_LAST_UPDATED : isReturns ? "November 20, 2026" : "July 9, 2026"}.
-            {isPrivacy ? ` ${PRIVACY_POLICY_INTRO}` : isAccessibility ? " This statement describes how we approach accessibility on the Strygonia website." : isReturns ? " This policy applies to every order placed on strygonia.com." : " This page covers the current Strygonia prototype website and reserve flow."}
+            Last updated {isPrivacy ? PRIVACY_POLICY_LAST_UPDATED : isAccessibility ? ACCESSIBILITY_LAST_UPDATED : "November 20, 2026"}.
+            {isPrivacy ? ` ${PRIVACY_POLICY_INTRO}` : isAccessibility ? " This statement describes how we approach accessibility on the Strygonia website." : isReturns ? " This policy applies to every order placed on strygonia.com." : " These terms cover use of strygonia.com and every order placed on it."}
           </p>
 
           {isAccessibility && (

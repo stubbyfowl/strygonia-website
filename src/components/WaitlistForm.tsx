@@ -22,7 +22,7 @@ export function WaitlistForm({ page, compact = false }: { page: string; compact?
     setStatus("sending");
     try {
       await submitForm("waitlist", { email: String(data.get("email") ?? ""), _gotcha: String(data.get("_gotcha") ?? ""), page });
-      setMessage("You're on the list. We'll email you when BlackBox ships.");
+      setMessage("You're on the list. We'll email you when there's something new.");
       setStatus("done");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Something went wrong. Please try again.");
@@ -33,10 +33,10 @@ export function WaitlistForm({ page, compact = false }: { page: string; compact?
   return (
     <div>
       <h2 style={{ fontFamily: DISPLAY, fontWeight: compact ? 600 : 700, fontSize: compact ? "1.4rem" : "clamp(1.8rem, 3.2vw, 2.6rem)", lineHeight: 1.05, color: "var(--ark-ink)" }}>
-        Get notified when BlackBox ships
+        Get BlackBox updates
       </h2>
       <p style={{ fontFamily: BODY, fontSize: compact ? "0.95rem" : "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.75, marginTop: compact ? "0.6rem" : "1rem", maxWidth: "34rem" }}>
-        Leave your email and we'll tell you the moment it's ready.
+        New firmware, app releases, and anything new from Strygonia. Leave your email and we'll let you know.
       </p>
 
       {status === "done" ? (
