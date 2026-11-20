@@ -92,4 +92,5 @@ STM32, ESP32, Raspberry Pi, Arduino, KiCad projects, custom PCBs, breadboards, R
 - Careers: https://www.strygonia.com/careers
 - Privacy: https://www.strygonia.com/privacy
 - Terms: https://www.strygonia.com/terms
+- Returns (all sales final): https://www.strygonia.com/returns
 - Accessibility: https://www.strygonia.com/accessibility

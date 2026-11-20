@@ -1452,14 +1452,21 @@ function DownloadsPage({ onHome, onReserve }: { onHome: () => void; onReserve: (
   );
 }
 
-function LegalPage({ type, onHome, a11y, onToggleA11y }: { type: "privacy" | "terms" | "accessibility"; onHome: () => void; a11y: boolean; onToggleA11y: () => void }) {
+function LegalPage({ type, onHome, a11y, onToggleA11y }: { type: "privacy" | "terms" | "accessibility" | "returns"; onHome: () => void; a11y: boolean; onToggleA11y: () => void }) {
   const isPrivacy = type === "privacy";
   const isAccessibility = type === "accessibility";
+  const isReturns = type === "returns";
   const sections = isPrivacy
     ? PRIVACY_POLICY_SECTIONS
     : isAccessibility
       ? ACCESSIBILITY_SECTIONS
-      : [
+      : isReturns
+        ? [
+          { title: "All sales are final", body: "We don't accept returns or exchanges, and we don't refund orders for a change of mind, an item ordered by mistake, or an item you no longer need. This covers BlackBox, the BlackBox Case, and shipping. Please check your cart before you pay." },
+          { title: "Damaged or wrong item", body: "If your order arrives damaged, or we sent you the wrong item, email contact@strygonia.com within 7 days of delivery with your name, what you ordered, and a photo. We'll repair or replace it at no cost to you." },
+          { title: "Questions", body: "Not sure BlackBox will work with your setup? Email contact@strygonia.com before you order and we'll help you check." },
+        ]
+        : [
         { title: "Use of the site", body: "This site presents Strygonia concepts, prototype information, and early-access opportunities. Product details may change as engineering validation continues." },
         { title: "Reservations", body: "Joining the reserve list is an expression of interest only. It does not reserve final inventory, guarantee price, confirm specifications, or require payment." },
         { title: "Prototype status", body: "BlackBox is in prototype development. Performance, compatibility, materials, availability, and shipping windows may change before launch." },
@@ -1473,11 +1480,11 @@ function LegalPage({ type, onHome, a11y, onToggleA11y }: { type: "privacy" | "te
         <Panel className="p-8 md:p-12">
           <Eyebrow>Strygonia</Eyebrow>
           <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.1rem, 4.1vw, 3.4rem)", lineHeight: 1, letterSpacing: "0", color: "var(--ark-ink)", marginBottom: "1rem" }}>
-            {isPrivacy ? "Privacy Policy" : isAccessibility ? "Accessibility Statement" : "Terms of Service"}
+            {isPrivacy ? "Privacy Policy" : isAccessibility ? "Accessibility Statement" : isReturns ? "Return Policy" : "Terms of Service"}
           </h1>
           <p style={{ fontFamily: BODY, fontSize: "0.95rem", color: "var(--ark-ink-dim)", lineHeight: 1.75, maxWidth: "42rem", marginBottom: "2rem" }}>
-            Last updated {isPrivacy ? PRIVACY_POLICY_LAST_UPDATED : isAccessibility ? ACCESSIBILITY_LAST_UPDATED : "July 9, 2026"}.
-            {isPrivacy ? ` ${PRIVACY_POLICY_INTRO}` : isAccessibility ? " This statement describes how we approach accessibility on the Strygonia website." : " This page covers the current Strygonia prototype website and reserve flow."}
+            Last updated {isPrivacy ? PRIVACY_POLICY_LAST_UPDATED : isAccessibility ? ACCESSIBILITY_LAST_UPDATED : isReturns ? "November 20, 2026" : "July 9, 2026"}.
+            {isPrivacy ? ` ${PRIVACY_POLICY_INTRO}` : isAccessibility ? " This statement describes how we approach accessibility on the Strygonia website." : isReturns ? " This policy applies to every order placed on strygonia.com." : " This page covers the current Strygonia prototype website and reserve flow."}
           </p>
 
           {isAccessibility && (
@@ -1531,7 +1538,7 @@ function Footer({
   onCase,
   onSection,
 }: {
-  onLegalPage: (page: "privacy" | "terms" | "accessibility") => void;
+  onLegalPage: (page: "privacy" | "terms" | "accessibility" | "returns") => void;
   onContact: () => void;
   onCareers: () => void;
   onProduct: (id: ProductId) => void;
@@ -1545,7 +1552,7 @@ function Footer({
     { title: "Products", links: [{ label: "BlackBox", href: PATHS.blackbox, action: () => onProduct("blackbox") }, { label: "BlackBox Case", href: PATHS.case, action: onCase }, { label: "Purchase", href: PATHS.purchase, action: onPurchase }] },
     { title: "Explore", links: [{ label: "Specs", href: PATHS.specs, action: onSpecs }, { label: "Downloads", href: PATHS.downloads, action: onDownloads }, { label: "Team", href: "/#team", action: () => onSection("team") }] },
     { title: "Company", links: [{ label: "Contact", href: PATHS.contact, action: onContact }, { label: "Careers", href: PATHS.careers, action: onCareers }] },
-    { title: "Legal", links: [{ label: "Privacy", href: PATHS.privacy, action: () => onLegalPage("privacy") }, { label: "Terms", href: PATHS.terms, action: () => onLegalPage("terms") }, { label: "Accessibility", href: PATHS.accessibility, action: () => onLegalPage("accessibility") }] },
+    { title: "Legal", links: [{ label: "Privacy", href: PATHS.privacy, action: () => onLegalPage("privacy") }, { label: "Terms", href: PATHS.terms, action: () => onLegalPage("terms") }, { label: "Accessibility", href: PATHS.accessibility, action: () => onLegalPage("accessibility") }, { label: "Returns", href: PATHS.returns, action: () => onLegalPage("returns") }] },
   ];
 
   return (
@@ -1584,7 +1591,7 @@ function Footer({
 }
 
 /* ── Root ─────────────────────────────────────────────────────────── */
-type Page = "home" | "purchase" | "case" | "contact" | "specs" | "downloads" | "careers" | "privacy" | "terms" | "accessibility" | ProductId;
+type Page = "home" | "purchase" | "case" | "contact" | "specs" | "downloads" | "careers" | "privacy" | "terms" | "accessibility" | "returns" | ProductId;
 
 const SITE = "https://www.strygonia.com";
 
@@ -1600,6 +1607,7 @@ const PATHS: Record<Page, string> = {
   privacy: "/privacy",
   terms: "/terms",
   accessibility: "/accessibility",
+  returns: "/returns",
 };
 
 const META: Record<Page, [title: string, description: string]> = {
@@ -1614,6 +1622,7 @@ const META: Record<Page, [title: string, description: string]> = {
   privacy: ["Privacy Policy | Strygonia", "How Strygonia collects, uses, and protects your personal information."],
   terms: ["Terms of Service | Strygonia", "The terms that govern use of the Strygonia website and purchases of Strygonia products."],
   accessibility: ["Accessibility | Strygonia", "Strygonia's commitment to an accessible website, and how to reach us if something doesn't work for you."],
+  returns: ["Return Policy | Strygonia", "All Strygonia sales are final: no returns or exchanges. If your order arrives damaged or wrong, we'll repair or replace it."],
 };
 
 const pageFromPath = (path: string): Page => {
@@ -1683,7 +1692,7 @@ export default function App() {
   const goSpecs = () => go("specs");
   const goDownloads = () => go("downloads");
   const goCareers = () => go("careers");
-  const goLegal = (p: "privacy" | "terms" | "accessibility") => go(p);
+  const goLegal = (p: "privacy" | "terms" | "accessibility" | "returns") => go(p);
   const goProduct = (id: ProductId) => go(id);
   const goSection = (section: string) => {
     if (page !== "home") {
@@ -1759,7 +1768,7 @@ export default function App() {
           onContact={goContact}
         />
       ) : (
-        <LegalPage type={page as "privacy" | "terms" | "accessibility"} onHome={goHome} a11y={a11y} onToggleA11y={() => setA11y((v) => !v)} />
+        <LegalPage type={page as "privacy" | "terms" | "accessibility" | "returns"} onHome={goHome} a11y={a11y} onToggleA11y={() => setA11y((v) => !v)} />
       )}
 
       <Footer
