@@ -660,9 +660,11 @@ function StripeCheckout({ items, total }: { items: CartLine[]; total: number }) 
         </div>
       )}
 
-      <p className="mt-5 text-center" style={{ fontFamily: BODY, fontSize: "0.78rem", color: "var(--ark-faint)" }}>
-        Secured by Stripe · {usd(total)} USD
-      </p>
+      <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+        {/* Stripe's official badge, from stripe.com/newsroom/brand-assets */}
+        <img src="/powered-by-stripe.svg" alt="Powered by Stripe" width={150} height={34} />
+        <span style={{ fontFamily: BODY, fontSize: "0.78rem", color: "var(--ark-faint)" }}>{usd(total)} USD</span>
+      </div>
     </Panel>
   );
 }
