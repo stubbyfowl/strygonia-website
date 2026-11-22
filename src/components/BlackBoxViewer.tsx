@@ -175,7 +175,7 @@ export function BlackBoxViewer({ className = "" }: { className?: string }) {
             opacity: grabbed ? 0 : 1,
           }}
         >
-          Drag to rotate · live 3D
+          Drag to rotate
         </span>
       )}
     </div>

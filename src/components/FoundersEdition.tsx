@@ -1,5 +1,6 @@
 import { ArrowRight, CircuitBoard } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ChromeMark } from "@/components/ChromeMark";
 import { useFounders } from "@/lib/founders";
 
 const BODY = "var(--ark-body)";
@@ -28,10 +29,11 @@ function Badge({ soldOut }: { soldOut: boolean }) {
   );
 }
 
-function Count({ remaining, soldOut }: { remaining: number; soldOut: boolean }) {
+/* Holds its line before the count arrives, so nothing below it jumps. */
+function Count({ founders, soldOut }: { founders: { remaining: number } | null; soldOut: boolean }) {
   return (
-    <p style={{ fontFamily: BODY, fontSize: "0.82rem", fontWeight: 600, letterSpacing: "0.04em", color: "#93c5fd", marginTop: "0.7rem" }}>
-      {soldOut ? `All ${CAP} claimed` : `${remaining} of ${CAP} left`}
+    <p className="ark-num" style={{ fontFamily: BODY, fontSize: "0.82rem", fontWeight: 600, letterSpacing: "0.04em", color: "#93c5fd", marginTop: "0.7rem", visibility: founders ? "visible" : "hidden" }}>
+      {soldOut ? `All ${CAP} claimed` : `${founders?.remaining ?? CAP} of ${CAP} left`}
     </p>
   );
 }
@@ -56,7 +58,7 @@ export function FoundersEdition({ onReserve, onContact, compact = false }: { onR
             {soldOut ? `All ${CAP} Founder's Edition units are claimed, so this order is a standard BlackBox at $199.` : RULE}
           </p>
           <Tiles size={14} claimed={claimed} />
-          {founders && <Count remaining={founders.remaining} soldOut={soldOut} />}
+          <Count founders={founders} soldOut={soldOut} />
         </div>
       </div>
     );
@@ -66,9 +68,7 @@ export function FoundersEdition({ onReserve, onContact, compact = false }: { onR
     <section className="ark-dark relative overflow-hidden py-28 px-6" style={{ background: "var(--ark-bg)", borderTop: "1px solid var(--ark-line-soft)" }}>
       <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(55% 60% at 15% 35%, rgba(37,99,235,0.26), transparent 70%), radial-gradient(40% 50% at 90% 90%, rgba(37,99,235,0.12), transparent 70%)" }} />
       <div className="relative max-w-6xl mx-auto grid lg:grid-cols-[auto_1fr] gap-8 lg:gap-20 items-center">
-        <div className="ark-shine select-none" aria-hidden style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(8rem, 20vw, 15rem)", lineHeight: 0.8, letterSpacing: "-0.04em" }}>
-          {CAP}
-        </div>
+        <ChromeMark className="w-[15rem] sm:w-[20rem] aspect-[604/412]" />
         <div>
           <Badge soldOut={soldOut} />
           <h2 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(2.2rem, 4.4vw, 3.6rem)", lineHeight: 0.95, letterSpacing: "-0.01em", color: "var(--ark-ink)", margin: "1.2rem 0 1rem" }}>
@@ -81,7 +81,7 @@ export function FoundersEdition({ onReserve, onContact, compact = false }: { onR
           </p>
           <div className="mt-8 max-w-xl">
             <Tiles size={18} claimed={claimed} />
-            {founders && <Count remaining={founders.remaining} soldOut={soldOut} />}
+            <Count founders={founders} soldOut={soldOut} />
           </div>
           {(onReserve || onContact) && (
             <div className="flex flex-wrap gap-4 mt-9">

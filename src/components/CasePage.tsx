@@ -50,10 +50,9 @@ function Panel({ className = "", children }: { className?: string; children: Rea
   );
 }
 
-function SectionHead({ kicker, title }: { kicker: string; title: string }) {
+function SectionHead({ title }: { title: string }) {
   return (
     <div className="max-w-2xl mb-10">
-      <span style={{ fontFamily: BODY, fontSize: "0.82rem", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ark-signal)", display: "block", marginBottom: "1rem" }}>{kicker}</span>
       <h2 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(1.9rem, 3.4vw, 2.8rem)", lineHeight: 0.98, color: "var(--ark-ink)" }}>{title}</h2>
     </div>
   );
@@ -100,7 +99,6 @@ export function CasePage({
 
             <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-10 items-center">
               <Reveal>
-                <span style={{ fontFamily: BODY, fontSize: "0.8rem", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ark-muted)" }}>Accessory · Fits BlackBox</span>
                 <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.6rem, 5.2vw, 4.4rem)", lineHeight: 0.96, color: "var(--ark-ink)", margin: "0.8rem 0 1.1rem" }}>BlackBox Case</h1>
                 <p style={{ fontFamily: BODY, fontSize: "1.3rem", color: "var(--ark-signal)", lineHeight: 1.35, marginBottom: "1.2rem" }}>A snug two-piece case for BlackBox.</p>
                 <p style={{ fontFamily: BODY, fontSize: "1.05rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, maxWidth: "36rem", marginBottom: "1.6rem" }}>
@@ -134,8 +132,7 @@ export function CasePage({
               <Reveal delay={0.1} variant="scale">
                 <Panel className="p-6">
                   <CaseViewer colour={colour} open={open} fallback={`/products/case/${colour}-front-right.jpg`} />
-                  <div className="mt-4 flex items-center justify-between gap-3">
-                    <span style={{ fontFamily: BODY, fontSize: "0.8rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--ark-muted)" }}>{CASE_COLOURS[colour].name}</span>
+                  <div className="mt-4 flex items-center justify-end">
                     <Button size="sm" variant="outline" onClick={() => setOpen((v) => !v)} aria-pressed={open}>
                       {open ? "Close it" : "Open it"}
                     </Button>
@@ -149,7 +146,7 @@ export function CasePage({
         <section className="relative py-24 px-6 border-y" style={{ background: "var(--ark-bg-2)", borderColor: "var(--ark-line-soft)" }}>
           <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-14">
             <div>
-              <SectionHead kicker="Built around BlackBox" title="Nothing gets in the way" />
+              <SectionHead title="Nothing gets in the way" />
               <ul className="grid gap-4">
                 {FEATURES.map((f) => (
                   <li key={f} className="pl-4" style={{ fontFamily: BODY, fontSize: "0.98rem", color: "var(--ark-ink-dim)", lineHeight: 1.65, borderLeft: "2px solid var(--ark-signal)" }}>{f}</li>
@@ -157,7 +154,7 @@ export function CasePage({
               </ul>
             </div>
             <div>
-              <SectionHead kicker="How it goes together" title="Four screws, no glue" />
+              <SectionHead title="Four screws, no glue" />
               <p style={{ fontFamily: BODY, fontSize: "0.98rem", color: "var(--ark-ink-dim)", lineHeight: 1.75, marginBottom: "1rem" }}>
                 The board's own four corner holes hold everything together. Four M2.5 × 12 mm screws go up through the base and the board and thread into posts in the lid, so there's no glue, no inserts and no clips.
               </p>
@@ -170,7 +167,7 @@ export function CasePage({
 
         <section className="relative py-24 px-6" style={{ background: "var(--ark-bg)" }}>
           <div className="max-w-6xl mx-auto">
-            <SectionHead kicker="Every opening" title="Ports, LEDs and the button" />
+            <SectionHead title="Ports, LEDs and the button" />
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-8">
               {OPENINGS.map(([name, detail]) => (
                 <div key={name} className="pt-5 border-t" style={{ borderColor: "var(--ark-line)" }}>
@@ -190,7 +187,7 @@ export function CasePage({
 
         <section className="ark-dark relative py-24 px-6" style={{ background: "var(--ark-bg)" }}>
           <div className="max-w-6xl mx-auto">
-            <SectionHead kicker={CASE_COLOURS[colour].name} title="From every side" />
+            <SectionHead title="From every side" />
             <div className="grid gap-6 md:grid-cols-2">
               {GALLERY.map(([view, caption], i) => (
                 <figure key={view} className={i === 0 ? "md:col-span-2" : ""}>

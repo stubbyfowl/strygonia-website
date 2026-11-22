@@ -23,6 +23,7 @@ import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-
 import { CookieBanner } from "@/components/CookieBanner";
 import { DeviceMockup } from "@/components/DeviceMockup";
 import { BlackBoxExploded } from "@/components/BlackBoxExploded";
+import { ScopeScene } from "@/components/ScopeScene";
 import { RewindTimeline } from "@/components/RewindTimeline";
 import { Reveal } from "@/components/Reveal";
 import { ProductDescriptionPage } from "@/components/ProductDescriptionPage";
@@ -81,14 +82,6 @@ function Panel({
     <Card className={`backdrop-blur-sm ${className}`} style={style}>
       {children}
     </Card>
-  );
-}
-
-function Eyebrow({ children, variant = "outline" }: { children: React.ReactNode; variant?: "default" | "secondary" | "outline"; color?: string }) {
-  return (
-    <Badge variant={variant} className="mb-4 text-[0.78rem] tracking-[0.06em] uppercase font-semibold" style={{ fontFamily: BODY }}>
-      {children}
-    </Badge>
   );
 }
 
@@ -232,19 +225,19 @@ function Navbar({
 
         <div className="md:hidden flex items-center gap-4">
           {count > 0 && (
-            <PageLink href={PATHS.purchase} onNavigate={onPurchase} className="ark-focus relative inline-flex" aria-label={`Cart, ${count} item${count === 1 ? "" : "s"}`} style={{ color: scrolled ? "var(--ark-ink)" : "#fff" }}>
+            <PageLink href={PATHS.purchase} onNavigate={onPurchase} className="ark-focus ark-hit relative inline-flex" aria-label={`Cart, ${count} item${count === 1 ? "" : "s"}`} style={{ color: scrolled ? "var(--ark-ink)" : "#fff" }}>
               <ShoppingBag size={20} />
               <span className="absolute -top-1.5 -right-2 inline-flex items-center justify-center rounded-full min-w-[1.1rem] h-[1.1rem] px-1" style={{ background: "var(--ark-signal)", color: "#fff", fontSize: "0.65rem", fontWeight: 700 }}>{count}</span>
             </PageLink>
           )}
-          <button className="ark-focus" style={{ color: scrolled ? "var(--ark-ink-dim)" : "#fff" }} onClick={() => setOpen(!open)} aria-label="Menu">
+          <button className="ark-focus ark-hit" style={{ color: scrolled ? "var(--ark-ink-dim)" : "#fff" }} onClick={() => setOpen(!open)} aria-label="Menu" aria-expanded={open}>
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
 
       {open && (
-        <nav aria-label="Mobile navigation" className="md:hidden p-6 border-b" style={{ background: "rgba(240,235,228,0.98)", borderColor: "var(--ark-line)" }}>
+        <nav aria-label="Mobile navigation" className="ark-menu-drop md:hidden p-6 border-b" style={{ background: "rgba(240,235,228,0.98)", borderColor: "var(--ark-line)" }}>
           <ul className="flex flex-col gap-4">
             {NAV_LINKS.map((link) => (
               <li key={link.label}>
@@ -265,27 +258,43 @@ function Navbar({
 }
 
 /* ── Hero ─────────────────────────────────────────────────────────── */
-function Hero({ onBlackBox }: { onBlackBox: () => void }) {
+/* An oscilloscope screen: the rail dies behind the headline, and the board that recorded it
+   breaks into the type. The entrance is the page's one orchestrated moment. */
+function Hero({ onBlackBox, onBuy }: { onBlackBox: () => void; onBuy: () => void }) {
   return (
     <section id="home" className="ark-dark relative w-full overflow-hidden" style={{ background: "var(--ark-bg)" }}>
-      <div className="min-h-[90vh] flex flex-col items-center justify-center px-6 pt-28 pb-16 relative z-10">
-        <div className="max-w-4xl text-center">
-          <h1 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(3rem, 7vw, 5.8rem)", lineHeight: 0.92, letterSpacing: "-0.02em", color: "#fff" }}>
-            Rewind the moment
-            <br />
-            your board died.
+      <div className="relative lg:min-h-[100svh]">
+        <ScopeScene />
+        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 pt-36 lg:pt-44 pb-16 lg:pb-28">
+          <h1 className="relative z-10" style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(3.3rem, 8.4vw, 8.6rem)", lineHeight: 0.86, letterSpacing: "-0.025em", color: "#fff" }}>
+            <span className="ark-rise block">Rewind the moment</span>{" "}
+            <span className="ark-rise block" style={{ animationDelay: "0.08s" }}>your board died.</span>
           </h1>
-          <p style={{ fontFamily: BODY, fontSize: "clamp(1rem, 1.6vw, 1.15rem)", color: "rgba(255,255,255,0.50)", lineHeight: 1.7, maxWidth: "34rem", margin: "2rem auto 0" }}>
-            BlackBox records voltage, current, and serial output in a rolling window. When your board faults, you scrub back through the last few seconds instead of guessing.
-          </p>
-          <div className="flex justify-center gap-4 mt-10">
-            <Button size="lg" onClick={onBlackBox}>
-              Explore BlackBox <ArrowRight size={17} />
-            </Button>
+          <img
+            src="/hero/blackbox-angle-1800.webp"
+            srcSet="/hero/blackbox-angle-1000.webp 1000w, /hero/blackbox-angle-1800.webp 1800w"
+            sizes="(min-width: 1024px) 56vw, 118vw"
+            width={1800}
+            height={1355}
+            alt="The BlackBox board"
+            fetchPriority="high"
+            className="ark-board relative z-20 block max-w-none w-[118%] -ml-[8%] -mt-[1.75rem] sm:-mt-[3rem] pointer-events-none lg:absolute lg:m-0 lg:w-[min(58vw,900px)] lg:right-[-3.5rem] lg:top-[10rem]"
+            style={{ rotate: "-5deg" }}
+          />
+          <div className="ark-rise relative z-30 max-w-[26rem] lg:mt-10" style={{ animationDelay: "0.45s" }}>
+            <p style={{ fontFamily: BODY, fontSize: "clamp(1rem, 1.4vw, 1.12rem)", color: "rgba(255,255,255,0.62)", lineHeight: 1.7 }}>
+              BlackBox records voltage, current, and serial output in a rolling window. When your board faults, you scrub back through the last few seconds instead of guessing.
+            </p>
+            <div className="flex flex-wrap gap-3 mt-8">
+              <Button size="lg" onClick={onBlackBox}>
+                Explore BlackBox <ArrowRight size={17} />
+              </Button>
+              <Button variant="light" size="lg" onClick={onBuy}>{PRODUCTS.blackbox.reserveLabel}</Button>
+            </div>
           </div>
         </div>
       </div>
-      <div className="max-w-2xl mx-auto px-6 pb-28">
+      <div className="relative z-10 max-w-2xl mx-auto px-6 pb-28">
         <RewindTimeline />
       </div>
     </section>
@@ -624,7 +633,7 @@ function StripeCheckout({ items, total, onDraft }: { items: CartLine[]; total: n
   };
 
   return (
-    <Panel className="p-7">
+    <Panel className="ark-num p-7">
       <div className="flex items-center justify-between mb-5">
         <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.25rem", color: "var(--ark-ink)" }}>
           {step === "shipping" ? "Shipping" : "Payment"}
@@ -742,11 +751,11 @@ function QtyStepper({ sku, qty }: { sku: Sku; qty: number }) {
   const item = CATALOG[sku];
   return (
     <div className="inline-flex items-center gap-2" role="group" aria-label={`Quantity of ${item.name}${item.variant ? `, ${item.variant}` : ""}`}>
-      <button type="button" className="ark-focus inline-flex items-center justify-center w-8 h-8 rounded-full" style={{ ...ICON_BTN, opacity: qty <= 1 ? 0.4 : 1 }} disabled={qty <= 1} onClick={() => cart.step(sku, -1)} aria-label="One fewer">
+      <button type="button" className="ark-focus ark-hit inline-flex items-center justify-center w-8 h-8 rounded-full" style={{ ...ICON_BTN, opacity: qty <= 1 ? 0.4 : 1 }} disabled={qty <= 1} onClick={() => cart.step(sku, -1)} aria-label="One fewer">
         <Minus size={14} />
       </button>
       <span aria-live="polite" style={{ fontFamily: BODY, fontWeight: 600, minWidth: "1.5rem", textAlign: "center", color: "var(--ark-ink)" }}>{qty}</span>
-      <button type="button" className="ark-focus inline-flex items-center justify-center w-8 h-8 rounded-full" style={{ ...ICON_BTN, opacity: qty >= MAX_QTY ? 0.4 : 1 }} disabled={qty >= MAX_QTY} onClick={() => cart.step(sku, 1)} aria-label="One more">
+      <button type="button" className="ark-focus ark-hit inline-flex items-center justify-center w-8 h-8 rounded-full" style={{ ...ICON_BTN, opacity: qty >= MAX_QTY ? 0.4 : 1 }} disabled={qty >= MAX_QTY} onClick={() => cart.step(sku, 1)} aria-label="One more">
         <Plus size={14} />
       </button>
     </div>
@@ -766,7 +775,7 @@ function CartPanel({ shipping }: { shipping: number | null | undefined }) {
     </div>
   );
   return (
-    <Panel className="p-6">
+    <Panel className="ark-num p-6">
       <ul>
         {[...lines].sort((a, b) => SKU_ORDER.indexOf(a.sku) - SKU_ORDER.indexOf(b.sku)).map(({ sku, qty }) => {
           const item = CATALOG[sku];
@@ -780,7 +789,7 @@ function CartPanel({ shipping }: { shipping: number | null | undefined }) {
               <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
                 <QtyStepper sku={sku} qty={qty} />
                 <span style={{ fontFamily: BODY, fontWeight: 600, color: "var(--ark-ink)", minWidth: "3.5rem", textAlign: "right" }}>{usd(item.price * qty)}</span>
-                <button type="button" onClick={() => cart.remove(sku)} className="ark-focus" aria-label={`Remove ${item.name}${item.variant ? ` (${item.variant})` : ""}`} style={{ color: "var(--ark-muted)", background: "none", border: "none", cursor: "pointer", padding: 4 }}>
+                <button type="button" onClick={() => cart.remove(sku)} className="ark-focus ark-hit" aria-label={`Remove ${item.name}${item.variant ? ` (${item.variant})` : ""}`} style={{ color: "var(--ark-muted)", background: "none", border: "none", cursor: "pointer", padding: 4 }}>
                   <Trash2 size={16} />
                 </button>
               </div>
@@ -978,7 +987,6 @@ function ContactPage({ onHome }: { onHome: () => void }) {
         <BackBar onHome={onHome} />
         <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-10 items-start">
           <Reveal>
-            <Eyebrow>Contact</Eyebrow>
             <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.2rem, 4.3vw, 3.6rem)", lineHeight: 0.98, letterSpacing: "0", color: "var(--ark-ink)" }}>
               Get in touch
             </h1>
@@ -1064,7 +1072,6 @@ function CareersPage({ onHome }: { onHome: () => void }) {
         <BackBar onHome={onHome} />
         <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-10 items-start">
           <Reveal>
-            <Eyebrow>Careers</Eyebrow>
             <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.2rem, 4.3vw, 3.6rem)", lineHeight: 0.98, letterSpacing: "0", color: "var(--ark-ink)" }}>
               Work with us
             </h1>
@@ -1152,7 +1159,6 @@ function SpecsPage({ onHome, onReserve }: { onHome: () => void; onReserve: () =>
       <div className="max-w-6xl mx-auto">
         <BackBar onHome={onHome} />
         <Reveal className="max-w-3xl mb-12">
-          <Eyebrow>BlackBox · SG-BB1 · V1 · Rev C</Eyebrow>
           <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.2rem, 4.3vw, 3.6rem)", lineHeight: 0.98, letterSpacing: "0", color: "var(--ark-ink)", marginBottom: "1.2rem" }}>
             Specifications
           </h1>
@@ -1324,7 +1330,6 @@ function DownloadsPage({ onHome, onReserve }: { onHome: () => void; onReserve: (
       <div className="max-w-6xl mx-auto">
         <BackBar onHome={onHome} />
         <Reveal className="max-w-3xl mb-12">
-          <Eyebrow>BlackBox Desktop App {APP_VERSION} · Firmware {FIRMWARE_VERSION}</Eyebrow>
           <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.2rem, 4.3vw, 3.6rem)", lineHeight: 0.98, letterSpacing: "0", color: "var(--ark-ink)", marginBottom: "1.2rem" }}>
             Downloads
           </h1>
@@ -1501,7 +1506,6 @@ function LegalPage({ type, onHome, a11y, onToggleA11y }: { type: "privacy" | "te
       <div className="max-w-4xl mx-auto">
         <BackBar onHome={onHome} />
         <Panel className="p-8 md:p-12">
-          <Eyebrow>Strygonia</Eyebrow>
           <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.1rem, 4.1vw, 3.4rem)", lineHeight: 1, letterSpacing: "0", color: "var(--ark-ink)", marginBottom: "1rem" }}>
             {isPrivacy ? "Privacy Policy" : isAccessibility ? "Accessibility Statement" : isReturns ? "Return Policy" : "Terms of Service"}
           </h1>
@@ -1752,7 +1756,7 @@ export default function App() {
 
       {page === "home" ? (
         <main>
-          <Hero onBlackBox={() => goProduct("blackbox")} />
+          <Hero onBlackBox={() => goProduct("blackbox")} onBuy={() => buyBlackBox()} />
           <ToolMarquee />
           <Products onProduct={goProduct} onReserve={() => buyBlackBox()} onCase={goCase} />
           <section className="relative py-24 px-6 border-t" style={{ background: "var(--ark-bg-2)", borderColor: "var(--ark-line-soft)" }}>

@@ -11,4 +11,7 @@ export default defineConfig({
     },
   },
   assetsInclude: ["**/*.svg", "**/*.csv"],
+  // Only imported lazily, so pre-bundle it at startup; otherwise the dev server bundles it later
+  // against a second copy of React.
+  optimizeDeps: { include: ["@paper-design/shaders-react"] },
 });

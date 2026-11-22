@@ -69,12 +69,9 @@ function GhostBtn({ children, onClick }: { children: React.ReactNode; onClick?: 
 
 /* Section heading used by every band below the hero, so the page reads as one
    rhythm instead of a stack of unrelated panels. */
-function SectionHead({ kicker, title, blurb }: { kicker: string; title: string; blurb?: string }) {
+function SectionHead({ title, blurb }: { title: string; blurb?: string }) {
   return (
     <div className="max-w-2xl mb-14">
-      <span style={{ fontFamily: BODY, fontSize: "0.82rem", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ark-signal)", display: "block", marginBottom: "1rem" }}>
-        {kicker}
-      </span>
       <h2 className="" style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(1.9rem, 3.4vw, 2.8rem)", lineHeight: 0.98, color: "var(--ark-ink)" }}>
         {title}
       </h2>
@@ -92,10 +89,8 @@ function SectionHead({ kicker, title, blurb }: { kicker: string; title: string; 
 function AtAGlance({ product }: { product: ProductSpec }) {
   return (
     <section className="relative py-20 px-6 border-y" style={{ background: "var(--ark-bg-2)", borderColor: "var(--ark-line-soft)" }}>
-      <div className="max-w-6xl mx-auto grid lg:grid-cols-[0.36fr_1.64fr] gap-8 lg:gap-16">
-        <h2 style={{ fontFamily: BODY, fontSize: "0.85rem", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ark-muted)", lineHeight: 1.7 }}>
-          At a glance
-        </h2>
+      <div className="max-w-6xl mx-auto">
+        <h2 className="sr-only">At a glance</h2>
         <ul className="grid sm:grid-cols-2 gap-x-10 gap-y-5">
           {product.features.map((f) => (
             <li key={f} className="pl-4" style={{ fontFamily: BODY, fontSize: "0.95rem", color: "var(--ark-ink-dim)", lineHeight: 1.65, borderLeft: "2px solid var(--ark-line)" }}>
@@ -114,7 +109,6 @@ function SignalChain({ product }: { product: ProductSpec }) {
     <section className="relative py-28 px-6" style={{ background: "var(--ark-bg-2)" }}>
       <div className="max-w-6xl mx-auto">
         <SectionHead
-          kicker="How it works"
           title="How it works"
           blurb="BlackBox runs continuously while your board runs, keeping a rolling window of every channel. The failure is already recorded by the time you notice it."
         />
@@ -137,7 +131,6 @@ function Signals({ product }: { product: ProductSpec }) {
     <section className="relative py-28 px-6" style={{ background: "var(--ark-bg-2)" }}>
       <div className="max-w-6xl mx-auto">
         <SectionHead
-          kicker="V1 signal set"
           title="V1 channels"
           blurb="Six inputs on one harness. Every sample shares the same clock, so a voltage dip, current spike, and the serial print that preceded them line up on one timeline."
         />
@@ -162,7 +155,7 @@ function BuildSheet({ product }: { product: ProductSpec }) {
   return (
     <section className="relative py-28 px-6" style={{ background: "var(--ark-bg-2)" }}>
       <div className="max-w-6xl mx-auto">
-        <SectionHead kicker="The hardware" title="Specifications" />
+        <SectionHead title="Specifications" />
         <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-6">
           <Panel className="p-8">
             <h3 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.3rem", color: "var(--ark-ink)", marginBottom: "1.4rem" }}>Specifications</h3>
@@ -197,19 +190,16 @@ const GALLERY_SHOTS = [
   {
     src: blackbox1,
     alt: "BlackBox Rev C PCB top view, components, ICs, and signal routing visible",
-    caption: "Rev C · top side",
     full: true,
   },
   {
     src: blackbox2,
     alt: "BlackBox Rev C PCB bottom view, ground plane and bottom-side passives",
-    caption: "Rev C · bottom side",
     full: false,
   },
   {
     src: blackbox3,
     alt: "BlackBox Rev C PCB profile view, board thickness, connector heights, and component clearances",
-    caption: "Rev C · profile",
     full: false,
   },
 ];
@@ -218,19 +208,14 @@ function BlackBoxGallery() {
   return (
     <section className="relative py-28 px-6" style={{ background: "var(--ark-bg)" }}>
       <div className="max-w-6xl mx-auto">
-        <SectionHead kicker="Renders" title="Product renders" />
+        <SectionHead title="Product renders" />
 
         <div className="grid gap-6 md:grid-cols-2">
           {GALLERY_SHOTS.map((shot, i) => (
-            <figure key={shot.caption} className={shot.full ? "md:col-span-2" : ""}>
+            <figure key={shot.src} className={shot.full ? "md:col-span-2" : ""}>
               <div className="rounded-lg overflow-hidden" style={{ border: "1px solid var(--ark-line)" }}>
                 <img src={shot.src} alt={shot.alt} width={3168} height={2384} loading="lazy" className="block w-full h-auto" />
               </div>
-              <figcaption className="mt-3">
-                <span style={{ fontFamily: BODY, fontSize: "0.82rem", fontWeight: 500, color: "var(--ark-muted)" }}>
-                  {shot.caption}
-                </span>
-              </figcaption>
             </figure>
           ))}
         </div>
@@ -317,8 +302,7 @@ export function ProductDescriptionPage({
             <Reveal delay={0.1} variant="scale">
               <Panel className="p-6">
                 {isBlackbox ? <BlackBoxViewer /> : <DeviceMockup kind={product.mockup} className="w-full h-auto" />}
-                <div className="mt-4 flex items-center justify-between">
-                  <span style={{ fontFamily: BODY, fontSize: "0.8rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--ark-muted)" }}>{product.code}</span>
+                <div className="mt-4 flex items-center justify-end">
                   <span style={{ fontFamily: BODY, fontSize: "0.8rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--ark-signal)" }}>{product.status}</span>
                 </div>
               </Panel>

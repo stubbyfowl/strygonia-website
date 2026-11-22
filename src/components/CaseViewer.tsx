@@ -190,7 +190,7 @@ export function CaseViewer({ colour, open, fallback }: { colour: CaseColour; ope
       {status === "error" && <img src={fallback} alt="BlackBox Case" className="absolute inset-0 w-full h-full object-cover" />}
       {status === "ready" && !grabbed && (
         <span className="absolute bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-3 py-1.5 pointer-events-none" style={{ fontFamily: BODY, fontSize: "0.75rem", fontWeight: 500, color: "var(--ark-ink-dim)", border: "1px solid var(--ark-line)", background: "rgba(240,235,228,0.75)", backdropFilter: "blur(6px)" }}>
-          Drag to rotate · live 3D
+          Drag to rotate
         </span>
       )}
     </div>
