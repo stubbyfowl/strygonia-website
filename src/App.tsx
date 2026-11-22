@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import {
   ArrowRight,
-  ArrowLeft,
   Menu,
   X,
   Youtube,
@@ -102,7 +101,7 @@ function SocialLinkButtons({ compact = false }: { compact?: boolean }) {
           target="_blank"
           rel="noopener noreferrer"
           className="ark-focus inline-flex items-center gap-2 rounded-lg px-3 py-2 border transition-colors duration-200 hover:text-foreground/90 hover:border-white/20"
-          style={{ borderColor: "var(--ark-line)", background: "rgba(28,25,23,0.03)", color: "var(--ark-muted)", fontFamily: BODY, fontSize: compact ? "0.78rem" : "0.84rem", textDecoration: "none" }}
+          style={{ borderColor: "var(--ark-line)", background: "rgba(255,255,255,0.03)", color: "var(--ark-muted)", fontFamily: BODY, fontSize: compact ? "0.78rem" : "0.84rem", textDecoration: "none" }}
         >
           {SOCIAL_LINK_ICONS[item.id]}
           {item.label}
@@ -184,7 +183,7 @@ function Navbar({
       <div
         className="w-full flex items-center justify-between px-6 lg:px-10 py-3 transition-all duration-300"
         style={{
-          background: scrolled ? "rgba(240,235,228,0.92)" : "transparent",
+          background: scrolled ? "rgba(12,12,12,0.82)" : "transparent",
           backdropFilter: scrolled ? "blur(14px)" : "none",
           WebkitBackdropFilter: scrolled ? "blur(14px)" : "none",
           borderBottom: scrolled ? "1px solid var(--ark-line)" : "1px solid transparent",
@@ -237,7 +236,7 @@ function Navbar({
       </div>
 
       {open && (
-        <nav aria-label="Mobile navigation" className="ark-menu-drop md:hidden p-6 border-b" style={{ background: "rgba(240,235,228,0.98)", borderColor: "var(--ark-line)" }}>
+        <nav aria-label="Mobile navigation" className="ark-menu-drop md:hidden p-6 border-b" style={{ background: "rgba(12,12,12,0.97)", borderColor: "var(--ark-line)" }}>
           <ul className="flex flex-col gap-4">
             {NAV_LINKS.map((link) => (
               <li key={link.label}>
@@ -389,7 +388,7 @@ function Products({ onProduct, onReserve, onCase }: { onProduct: (id: ProductId)
     <section id="products" className="ark-dark relative py-28 px-6 overflow-hidden" style={{ background: "var(--ark-bg)" }}>
       <div className="max-w-6xl mx-auto relative z-10">
         <Reveal className="max-w-2xl mb-20">
-          <h2 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(2.2rem, 4vw, 3.6rem)", lineHeight: 0.95, color: "var(--ark-ink)", marginBottom: "1.2rem" }}>
+          <h2 className="ark-heading" style={{ marginBottom: "1.2rem" }}>
             What we make
           </h2>
           <p style={{ fontFamily: BODY, fontSize: "1.05rem", color: "var(--ark-ink-dim)", lineHeight: 1.8 }}>
@@ -413,7 +412,7 @@ function Team() {
   return (
     <section id="team" className="relative py-28 px-6 overflow-hidden" style={{ background: "var(--ark-bg)" }}>
       <div className="max-w-3xl mx-auto text-center">
-        <h2 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(2rem, 3.5vw, 3rem)", lineHeight: 0.98, color: "var(--ark-ink)", marginBottom: "3.5rem" }}>
+        <h2 className="ark-heading" style={{ marginBottom: "3.5rem" }}>
           Leadership
         </h2>
         <div className="flex flex-col items-center gap-6">
@@ -444,15 +443,7 @@ function CTA({ onReserve, onContact }: { onReserve: () => void; onContact: () =>
 /* ── Purchase page (cart + checkout) ─────────────────────────────── */
 const FORM_LABEL_STYLE: React.CSSProperties = { fontFamily: BODY, fontSize: "0.78rem", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ark-muted)" };
 const FORM_FIELD_CLASS = "ark-focus w-full rounded-lg px-4 py-3 outline-none border";
-const FORM_FIELD_STYLE: React.CSSProperties = { background: "rgba(28,25,23,0.04)", borderColor: "var(--ark-line)", color: "var(--ark-ink)", fontFamily: BODY };
-
-function BackBar({ onHome, label = "Back to Strygonia" }: { onHome: () => void; label?: string }) {
-  return (
-    <button onClick={onHome} className="ark-focus mb-8 inline-flex items-center gap-2 text-sm" style={{ fontFamily: BODY, color: "var(--ark-ink-dim)" }}>
-      <ArrowLeft size={14} /> {label}
-    </button>
-  );
-}
+const FORM_FIELD_STYLE: React.CSSProperties = { background: "rgba(255,255,255,0.04)", borderColor: "var(--ark-line)", color: "var(--ark-ink)", fontFamily: BODY };
 
 function CheckoutForm({ amount }: { amount: number }) {
   const stripe = useStripe();
@@ -491,7 +482,7 @@ function CheckoutForm({ amount }: { amount: number }) {
         {status === "processing" ? "Processing..." : <><Lock size={14} /> Pay {usd(amount / 100)}</>}
       </Button>
       {status === "error" && (
-        <div className="mt-4 rounded-lg px-4 py-3 border" style={{ background: "rgba(28,25,23,0.06)", borderColor: "rgba(28,25,23,0.14)", color: "var(--ark-fault-2)", fontFamily: BODY, fontSize: "0.85rem" }}>
+        <div className="mt-4 rounded-lg px-4 py-3 border" style={{ background: "rgba(255,255,255,0.06)", borderColor: "rgba(255,255,255,0.14)", color: "#fca5a5", fontFamily: BODY, fontSize: "0.85rem" }}>
           {errorMsg}
         </div>
       )}
@@ -646,7 +637,7 @@ function StripeCheckout({ items, total, onDraft }: { items: CartLine[]; total: n
       {step === "shipping" ? (
         <ShippingForm onComplete={handleShippingComplete} onDraft={onDraft} initial={shipping} />
       ) : error ? (
-        <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(28,25,23,0.06)", borderColor: "rgba(28,25,23,0.14)", color: "var(--ark-fault-2)", fontFamily: BODY, fontSize: "0.85rem" }}>
+        <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(255,255,255,0.06)", borderColor: "rgba(255,255,255,0.14)", color: "#fca5a5", fontFamily: BODY, fontSize: "0.85rem" }}>
           {error}
           <div className="mt-2">
             <button onClick={() => { setError(""); setStep("shipping"); }} style={{ fontFamily: BODY, fontSize: "0.78rem", color: "var(--ark-signal)", background: "none", border: "none", padding: 0, cursor: "pointer", textDecoration: "underline", textUnderlineOffset: "2px" }}>
@@ -657,7 +648,7 @@ function StripeCheckout({ items, total, onDraft }: { items: CartLine[]; total: n
       ) : clientSecret && stripePromise ? (
         <>
           {shipping && (
-            <div className="mb-5 rounded-lg px-4 py-3" style={{ background: "rgba(28,25,23,0.04)", fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-ink-dim)" }}>
+            <div className="mb-5 rounded-lg px-4 py-3" style={{ background: "rgba(255,255,255,0.04)", fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-ink-dim)" }}>
               <span style={{ fontWeight: 600, color: "var(--ark-ink)" }}>{shipping.name}</span>
               <br />{shipping.line1}{shipping.line2 ? `, ${shipping.line2}` : ""}
               <br />{shipping.city}, {shipping.state} {shipping.postal_code}{shipping.country !== "US" && `, ${countryName(shipping.country)}`}
@@ -668,7 +659,7 @@ function StripeCheckout({ items, total, onDraft }: { items: CartLine[]; total: n
               </div>
             </div>
           )}
-          <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: "stripe", variables: { colorPrimary: "#2563eb", borderRadius: "8px" } } }}>
+          <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: "night", variables: { colorPrimary: "#3b82f6", colorBackground: "#161616", borderRadius: "8px" } } }}>
             <CheckoutForm amount={amount} />
           </Elements>
         </>
@@ -892,12 +883,11 @@ function PurchasePage({ onHome, onCase }: { onHome: () => void; onCase: () => vo
   }, []);
 
   return (
-    <main className="relative min-h-screen px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
+    <main className="ark-screen relative min-h-screen px-6 pt-36 lg:pt-44 pb-24" style={{ background: "var(--ark-bg)" }}>
       <div className="max-w-6xl mx-auto">
-        <BackBar onHome={onHome} />
         <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-10 items-start">
           <Reveal>
-            <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.2rem, 4.3vw, 3.6rem)", lineHeight: 0.98, letterSpacing: "0", color: "var(--ark-ink)", marginBottom: "1.1rem" }}>
+            <h1 className="ark-title">
               Purchase
             </h1>
             {!returned && (
@@ -982,12 +972,11 @@ function ContactPage({ onHome }: { onHome: () => void }) {
   };
 
   return (
-    <main className="relative min-h-screen px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
+    <main className="ark-screen relative min-h-screen px-6 pt-36 lg:pt-44 pb-24" style={{ background: "var(--ark-bg)" }}>
       <div className="max-w-6xl mx-auto">
-        <BackBar onHome={onHome} />
         <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-10 items-start">
           <Reveal>
-            <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.2rem, 4.3vw, 3.6rem)", lineHeight: 0.98, letterSpacing: "0", color: "var(--ark-ink)" }}>
+            <h1 className="ark-title">
               Get in touch
             </h1>
             <p style={{ fontFamily: BODY, fontSize: "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, maxWidth: "34rem", marginTop: "1.4rem" }}>
@@ -1026,7 +1015,7 @@ function ContactPage({ onHome }: { onHome: () => void }) {
                   <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(37,99,235,0.06)", borderColor: "rgba(37,99,235,0.18)", color: "var(--ark-signal)", fontFamily: BODY }}>Thanks for reaching out. We'll reply to your email soon.</div>
                 )}
                 {status === "error" && (
-                  <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(28,25,23,0.06)", borderColor: "rgba(28,25,23,0.14)", color: "var(--ark-fault-2)", fontFamily: BODY }}>{errorMessage}</div>
+                  <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(255,255,255,0.06)", borderColor: "rgba(255,255,255,0.14)", color: "#fca5a5", fontFamily: BODY }}>{errorMessage}</div>
                 )}
                 <p style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-faint)", lineHeight: 1.6 }}>You can email us at {STRYGONIA_EMAIL}</p>
               </form>
@@ -1067,12 +1056,11 @@ function CareersPage({ onHome }: { onHome: () => void }) {
   };
 
   return (
-    <main className="relative min-h-screen px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
+    <main className="ark-screen relative min-h-screen px-6 pt-36 lg:pt-44 pb-24" style={{ background: "var(--ark-bg)" }}>
       <div className="max-w-6xl mx-auto">
-        <BackBar onHome={onHome} />
         <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-10 items-start">
           <Reveal>
-            <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.2rem, 4.3vw, 3.6rem)", lineHeight: 0.98, letterSpacing: "0", color: "var(--ark-ink)" }}>
+            <h1 className="ark-title">
               Work with us
             </h1>
             <p style={{ fontFamily: BODY, fontSize: "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, maxWidth: "34rem", marginTop: "1.4rem" }}>
@@ -1115,7 +1103,7 @@ function CareersPage({ onHome }: { onHome: () => void }) {
                   <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(37,99,235,0.06)", borderColor: "rgba(37,99,235,0.18)", color: "var(--ark-signal)", fontFamily: BODY }}>Thanks for applying. We'll review and get back to you soon.</div>
                 )}
                 {status === "error" && (
-                  <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(28,25,23,0.06)", borderColor: "rgba(28,25,23,0.14)", color: "var(--ark-fault-2)", fontFamily: BODY }}>{errorMessage}</div>
+                  <div className="rounded-lg px-4 py-3 border" style={{ background: "rgba(255,255,255,0.06)", borderColor: "rgba(255,255,255,0.14)", color: "#fca5a5", fontFamily: BODY }}>{errorMessage}</div>
                 )}
                 <p style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-faint)", lineHeight: 1.6 }}>You can email us at {STRYGONIA_EMAIL}</p>
               </form>
@@ -1155,11 +1143,10 @@ function SpecsPage({ onHome, onReserve }: { onHome: () => void; onReserve: () =>
   const stack = [["PCB design", "KiCad"], ["Firmware", "C · STM32 HAL, TinyUSB, FatFs"], ["BlackBox Desktop App", "Electron · React"], ["Prototyping", "Python"], ["Version control", "GitHub"]];
 
   return (
-    <main className="relative min-h-screen px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
+    <main className="ark-screen relative min-h-screen px-6 pt-36 lg:pt-44 pb-24" style={{ background: "var(--ark-bg)" }}>
       <div className="max-w-6xl mx-auto">
-        <BackBar onHome={onHome} />
         <Reveal className="max-w-3xl mb-12">
-          <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.2rem, 4.3vw, 3.6rem)", lineHeight: 0.98, letterSpacing: "0", color: "var(--ark-ink)", marginBottom: "1.2rem" }}>
+          <h1 className="ark-title">
             Specifications
           </h1>
           <p style={{ fontFamily: BODY, fontSize: "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.8 }}>
@@ -1326,11 +1313,10 @@ function DownloadsPage({ onHome, onReserve }: { onHome: () => void; onReserve: (
   ];
 
   return (
-    <main className="relative min-h-screen px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
+    <main className="ark-screen relative min-h-screen px-6 pt-36 lg:pt-44 pb-24" style={{ background: "var(--ark-bg)" }}>
       <div className="max-w-6xl mx-auto">
-        <BackBar onHome={onHome} />
         <Reveal className="max-w-3xl mb-12">
-          <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.2rem, 4.3vw, 3.6rem)", lineHeight: 0.98, letterSpacing: "0", color: "var(--ark-ink)", marginBottom: "1.2rem" }}>
+          <h1 className="ark-title">
             Downloads
           </h1>
           <p style={{ fontFamily: BODY, fontSize: "1.02rem", color: "var(--ark-ink-dim)", lineHeight: 1.8 }}>
@@ -1502,11 +1488,10 @@ function LegalPage({ type, onHome, a11y, onToggleA11y }: { type: "privacy" | "te
       ];
 
   return (
-    <main className="relative min-h-screen px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
+    <main className="ark-screen relative min-h-screen px-6 pt-36 lg:pt-44 pb-24" style={{ background: "var(--ark-bg)" }}>
       <div className="max-w-4xl mx-auto">
-        <BackBar onHome={onHome} />
-        <Panel className="p-8 md:p-12">
-          <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.1rem, 4.1vw, 3.4rem)", lineHeight: 1, letterSpacing: "0", color: "var(--ark-ink)", marginBottom: "1rem" }}>
+        <div>
+          <h1 className="ark-title">
             {isPrivacy ? "Privacy Policy" : isAccessibility ? "Accessibility Statement" : isReturns ? "Return Policy" : "Terms of Service"}
           </h1>
           <p style={{ fontFamily: BODY, fontSize: "0.95rem", color: "var(--ark-ink-dim)", lineHeight: 1.75, maxWidth: "42rem", marginBottom: "2rem" }}>
@@ -1520,7 +1505,7 @@ function LegalPage({ type, onHome, a11y, onToggleA11y }: { type: "privacy" | "te
                 <h2 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.2rem", color: "var(--ark-ink)", marginBottom: "0.35rem" }}>Accessibility mode</h2>
                 <p style={{ fontFamily: BODY, fontSize: "0.92rem", color: "var(--ark-ink-dim)", lineHeight: 1.65 }}>Turn on high-contrast reading mode across the site.</p>
               </div>
-              <button onClick={onToggleA11y} className="ark-focus inline-flex items-center gap-2 px-5 py-2.5 rounded-lg transition-all" style={{ fontFamily: BODY, fontSize: "0.82rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", background: a11y ? "#fff" : "rgba(28,25,23,0.05)", border: a11y ? "1px solid #000" : "1px solid var(--ark-line)", color: a11y ? "#000" : "var(--ark-ink)" }} aria-pressed={a11y} aria-label="Toggle accessibility mode">
+              <button onClick={onToggleA11y} className="ark-focus inline-flex items-center gap-2 px-5 py-2.5 rounded-lg transition-all" style={{ fontFamily: BODY, fontSize: "0.82rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", background: a11y ? "#fff" : "rgba(255,255,255,0.05)", border: a11y ? "1px solid #000" : "1px solid var(--ark-line)", color: a11y ? "#000" : "var(--ark-ink)" }} aria-pressed={a11y} aria-label="Toggle accessibility mode">
                 {a11y ? <EyeOff size={14} /> : <Eye size={14} />}
                 {a11y ? "Exit accessibility mode" : "Enable accessibility mode"}
               </button>
@@ -1544,7 +1529,7 @@ function LegalPage({ type, onHome, a11y, onToggleA11y }: { type: "privacy" | "te
               </section>
             ))}
           </div>
-        </Panel>
+        </div>
       </div>
     </main>
   );

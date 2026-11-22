@@ -37,7 +37,7 @@ export function CaseColourPicker({
               cursor: "pointer",
             }}
           >
-            {c && <span aria-hidden className="inline-block w-3.5 h-3.5 rounded-full" style={{ background: CASE_COLOURS[c].hex, border: "1px solid rgba(28,25,23,0.25)" }} />}
+            {c && <span aria-hidden className="inline-block w-3.5 h-3.5 rounded-full" style={{ background: CASE_COLOURS[c].hex, border: "1px solid rgba(255,255,255,0.35)" }} />}
             {c ? CASE_COLOURS[c].name : "No case"}
             {c && priceSuffix && <span style={{ color: "var(--ark-muted)", fontWeight: 400 }}>{priceSuffix}</span>}
           </button>

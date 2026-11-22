@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, Check, Package } from "lucide-react";
+import { ArrowRight, Check, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/Reveal";
 import { CaseViewer } from "@/components/CaseViewer";
@@ -53,7 +53,7 @@ function Panel({ className = "", children }: { className?: string; children: Rea
 function SectionHead({ title }: { title: string }) {
   return (
     <div className="max-w-2xl mb-10">
-      <h2 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(1.9rem, 3.4vw, 2.8rem)", lineHeight: 0.98, color: "var(--ark-ink)" }}>{title}</h2>
+      <h2 className="ark-heading">{title}</h2>
     </div>
   );
 }
@@ -86,20 +86,21 @@ export function CasePage({
   return (
     <main>
       <article>
-        <section className="relative px-6 pt-32 pb-24" style={{ background: "var(--ark-bg)" }}>
+        <section className="ark-screen relative px-6 pt-36 lg:pt-44 pb-24 overflow-hidden" style={{ background: "var(--ark-bg)" }}>
           <div className="max-w-6xl mx-auto">
-            <div className="mb-10 flex flex-wrap items-center gap-6">
-              <button onClick={onHome} className="ark-focus inline-flex items-center gap-2 text-sm" style={{ fontFamily: BODY, color: "var(--ark-ink-dim)" }}>
-                <ArrowLeft size={14} /> Home
-              </button>
-              <button onClick={onBlackBox} className="ark-focus inline-flex items-center gap-2 text-sm" style={{ fontFamily: BODY, color: "var(--ark-ink-dim)" }}>
-                <ArrowLeft size={14} /> BlackBox
-              </button>
-            </div>
-
-            <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-10 items-center">
-              <Reveal>
-                <h1 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "clamp(2.6rem, 5.2vw, 4.4rem)", lineHeight: 0.96, color: "var(--ark-ink)", margin: "0.8rem 0 1.1rem" }}>BlackBox Case</h1>
+            {/* Phones: name, then the case, then the details. Desktop: the case spans the right column. */}
+            <div className="grid lg:grid-cols-[0.95fr_1.05fr] gap-y-2 items-center">
+              <h1 className="ark-title relative z-10 lg:self-end lg:mb-6">BlackBox Case</h1>
+              {/* The case itself, out of its box and big. */}
+              <div className="ark-board relative z-20 lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:-ml-4 lg:-mr-8">
+                <CaseViewer colour={colour} open={open} fallback={`/products/case/${colour}-front-right.jpg`} />
+                <div className="mt-2 flex justify-center">
+                  <Button size="sm" variant="outline" onClick={() => setOpen((v) => !v)} aria-pressed={open}>
+                    {open ? "Close it" : "Open it"}
+                  </Button>
+                </div>
+              </div>
+              <Reveal className="relative z-10 lg:self-start">
                 <p style={{ fontFamily: BODY, fontSize: "1.3rem", color: "var(--ark-signal)", lineHeight: 1.35, marginBottom: "1.2rem" }}>A snug two-piece case for BlackBox.</p>
                 <p style={{ fontFamily: BODY, fontSize: "1.05rem", color: "var(--ark-ink-dim)", lineHeight: 1.8, maxWidth: "36rem", marginBottom: "1.6rem" }}>
                   The Strygonia logo on top, BLACKBOX underneath. Light windows for the four status LEDs, a press-tab for the TRIGGER button, and openings for USB-C, microSD, the target cable and the power terminal. Four screws, no tools beyond a hex key.
@@ -129,16 +130,6 @@ export function CasePage({
                 </p>
               </Reveal>
 
-              <Reveal delay={0.1} variant="scale">
-                <Panel className="p-6">
-                  <CaseViewer colour={colour} open={open} fallback={`/products/case/${colour}-front-right.jpg`} />
-                  <div className="mt-4 flex items-center justify-end">
-                    <Button size="sm" variant="outline" onClick={() => setOpen((v) => !v)} aria-pressed={open}>
-                      {open ? "Close it" : "Open it"}
-                    </Button>
-                  </div>
-                </Panel>
-              </Reveal>
             </div>
           </div>
         </section>

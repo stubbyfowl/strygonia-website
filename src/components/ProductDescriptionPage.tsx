@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Activity, ArrowLeft, ArrowRight, CircuitBoard, Gauge, Radio, Terminal, Zap } from "lucide-react";
+import { Activity, ArrowRight, CircuitBoard, Gauge, Radio, Terminal, Zap } from "lucide-react";
 import { DeviceMockup } from "@/components/DeviceMockup";
 import { BlackBoxViewer } from "@/components/BlackBoxViewer";
 import { BlackBoxExploded } from "@/components/BlackBoxExploded";
@@ -72,7 +72,7 @@ function GhostBtn({ children, onClick }: { children: React.ReactNode; onClick?: 
 function SectionHead({ title, blurb }: { title: string; blurb?: string }) {
   return (
     <div className="max-w-2xl mb-14">
-      <h2 className="" style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(1.9rem, 3.4vw, 2.8rem)", lineHeight: 0.98, color: "var(--ark-ink)" }}>
+      <h2 className="ark-heading">
         {title}
       </h2>
       {blurb && (
@@ -246,36 +246,16 @@ export function ProductDescriptionPage({
     <main>
     <article>
       {/* ── Hero: what it is, and the unit itself. Nothing else. ─────── */}
-      <section
-        className="relative px-6 pt-32 pb-24"
-        style={{ background: "var(--ark-bg)" }}
-      >
+      <section className="ark-screen relative px-6 pt-36 lg:pt-44 pb-24 overflow-hidden" style={{ background: "var(--ark-bg)" }}>
         <div className="max-w-6xl mx-auto">
-          <div className="mb-10 flex flex-wrap items-center gap-6">
-            <button onClick={onHome} className="ark-focus inline-flex items-center gap-2 text-sm" style={{ fontFamily: BODY, color: "var(--ark-ink-dim)" }}>
-              <ArrowLeft size={14} /> Home
-            </button>
-            <button onClick={onBack} className="ark-focus inline-flex items-center gap-2 text-sm" style={{ fontFamily: BODY, color: "var(--ark-ink-dim)" }}>
-              <ArrowLeft size={14} /> {backLabel}
-            </button>
-          </div>
-
-          <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-10 items-center">
-            <Reveal>
-              <h1
-                className=""
-                style={{
-                  fontFamily: DISPLAY,
-                  fontWeight: 600,
-                  fontSize: "clamp(2.6rem, 5.2vw, 4.4rem)",
-                  lineHeight: 0.96,
-                  letterSpacing: "0",
-                  color: "var(--ark-ink)",
-                  marginBottom: "1.1rem",
-                }}
-              >
-                {product.name}
-              </h1>
+          {/* Phones: name, then the unit, then the details. Desktop: the unit spans the right column. */}
+          <div className="grid lg:grid-cols-[0.92fr_1.08fr] gap-y-2 items-center">
+            <h1 className="ark-title ark-title-xl relative z-10 lg:self-end lg:mb-6">{product.name}</h1>
+            {/* The unit itself, out of its box and big. */}
+            <div className="ark-board relative z-20 -mx-4 sm:mx-0 lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:ml-8 lg:-mr-12">
+              {isBlackbox ? <BlackBoxViewer /> : <DeviceMockup kind={product.mockup} className="w-full h-auto" />}
+            </div>
+            <Reveal className="relative z-10 lg:self-start">
               <p className="" style={{ fontFamily: BODY, fontSize: "1.3rem", color: "var(--ark-signal)", lineHeight: 1.35, marginBottom: "1.5rem" }}>
                 {product.tagline}
               </p>
@@ -299,14 +279,6 @@ export function ProductDescriptionPage({
               </div>
             </Reveal>
 
-            <Reveal delay={0.1} variant="scale">
-              <Panel className="p-6">
-                {isBlackbox ? <BlackBoxViewer /> : <DeviceMockup kind={product.mockup} className="w-full h-auto" />}
-                <div className="mt-4 flex items-center justify-end">
-                  <span style={{ fontFamily: BODY, fontSize: "0.8rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--ark-signal)" }}>{product.status}</span>
-                </div>
-              </Panel>
-            </Reveal>
           </div>
         </div>
       </section>
