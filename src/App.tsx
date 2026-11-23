@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { flushSync } from "react-dom";
 import {
   ArrowRight,
   Menu,
@@ -280,7 +281,7 @@ function Hero({ onBlackBox, onBuy }: { onBlackBox: () => void; onBuy: () => void
             alt="The BlackBox board"
             fetchPriority="high"
             className="ark-board relative z-20 block max-w-none w-[118%] -ml-[8%] -mt-[1.75rem] sm:-mt-[3rem] pointer-events-none lg:absolute lg:m-0 lg:w-[min(58vw,900px)] lg:right-[-3.5rem] lg:top-[10rem]"
-            style={{ rotate: "-5deg" }}
+            style={{ rotate: "-5deg", viewTransitionName: "blackbox" }}
           />
           <div className="ark-rise relative z-30 max-w-[26rem] lg:mt-10" style={{ animationDelay: "0.45s" }}>
             <p style={{ fontFamily: BODY, fontSize: "clamp(1rem, 1.4vw, 1.12rem)", color: "rgba(255,255,255,0.62)", lineHeight: 1.7 }}>
@@ -1686,9 +1687,18 @@ export default function App() {
     return () => window.removeEventListener("popstate", onPop);
   }, []);
 
+  // Pages crossfade, and the board morphs between pages that show it (browsers without
+  // view transitions, or with reduced motion, just switch).
   const go = (next: Page) => {
-    setPage(next);
-    requestAnimationFrame(() => scrollToTop(true));
+    const swap = () => {
+      flushSync(() => setPage(next));
+      scrollToTop(true);
+    };
+    if (document.startViewTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) document.startViewTransition(swap);
+    else {
+      setPage(next);
+      requestAnimationFrame(() => scrollToTop(true));
+    }
   };
   const goHome = () => go("home");
   const goPurchase = () => go("purchase");

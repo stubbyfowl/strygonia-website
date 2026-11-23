@@ -272,6 +272,11 @@ p, li { text-wrap: pretty; }
   color: transparent;
 }
 
+/* Page changes: a quick crossfade; the board glides between pages that show it. */
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: 0.3s; }
+::view-transition-group(blackbox) { animation-duration: 0.55s; animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1); }
+
 html.a11y-mode .ark-screen::before,
 html.a11y-mode .ark-scope,
 html.a11y-mode .ark-medallion,

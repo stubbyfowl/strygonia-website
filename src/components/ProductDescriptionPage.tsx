@@ -252,7 +252,7 @@ export function ProductDescriptionPage({
           <div className="grid lg:grid-cols-[0.92fr_1.08fr] gap-y-2 items-center">
             <h1 className="ark-title ark-title-xl relative z-10 lg:self-end lg:mb-6">{product.name}</h1>
             {/* The unit itself, out of its box and big. */}
-            <div className="ark-board relative z-20 -mx-4 sm:mx-0 lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:ml-8 lg:-mr-12">
+            <div className="ark-board relative z-20 -mx-4 sm:mx-0 lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:ml-8 lg:-mr-12" style={isBlackbox ? { viewTransitionName: "blackbox" } : undefined}>
               {isBlackbox ? <BlackBoxViewer /> : <DeviceMockup kind={product.mockup} className="w-full h-auto" />}
             </div>
             <Reveal className="relative z-10 lg:self-start">
