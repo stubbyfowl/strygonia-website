@@ -359,10 +359,19 @@ function ProductRow({
         </div>
       </div>
 
-      <div className={flip ? "lg:order-1 lg:-mr-20 lg:mt-0" : "lg:-ml-20 lg:mt-28"}>
-        <Panel className="p-8">
-          <DeviceMockup kind={product.mockup} className="w-full h-auto" />
-        </Panel>
+      {/* The real board, photographed (cut out of our own footage), out of its box. */}
+      <div className={flip ? "lg:order-1 lg:-mr-10" : "lg:-ml-10 lg:mt-4"}>
+        <img
+          src="/footage/board-real-1100.webp"
+          srcSet="/footage/board-real-640.webp 640w, /footage/board-real-1100.webp 1100w"
+          sizes="(min-width: 1024px) 40vw, 90vw"
+          width={1100}
+          height={1182}
+          loading="lazy"
+          alt="The real BlackBox Rev C board"
+          className="block w-full max-w-[520px] mx-auto h-auto"
+          style={{ filter: "drop-shadow(0 30px 50px rgba(0,0,0,0.65))" }}
+        />
       </div>
     </div>
   );
@@ -371,8 +380,8 @@ function ProductRow({
 function CaseRow({ onOpen }: { onOpen: () => void }) {
   return (
     <div className="grid lg:grid-cols-[0.95fr_1.05fr] gap-10 lg:gap-16 items-center">
-      <PageLink href={PATHS.case} onNavigate={onOpen} className="ark-focus block rounded-lg overflow-hidden" style={{ border: "1px solid var(--ark-line)" }}>
-        <img src="/products/case/black-front-right.jpg" alt="BlackBox Case in Stealth Black" width={1600} height={900} loading="lazy" className="block w-full h-auto" />
+      <PageLink href={PATHS.case} onNavigate={onOpen} className="ark-focus block">
+        <img src="/products/case/black-front-right-cutout.webp" alt="BlackBox Case in Stealth Black" width={1200} height={711} loading="lazy" className="block w-full h-auto" style={{ filter: "drop-shadow(0 30px 50px rgba(0,0,0,0.65))" }} />
       </PageLink>
       <div>
         <h3 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(1.9rem, 3.4vw, 2.8rem)", lineHeight: 0.98, color: "var(--ark-ink)", marginBottom: "1rem" }}>BlackBox Case</h3>
@@ -1329,7 +1338,7 @@ function DownloadsPage({ onHome, onReserve }: { onHome: () => void; onReserve: (
         </Reveal>
 
         <Reveal>
-          <Panel className="p-7">
+          <div className="pt-10" style={{ borderTop: "1px solid var(--ark-line-soft)" }}>
             <div className="grid lg:grid-cols-[0.85fr_1.15fr] gap-8 items-start">
               <div>
                 <h2 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(2.2rem, 4.2vw, 3.2rem)", lineHeight: 1, letterSpacing: "-0.01em", color: "var(--ark-ink)", marginBottom: "1rem" }}>BlackBox Desktop App</h2>
@@ -1358,7 +1367,7 @@ function DownloadsPage({ onHome, onReserve }: { onHome: () => void; onReserve: (
                 <figcaption style={{ fontFamily: BODY, fontSize: "0.8rem", color: "var(--ark-muted)", marginTop: "0.6rem" }}>The timeline: every signal on one clock, rewound to the moment the board failed.</figcaption>
               </figure>
             </div>
-          </Panel>
+          </div>
         </Reveal>
 
         <Reveal className="mt-6">
