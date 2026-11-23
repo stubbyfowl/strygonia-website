@@ -262,6 +262,16 @@ p, li { text-wrap: pretty; }
   color: var(--ark-ink);
 }
 
+/* Silver word: ChromeText's base layer, under (or instead of) the liquid chrome shader.
+   No tracking, so the shader's redraw of the word matches it letter for letter. */
+.ark-chrome-text {
+  letter-spacing: 0;
+  background: linear-gradient(172deg, #ffffff 8%, #c9ced6 30%, #6f7681 46%, #f2f4f7 56%, #959ca6 70%, #e4e7eb 88%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 html.a11y-mode .ark-screen::before,
 html.a11y-mode .ark-scope,
 html.a11y-mode .ark-medallion,

@@ -23,6 +23,7 @@ import { CookieBanner } from "@/components/CookieBanner";
 import { DeviceMockup } from "@/components/DeviceMockup";
 import { BlackBoxExploded } from "@/components/BlackBoxExploded";
 import { ScopeScene } from "@/components/ScopeScene";
+import { ChromeMark, ChromeText } from "@/components/ChromeMark";
 import { RewindTimeline } from "@/components/RewindTimeline";
 import { Reveal } from "@/components/Reveal";
 import { ProductDescriptionPage } from "@/components/ProductDescriptionPage";
@@ -190,7 +191,7 @@ function Navbar({
         }}
       >
         <PageLink href="/" onNavigate={onHome} className="ark-focus flex items-center gap-2.5" aria-label="Strygonia home">
-          <img src="/strygonia-icon.png" alt="" width={28} height={28} className="block flex-shrink-0" style={{ width: 28, height: 28 }} />
+          <ChromeMark className="flex-shrink-0 w-[35px] h-6" />
           <span style={{ fontFamily: WORDMARK, fontSize: "1rem", fontWeight: 600, letterSpacing: "0.02em", color: scrolled ? "var(--ark-ink)" : "#fff" }}>
             Strygonia
           </span>
@@ -266,7 +267,7 @@ function Hero({ onBlackBox, onBuy }: { onBlackBox: () => void; onBuy: () => void
         <ScopeScene />
         <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 pt-36 lg:pt-44 pb-16 lg:pb-28">
           <h1 className="relative z-10" style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: "clamp(3.3rem, 8.4vw, 8.6rem)", lineHeight: 0.86, letterSpacing: "-0.025em", color: "#fff" }}>
-            <span className="ark-rise block">Rewind the moment</span>{" "}
+            <span className="ark-rise block"><ChromeText>Rewind</ChromeText> the moment</span>{" "}
             <span className="ark-rise block" style={{ animationDelay: "0.08s" }}>your board died.</span>
           </h1>
           <img
@@ -708,6 +709,7 @@ function OrderConfirmation({ id, status }: { id: string; status: string }) {
 
   return (
     <Panel className="p-7">
+      {paid && <ChromeMark className="w-24 aspect-[604/412] mb-5" />}
       <h2 style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "1.6rem", color: "var(--ark-ink)", marginBottom: "0.8rem" }}>{heading}</h2>
       <p style={{ fontFamily: BODY, fontSize: "0.98rem", color: "var(--ark-ink-dim)", lineHeight: 1.7 }}>{body}</p>
       {numbers.length > 0 && (
@@ -1571,15 +1573,10 @@ function Footer({
     <footer className="ark-dark px-6 pt-14 pb-10 border-t relative" style={{ background: "var(--ark-bg)", borderColor: "var(--ark-line-soft)" }}>
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-start gap-10 sm:gap-16 mb-10">
-          <img
-            src="/strygonia-lockup-dark.png"
-            alt="Strygonia"
-            width={758}
-            height={278}
-            loading="lazy"
-            className="rounded-lg flex-shrink-0"
-            style={{ width: 180, height: "auto" }}
-          />
+          <div className="flex-shrink-0">
+            <ChromeMark className="w-32 aspect-[604/412]" />
+            <p className="mt-3" style={{ fontFamily: WORDMARK, fontSize: "1.6rem", lineHeight: 1, color: "var(--ark-ink)" }}>Strygonia</p>
+          </div>
           <div className="flex flex-wrap gap-x-10 gap-y-6">
             {columns.map((col) => (
               <div key={col.title} className="flex flex-col gap-2.5">

@@ -1,11 +1,12 @@
-/* The Strygonia mark in liquid chrome (Paper Shaders' LiquidMetal on the brand mark's silhouette).
-   Its own chunk: ChromeMark loads it only when it is near the screen. */
+/* Liquid chrome (Paper Shaders' LiquidMetal) over a shape: the Strygonia mark by default, or any
+   transparent image, such as a word drawn by ChromeText. Its own chunk, loaded on demand. */
 import { LiquidMetal } from "@paper-design/shaders-react";
 
-export default function LiquidMark({ still }: { still: boolean }) {
+export default function LiquidMark({ still, image = "/strygonia-mark.png" }: { still: boolean; image?: string }) {
   return (
     <LiquidMetal
-      image="/strygonia-mark.png"
+      image={image}
+      suspendWhenProcessingImage
       colorBack="#00000000"
       colorTint="#ffffff"
       repetition={2}
