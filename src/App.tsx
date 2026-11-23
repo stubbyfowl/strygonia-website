@@ -17,7 +17,7 @@ import {
   Package,
   ShoppingBag,
 } from "lucide-react";
-import { loadStripe } from "@stripe/stripe-js";
+import { loadStripe } from "@stripe/stripe-js/pure";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { CookieBanner } from "@/components/CookieBanner";
 import { DeviceMockup } from "@/components/DeviceMockup";
@@ -58,9 +58,10 @@ import { DOMESTIC, SHIP_COUNTRIES, quoteShipping } from "../api/_shipping.js";
 
 const { sidakProfile } = images;
 
-const stripePromise = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
-  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
-  : null;
+// Stripe.js loads the first time checkout needs it, not on every page.
+const STRIPE_KEY: string | undefined = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+let stripePromise: ReturnType<typeof loadStripe> | null = null;
+const getStripe = () => (stripePromise ??= loadStripe(STRIPE_KEY!));
 
 /* ── Shared type tokens ───────────────────────────────────────────── */
 const DISPLAY = "var(--ark-display)";
@@ -646,7 +647,7 @@ function StripeCheckout({ items, total, onDraft }: { items: CartLine[]; total: n
             </button>
           </div>
         </div>
-      ) : clientSecret && stripePromise ? (
+      ) : clientSecret && STRIPE_KEY ? (
         <>
           {shipping && (
             <div className="mb-5 rounded-lg px-4 py-3" style={{ background: "rgba(255,255,255,0.04)", fontFamily: BODY, fontSize: "0.85rem", color: "var(--ark-ink-dim)" }}>
@@ -660,7 +661,7 @@ function StripeCheckout({ items, total, onDraft }: { items: CartLine[]; total: n
               </div>
             </div>
           )}
-          <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: "night", variables: { colorPrimary: "#3b82f6", colorBackground: "#161616", borderRadius: "8px" } } }}>
+          <Elements stripe={getStripe()} options={{ clientSecret, appearance: { theme: "night", variables: { colorPrimary: "#3b82f6", colorBackground: "#161616", borderRadius: "8px" } } }}>
             <CheckoutForm amount={amount} />
           </Elements>
         </>
