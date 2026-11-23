@@ -4,7 +4,7 @@ const LiquidMark = lazy(() => import("./LiquidMark"));
 
 /* The mark's silhouette in silver: shown until the shader is ready, and for good if it can't run. */
 function Silhouette() {
-  return <img src="/strygonia-mark.png" alt="" draggable={false} className="block w-full h-full object-contain" style={{ filter: "brightness(0) invert(0.82)" }} />;
+  return <img src="/strygonia-mark.webp" alt="" draggable={false} className="block w-full h-full object-contain" style={{ filter: "brightness(0) invert(0.82)" }} />;
 }
 
 /* A device without WebGL must not take the page down with it (this sits in the navbar). */

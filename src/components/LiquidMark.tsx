@@ -2,7 +2,7 @@
    transparent image, such as a word drawn by ChromeText. Its own chunk, loaded on demand. */
 import { LiquidMetal } from "@paper-design/shaders-react";
 
-export default function LiquidMark({ still, image = "/strygonia-mark.png" }: { still: boolean; image?: string }) {
+export default function LiquidMark({ still, image = "/strygonia-mark.webp" }: { still: boolean; image?: string }) {
   return (
     <LiquidMetal
       image={image}

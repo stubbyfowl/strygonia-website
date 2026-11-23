@@ -1586,7 +1586,7 @@ function Footer({
         <div className="flex flex-col sm:flex-row sm:items-start gap-10 sm:gap-16 mb-10">
           <div className="flex-shrink-0">
             {/* Static silver: the Founder's Edition just above already carries the chrome. */}
-            <img src="/strygonia-mark.png" alt="" width={604} height={412} loading="lazy" className="block w-24 h-auto" style={{ filter: "brightness(0) invert(0.82)" }} />
+            <img src="/strygonia-mark.webp" alt="" width={604} height={412} loading="lazy" className="block w-24 h-auto" style={{ filter: "brightness(0) invert(0.82)" }} />
             <p className="mt-3" style={{ fontFamily: WORDMARK, fontSize: "1.6rem", lineHeight: 1, color: "var(--ark-ink)" }}>Strygonia</p>
           </div>
           <div className="flex flex-wrap gap-x-10 gap-y-6">
