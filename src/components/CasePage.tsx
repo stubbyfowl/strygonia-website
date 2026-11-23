@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ArrowRight, Check, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/Reveal";
-import { CaseViewer } from "@/components/CaseViewer";
+import { LazyCaseViewer } from "@/components/Lazy3D";
 import { CaseColourPicker } from "@/components/CaseColourPicker";
 import { CASE_COLOURS, CATALOG, usd, type CaseColour } from "@/constants/catalog";
 import { cart } from "@/lib/cart";
@@ -93,7 +93,7 @@ export function CasePage({
               <h1 className="ark-title relative z-10 lg:self-end lg:mb-6">BlackBox Case</h1>
               {/* The case itself, out of its box and big. */}
               <div className="ark-board relative z-20 lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:-ml-4 lg:-mr-8">
-                <CaseViewer colour={colour} open={open} fallback={`/products/case/${colour}-front-right.jpg`} />
+                <LazyCaseViewer colour={colour} open={open} fallback={`/products/case/${colour}-front-right.jpg`} />
                 <div className="mt-2 flex justify-center">
                   <Button size="sm" variant="outline" onClick={() => setOpen((v) => !v)} aria-pressed={open}>
                     {open ? "Close it" : "Open it"}

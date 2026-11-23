@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Activity, ArrowRight, CircuitBoard, Gauge, Radio, Terminal, Zap } from "lucide-react";
 import { DeviceMockup } from "@/components/DeviceMockup";
-import { BlackBoxViewer } from "@/components/BlackBoxViewer";
-import { BlackBoxExploded } from "@/components/BlackBoxExploded";
+import { LazyBlackBoxViewer, LazyExploded } from "@/components/Lazy3D";
 import { Reveal } from "@/components/Reveal";
 import { WaitlistForm } from "@/components/WaitlistForm";
 import { FoundersEdition } from "@/components/FoundersEdition";
@@ -253,7 +252,7 @@ export function ProductDescriptionPage({
             <h1 className="ark-title ark-title-xl relative z-10 lg:self-end lg:mb-6">{product.name}</h1>
             {/* The unit itself, out of its box and big. */}
             <div className="ark-board relative z-20 -mx-4 sm:mx-0 lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:ml-8 lg:-mr-12" style={isBlackbox ? { viewTransitionName: "blackbox" } : undefined}>
-              {isBlackbox ? <BlackBoxViewer /> : <DeviceMockup kind={product.mockup} className="w-full h-auto" />}
+              {isBlackbox ? <LazyBlackBoxViewer /> : <DeviceMockup kind={product.mockup} className="w-full h-auto" />}
             </div>
             <Reveal className="relative z-10 lg:self-start">
               <p className="" style={{ fontFamily: BODY, fontSize: "1.3rem", color: "var(--ark-signal)", lineHeight: 1.35, marginBottom: "1.5rem" }}>
@@ -288,7 +287,7 @@ export function ProductDescriptionPage({
       <Signals product={product} />
 
       {isBlackbox && (
-        <BlackBoxExploded
+        <LazyExploded
           title="Scroll to take it apart."
           subtitle="Watch the Rev C board come apart: every part lifts off, then the board peels into its layers."
         />

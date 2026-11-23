@@ -11,7 +11,7 @@ export const CASE_COLOURS: Record<CaseColour, { sku: Sku; name: string; hex: str
 /* Display prices only. The charge itself comes from the server's own price list in
    api/create-payment-intent.js, so a visitor can't change what they pay. */
 export const CATALOG: Record<Sku, { name: string; variant?: string; price: number; image: string }> = {
-  blackbox: { name: "BlackBox", price: 199, image: images.blackbox1 },
+  blackbox: { name: "BlackBox", price: 199, image: images.blackboxThumb },
   "case-white": { name: "BlackBox Case", variant: "Arctic White", price: 25, image: "/products/case/white-front-right.jpg" },
   "case-black": { name: "BlackBox Case", variant: "Stealth Black", price: 25, image: "/products/case/black-front-right.jpg" },
 };

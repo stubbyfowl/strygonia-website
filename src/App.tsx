@@ -22,7 +22,7 @@ import { loadStripe } from "@stripe/stripe-js/pure";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { CookieBanner } from "@/components/CookieBanner";
 import { DeviceMockup } from "@/components/DeviceMockup";
-import { BlackBoxExploded } from "@/components/BlackBoxExploded";
+import { LazyExploded } from "@/components/Lazy3D";
 import { ScopeScene } from "@/components/ScopeScene";
 import { ChromeMark, ChromeText } from "@/components/ChromeMark";
 import { RewindTimeline } from "@/components/RewindTimeline";
@@ -1768,7 +1768,7 @@ export default function App() {
             </div>
           </section>
           <div className="ark-dark">
-            <BlackBoxExploded
+            <LazyExploded
               title="Inside the V1"
               subtitle="All 105 parts lift off the board, then the board itself peels apart: silkscreen, solder mask, copper, and the FR4 core."
             />
